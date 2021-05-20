@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Accounts</title>
+    <title>Deleted Account</title>
     <script th:src="@{/js/renderjson.js}"></script>
     <link rel="stylesheet" th:href="@{/css/renderjson.css}">
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
@@ -73,11 +73,16 @@
     </div>
 </div>
 
-<h2 align="center">List of accounts</h2>
+<h2 align="center">Account was successfully deleted</h2>
 <div id="data"></div>
+
 <script type="text/javascript" src="renderjson.js"></script>
-<script>
-    var url = 'http://localhost:8080/accounts/getAll';
+<script th:inline="javascript">
+    var url = 'http://localhost:8080/accounts/deleted?code=';
+/*<![CDATA[*/
+    var code = /*[[${code}]]*/;
+/*]]>*/
+    url = url + code;
     fetch(url)
         .then(function (response) {
             return response.json();
@@ -90,6 +95,5 @@
         });
 
 </script>
-
 </body>
 </html>

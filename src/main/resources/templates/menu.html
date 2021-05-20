@@ -2,9 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Accounts</title>
-    <script th:src="@{/js/renderjson.js}"></script>
-    <link rel="stylesheet" th:href="@{/css/renderjson.css}">
+    <title>Menu</title>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
 </head>
 <body>
@@ -29,7 +27,7 @@
                 <td>Get account by UUID</td>
                 <td><label for="get_uuid"></label>
                     <input type="text" name="get_uuid" id="get_uuid" form="form1"
-                           placeholder="UUID of account you want to get" size="28"></td>
+                    placeholder="UUID of account you want to get" size="28"></td>
                 <td align="center"><form th:action="@{/accounts/getByUuid}" method="get" id="form1">
                     <button type="submit" style="background-color: #32cd32; width: 80px">GET</button>
                 </form></td>
@@ -72,24 +70,6 @@
         </table>
     </div>
 </div>
-
-<h2 align="center">List of accounts</h2>
-<div id="data"></div>
-<script type="text/javascript" src="renderjson.js"></script>
-<script>
-    var url = 'http://localhost:8080/accounts/getAll';
-    fetch(url)
-        .then(function (response) {
-            return response.json();
-        })
-        .then(function (data) {
-            document.getElementById("data").appendChild(renderjson(data));
-        })
-        .catch(function (err) {
-            console.log(err);
-        });
-
-</script>
 
 </body>
 </html>
