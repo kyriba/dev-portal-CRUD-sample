@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Menu</title>
+    <script th:src="@{/js/hiding.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/renderjson.css}">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body>
+
+<div class="container" th:replace="html/menu::menu-table"></div>
+
+<h3 class="to_hide" align="center">Input must not be blank!</h3>
+
+<button class="to_hide" onclick="do_hide()" style="width: 200px; margin: 10px; margin-left: 43%;">Hide all except the
+    menu
+</button>
+
+<script th:src = "@{/js/uri.js}"></script>
+
+</body>
+</html>

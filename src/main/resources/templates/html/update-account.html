@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Account</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body>
+
+<form th:action="@{/accounts/updated}" method="get" id="update_form">
+    <div class="container">
+        <div class="row">
+            <table class="table table-responsive table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th colspan="3" style="text-align:center; vertical-align:middle"><h2>Change Account</h2></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr hidden>
+                    <td><label for="uuid">UUID</label></td>
+                    <td><input type="text" name="uuid" id="uuid" style="width: 250px" th:value="${account.uuid}"><br>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr hidden>
+                    <td><label for="code">Code</label></td>
+                    <td><input type="text" name="code" id="code" style="width: 250px" th:value="${account.code}"><br>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><label>Address:</label><br></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><label for="country">Country</label></td>
+                    <td><input type="text" list="country" name="country" autocomplete="off"
+                               th:value="${account.address.country.code}"/>
+                        <datalist id="country">
+                            <option th:each="country_code: ${fields.get('countries')}" th:value="${country_code}">
+                        </datalist>
+                        <br></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><label for="city">City</label></td>
+                    <td><input type="text" name="city" id="city" th:value="${account.address.city}"><br></td>
+                </tr>
+                <tr>
+                    <td><label>Bank Account ID:</label><br></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><label for="value">Value</label></td>
+                    <td><input type="text" name="value" id="value" th:value="${account.bankAccountID.value}"><br></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><label for="ban_structure">Ban Structure</label></td>
+                    <td><select name="ban_structure" id="ban_structure">
+                        <option th:label="${account.bankAccountID.banStructure}"
+                                th:value="${account.bankAccountID.banStructure}" selected hidden></option>
+                        <option th:each="ban_structure: ${fields.get('ban_structures')}" th:value="${ban_structure}"
+                                th:label="${ban_structure}">
+                    </select><br></td>
+                </tr>
+                <tr>
+                    <td><label>Branch:</label><br></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><label for="branch_code">Code</label></td>
+                    <td><input type="text" list="branch_code" name="branch_code" autocomplete="off"
+                               th:value="${account.branch.code}"/>
+                        <datalist id="branch_code">
+                            <option th:each="branch: ${fields.get('branches')}" th:value="${branch}">
+                        </datalist>
+                        <br></td>
+                </tr>
+                <tr>
+                    <td><label>Calendar:</label><br></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><label for="calendar_code">Code</label></td>
+                    <td><input type="text" list="calendar_code" name="calendar_code" autocomplete="off"
+                               th:value="${account.calendar.code}"/>
+                        <datalist id="calendar_code">
+                            <option th:each="calendar: ${fields.get('calendars')}" th:value="${calendar}">
+                        </datalist>
+                        <br></td>
+                </tr>
+                <tr>
+                    <td><label>Company:</label><br></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><label for="company_code">Code</label></td>
+                    <td><input type="text" list="company_code" name="company_code" autocomplete="off"
+                               th:value="${account.company.code}"/>
+                        <datalist id="company_code">
+                            <option th:each="company: ${fields.get('companies')}" th:value="${company}">
+                        </datalist>
+                        <br></td>
+                </tr>
+                <tr>
+                    <td><label>Currency:</label><br></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><label for="currency_code">Code</label></td>
+                    <td><input type="text" list="currency_code" name="currency_code" autocomplete="off"
+                               th:value="${account.currency.code}"/>
+                        <datalist id="currency_code">
+                            <option th:each="currency: ${fields.get('currencies')}" th:value="${currency}">
+                        </datalist>
+                        <br></td>
+                </tr>
+                <tr>
+                    <td><label for="time_zone">Time Zone</label></td>
+                    <td><input type="text" list="time_zone" name="time_zone" autocomplete="off"
+                               th:value="${account.timeZone}"/>
+                        <datalist id="time_zone">
+                            <option th:each="time_zone: ${fields.get('time_zones')}" th:value="${time_zone}">
+                        </datalist>
+                        <br></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="text-align:center; vertical-align:middle">
+                        <button type="submit" style="background-color: #fca130; width: 150px; color: #fff;
+                        font-weight: 700; border: none; border-radius: 4px; height: 28px;"><b>PUT</b></button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</form>
+
+<form th:action="@{/accounts}" method="get" id="get_form">
+    <div class="container">
+        <div class="row">
+            <table class="table table-responsive table-bordered table-striped">
+                <tbody>
+                <td colspan="3" style="text-align:center; vertical-align:middle">
+                    <button type="submit" style="width: 150px"><b>Back to menu</b></button>
+                </td>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</form>
+
+</body>
+</html>

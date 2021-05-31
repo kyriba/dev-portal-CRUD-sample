@@ -1,7 +1,9 @@
 package io.swagger.client.controller;
 
+import io.swagger.client.exception.BadRequestException;
 import io.swagger.client.model.*;
 import io.swagger.client.service.AccountService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -11,129 +13,158 @@ import java.util.Map;
 @Controller
 @RequestMapping("/accounts")
 public class AccountApiController {
+
+    @Value("${base.url}")
+    private String BASE_URL;
     private AccountService accountService;
 
     public AccountApiController(AccountService accountService) {
         this.accountService = accountService;
     }
 
+    @GetMapping
+    public String getMenu(Model model) {
+        model.addAttribute("codes_list", accountService.getAllCodes());
+        model.addAttribute("created_accounts", accountService.getCreatedAccounts());
+        model.addAttribute("base_url", BASE_URL);
+        return "html/menu";
+    }
+
     @GetMapping("/getAll")
     @ResponseBody
-    public PageOfAccountSearchModel getAll(){
+    public PageOfAccountSearchModel getAll() {
         return accountService.getAllAccounts(null, null, null, null, null);
     }
 
-    @GetMapping("/getAccountByCode")
-    @ResponseBody
-    public AccountDetailsDto getAccountByCode(@RequestParam String code){
-        return accountService.getAccountByCode(code);
-    }
-
-    @GetMapping("/getAccountByUuid")
-    @ResponseBody
-    public AccountDetailsDto getAccountByUuid(@RequestParam String uuid){
-        return accountService.getAccountByUuid(uuid);
-    }
-
-    @GetMapping("/new")
-    @ResponseBody
-    public ResponseIdModel createdAccount(@RequestParam Map<String, String> account) {
-        System.out.println(account.entrySet());
-        return accountService.createAccount(account);
-    }
-
-    @GetMapping("/changed")
-    @ResponseBody
-    public ResponseIdModel changedAccount(@RequestParam Map<String, String> account) {
-        System.out.println(account.entrySet());
-        return accountService.updateAccount(account);
-    }
-
-    @GetMapping("/deleted")
-    @ResponseBody
-    public ResponseIdModel deletedAccount(@RequestParam String code) {
-        return accountService.deleteAccount(code);
-    }
-
-
-    @GetMapping
-    public String getMenu(){
-        return "menu";
-    }
-
     @GetMapping("/getAllAccounts")
-    public String getAllAccounts(){
-        return "accounts-list";
+    public String getAllAccounts(Model model) {
+        model.addAttribute("codes_list", accountService.getAllCodes());
+        model.addAttribute("created_accounts", accountService.getCreatedAccounts());
+        model.addAttribute("base_url", BASE_URL);
+        return "html/accounts-list";
     }
-
-    @GetMapping("/create")
-    public String createAccount(){
-        return "create-account";
-    }
-
-    @GetMapping("/update")
-    public String updateAccount(@RequestParam String update_code, Model model){
-        model.addAttribute("code", update_code);
-        model.addAttribute("country", accountService.getAccountByCode(update_code).getAddress().getCountry().getCode());
-        model.addAttribute("city", accountService.getAccountByCode(update_code).getAddress().getCity());
-        model.addAttribute("value", accountService.getAccountByCode(update_code).getBankAccountID().getValue());
-        model.addAttribute("ban_structure", accountService.getAccountByCode(update_code).getBankAccountID().getBanStructure());
-        model.addAttribute("branch_code", accountService.getAccountByCode(update_code).getBranch().getCode());
-        model.addAttribute("calendar_code", accountService.getAccountByCode(update_code).getCalendar().getCode());
-        model.addAttribute("company_code", accountService.getAccountByCode(update_code).getCompany().getCode());
-        model.addAttribute("currency_code", accountService.getAccountByCode(update_code).getCurrency().getCode());
-        model.addAttribute("time_zone", accountService.getAccountByCode(update_code).getTimeZone());
-        return "update-account";
-    }
-
 
     @GetMapping("/getByCode")
-    public String getByCode(@RequestParam String get_code, Model model){
-        model.addAttribute("code", get_code);
+    public String getByCode(@RequestParam String get_code, Model model) {
+        model.addAttribute("codes_list", accountService.getAllCodes());
+        model.addAttribute("created_accounts", accountService.getCreatedAccounts());
+        model.addAttribute("base_url", BASE_URL);
+        if (get_code.equals("")) {
+            return "exception/blank-input-exception";
+        }
+        try {
+            model.addAttribute("account", accountService.getAccountByCode(get_code));
+        } catch (BadRequestException e) {
+            if (e.getMessage().contains("There is no account with code")) {
+                model.addAttribute("error_message", e.getMessage());
+                return "exception/bad-request-exception";
+            }
+        }
         System.out.println(get_code);
-        return "account-code-renderjson";
+        return "html/account-code-renderjson";
     }
 
     @GetMapping("/getByUuid")
-    public String getByUuid(@RequestParam String get_uuid, Model model){
-        model.addAttribute("uuid", get_uuid);
+    public String getByUuid(@RequestParam String get_uuid, Model model) {
+        model.addAttribute("codes_list", accountService.getAllCodes());
+        model.addAttribute("created_accounts", accountService.getCreatedAccounts());
+        model.addAttribute("base_url", BASE_URL);
+        if (get_uuid.equals("")) {
+            return "exception/blank-input-exception";
+        }
+        try {
+            model.addAttribute("account", accountService.getAccountByUuid(get_uuid));
+        } catch (BadRequestException e) {
+            if (e.getMessage().contains("There is no account with uuid")) {
+                model.addAttribute("error_message", e.getMessage());
+                return "exception/bad-request-exception";
+            }
+        } catch (IllegalArgumentException e2) {
+            model.addAttribute("error_message", e2.getMessage());
+            return "exception/bad-request-exception";
+        }
         System.out.println(get_uuid);
-        return "account-uuid-renderjson";
+        return "html/account-uuid-renderjson";
+    }
+
+    @GetMapping("/create")
+    public String createAccount(Model model) {
+        model.addAttribute("fields", accountService.getAndSortDistinctValuesOfAccountsFields());
+        return "html/create-account";
     }
 
     @GetMapping("/created")
-    public String createdAccount(@RequestParam Map<String, String> account, Model model){
-        model.addAttribute("code", account.get("code"));
-        model.addAttribute("country", account.get("country"));
-        model.addAttribute("city", account.get("city"));
-        model.addAttribute("value", account.get("value"));
-        model.addAttribute("ban_structure", account.get("ban_structure"));
-        model.addAttribute("branch_code", account.get("branch_code"));
-        model.addAttribute("calendar_code", account.get("calendar_code"));
-        model.addAttribute("company_code", account.get("company_code"));
-        model.addAttribute("currency_code", account.get("currency_code"));
-        model.addAttribute("time_zone", account.get("time_zone"));
-        return "new-account";
+    public String createdAccount(@RequestParam Map<String, String> account, Model model) {
+        model.addAttribute("base_url", BASE_URL);
+        try {
+            model.addAttribute("account", accountService.createAccount(account));
+        } catch (BadRequestException e) {
+            model.addAttribute("codes_list", accountService.getAllCodes());
+            model.addAttribute("created_accounts", accountService.getCreatedAccounts());
+            model.addAttribute("error_message", e.getMessage());
+            return "exception/bad-request-exception";
+        }
+        model.addAttribute("codes_list", accountService.getAllCodes());
+        model.addAttribute("created_accounts", accountService.getCreatedAccounts());
+        return "html/new-account";
+    }
+
+    @GetMapping("/update")
+    public String updateAccount(@RequestParam String update_code, Model model) {
+        model.addAttribute("codes_list", accountService.getAllCodes());
+        model.addAttribute("created_accounts", accountService.getCreatedAccounts());
+        model.addAttribute("base_url", BASE_URL);
+        if (update_code.equals("")) {
+            return "exception/blank-input-exception";
+        }
+        try {
+            if (accountService.getCreatedAccounts().stream()
+                    .anyMatch(account -> update_code.equals(account.getCode()))) {
+                model.addAttribute("account", accountService.getAccountByCode(update_code));
+            } else
+                throw new BadRequestException("There is no account with code " + update_code + " which can be update");
+        } catch (BadRequestException e) {
+            if (e.getMessage().contains("There is no account with code")) {
+                model.addAttribute("error_message", e.getMessage());
+                return "exception/bad-request-exception";
+            }
+        }
+        model.addAttribute("fields", accountService.getAndSortDistinctValuesOfAccountsFields());
+        return "html/update-account";
     }
 
     @GetMapping("/updated")
-    public String updatedAccount(@RequestParam Map<String, String> account, Model model){
-        model.addAttribute("code", account.get("code"));
-        model.addAttribute("country", account.get("country"));
-        model.addAttribute("city", account.get("city"));
-        model.addAttribute("value", account.get("value"));
-        model.addAttribute("ban_structure", account.get("ban_structure"));
-        model.addAttribute("branch_code", account.get("branch_code"));
-        model.addAttribute("calendar_code", account.get("calendar_code"));
-        model.addAttribute("company_code", account.get("company_code"));
-        model.addAttribute("currency_code", account.get("currency_code"));
-        model.addAttribute("time_zone", account.get("time_zone"));
-        return "updated-account";
+    public String updatedAccount(@RequestParam Map<String, String> account, Model model) {
+        model.addAttribute("base_url", BASE_URL);
+        try {
+            model.addAttribute("account", accountService.updateAccount(account));
+        } catch (BadRequestException e) {
+            model.addAttribute("codes_list", accountService.getAllCodes());
+            model.addAttribute("created_accounts", accountService.getCreatedAccounts());
+            model.addAttribute("error_message", e.getMessage());
+            return "exception/bad-request-exception";
+        }
+        model.addAttribute("codes_list", accountService.getAllCodes());
+        model.addAttribute("created_accounts", accountService.getCreatedAccounts());
+        return "html/updated-account";
     }
 
     @GetMapping("/delete")
-    public String deleteAccount(@RequestParam String delete_code, Model model){
-        model.addAttribute("code", delete_code);
-        return "delete-account";
+    public String deleteAccount(@RequestParam String delete_code, Model model) {
+        model.addAttribute("codes_list", accountService.getAllCodes());
+        model.addAttribute("created_accounts", accountService.getCreatedAccounts());
+        model.addAttribute("base_url", BASE_URL);
+        if (delete_code.equals("")) {
+            return "exception/blank-input-exception";
+        }
+        try {
+            model.addAttribute("account", accountService.deleteAccount(delete_code));
+        } catch (BadRequestException e) {
+            if (e.getMessage().contains("There is no account with code")) {
+                model.addAttribute("error_message", e.getMessage());
+                return "exception/bad-request-exception";
+            }
+        }
+        return "html/deleted-account";
     }
 }

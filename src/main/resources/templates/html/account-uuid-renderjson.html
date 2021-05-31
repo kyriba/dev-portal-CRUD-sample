@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Account</title>
+    <script th:src="@{/js/renderjson.js}"></script>
+    <script th:src="@{/js/hiding.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/renderjson.css}">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body>
+
+<div class="container" th:replace="html/menu::menu-table"></div>
+
+<button class="to_hide" onclick="do_hide()" style="width: 200px; margin: 10px; margin-left: 44%;">Hide all except the
+    menu
+</button>
+
+<h2 class="to_hide" align="center">Account</h2>
+<div class="to_hide" id="data"></div>
+<script type="text/javascript" src="renderjson.js"></script>
+<script th:inline="javascript">
+    renderjson.set_show_to_level("all");
+
+/*<![CDATA[*/
+    var account = /*[[${account}]]*/;
+/*]]>*/
+
+    var refer = (function render() {
+        document.getElementById("data").appendChild(renderjson(account));
+        return render;
+    }());
+
+</script>
+
+<script th:src = "@{/js/uri.js}"></script>
+
+</body>
+</html>

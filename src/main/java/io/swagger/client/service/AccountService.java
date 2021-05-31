@@ -1,6 +1,7 @@
 
 package io.swagger.client.service;
 
+import io.swagger.client.model.Account;
 import io.swagger.client.model.AccountDetailsDto;
 import io.swagger.client.model.PageOfAccountSearchModel;
 import io.swagger.client.model.ResponseIdModel;
@@ -20,4 +21,10 @@ public interface AccountService {
     ResponseIdModel updateAccount(Map<String, String> account);
 
     ResponseIdModel deleteAccount(String code);
+
+    List<Account> getCreatedAccounts();
+
+    List<String> getAllCodes();
+
+    Map<String, List<String>> getAndSortDistinctValuesOfAccountsFields();
 }

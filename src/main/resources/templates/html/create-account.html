@@ -29,12 +29,11 @@
                 <tr>
                     <td></td>
                     <td><label for="country">Country</label></td>
-                    <td><select name="country" id="country">
-                        <option value="FR">FR</option>
-                        <option value="GB">GB</option>
-                        <option value="JP">JP</option>
-                        <option value="US" selected>US</option>
-                    </select><br></td>
+                    <td><input type="text" list="country" name="country" autocomplete="off"/>
+                        <datalist id="country">
+                            <option th:each="country_code: ${fields.get('countries')}" th:value="${country_code}">
+                        </datalist>
+                        <br></td>
                 </tr>
                 <tr>
                     <td></td>
@@ -55,18 +54,8 @@
                     <td></td>
                     <td><label for="ban_structure">Ban Structure</label></td>
                     <td><select name="ban_structure" id="ban_structure">
-                        <option value="BBAN_STRUCTURE">BBAN_STRUCTURE</option>
-                        <option value="IBAN_STRUCTURE">IBAN_STRUCTURE</option>
-                        <option value="LBAN_0_STRUCTURE">LBAN_0_STRUCTURE</option>
-                        <option value="LBAN_1_STRUCTURE">LBAN_1_STRUCTURE</option>
-                        <option value="LBAN_2_STRUCTURE">LBAN_2_STRUCTURE</option>
-                        <option value="LBAN_3_STRUCTURE">LBAN_3_STRUCTURE</option>
-                        <option value="LBAN_4_STRUCTURE">LBAN_4_STRUCTURE</option>
-                        <option value="LBAN_5_STRUCTURE">LBAN_5_STRUCTURE</option>
-                        <option value="LBAN_6_STRUCTURE">LBAN_6_STRUCTURE</option>
-                        <option value="LBAN_7_STRUCTURE">LBAN_7_STRUCTURE</option>
-                        <option value="LBAN_8_STRUCTURE">LBAN_8_STRUCTURE</option>
-                        <option value="LBAN_9_STRUCTURE">LBAN_9_STRUCTURE</option>
+                        <option th:each="ban_structure: ${fields.get('ban_structures')}" th:value="${ban_structure}"
+                                th:label="${ban_structure}">
                     </select><br></td>
                 </tr>
                 <tr>
@@ -77,13 +66,11 @@
                 <tr>
                     <td></td>
                     <td><label for="branch_code">Code</label></td>
-                    <td><select name="branch_code" id="branch_code">
-                        <option value="BRANCHDEMO" selected>BRANCHDEMO</option>
-                        <option value="HSBC01">HSBC01</option>
-                        <option value="MUFJ01">MUFJ01</option>
-                        <option value="SG01">SG01</option>
-                        <option value="USBANK01">USBANK01</option>
-                    </select><br></td>
+                    <td><input type="text" list="branch_code" name="branch_code" autocomplete="off"/>
+                        <datalist id="branch_code">
+                            <option th:each="branch: ${fields.get('branches')}" th:value="${branch}">
+                        </datalist>
+                    </td>
                 </tr>
                 <tr>
                     <td><label>Calendar:</label><br></td>
@@ -93,12 +80,11 @@
                 <tr>
                     <td></td>
                     <td><label for="calendar_code">Code</label></td>
-                    <td><select name="calendar_code" id="calendar_code">
-                        <option value="FR">FR</option>
-                        <option value="GB">GB</option>
-                        <option value="JP">JP</option>
-                        <option value="US" selected>US</option>
-                    </select><br></td>
+                    <td><input type="text" list="calendar_code" name="calendar_code" autocomplete="off"/>
+                        <datalist id="calendar_code">
+                            <option th:each="calendar: ${fields.get('calendars')}" th:value="${calendar}">
+                        </datalist>
+                        <br></td>
                 </tr>
                 <tr>
                     <td><label>Company:</label><br></td>
@@ -108,13 +94,11 @@
                 <tr>
                     <td></td>
                     <td><label for="company_code">Code</label></td>
-                    <td><select name="company_code" id="company_code">
-                        <option value="COMPANY01">COMPANY01</option>
-                        <option value="COMPANY02">COMPANY02</option>
-                        <option value="COMPANY03">COMPANY03</option>
-                        <option value="COMPANY04">COMPANY04</option>
-                        <option value="COMPANY-DEMO">COMPANY-DEMO</option>
-                    </select><br></td>
+                    <td><input type="text" list="company_code" name="company_code" autocomplete="off"/>
+                        <datalist id="company_code">
+                            <option th:each="company: ${fields.get('companies')}" th:value="${company}">
+                        </datalist>
+                        <br></td>
                 </tr>
                 <tr>
                     <td><label>Currency:</label><br></td>
@@ -124,21 +108,25 @@
                 <tr>
                     <td></td>
                     <td><label for="currency_code">Code</label></td>
-                    <td><select name="currency_code" id="currency_code">
-                        <option value="EUR">EUR</option>
-                        <option value="GBP">GBP</option>
-                        <option value="JPY">JPY</option>
-                        <option value="USD" selected>USD</option>
-                    </select><br></td>
+                    <td><input type="text" list="currency_code" name="currency_code" autocomplete="off"/>
+                        <datalist id="currency_code">
+                            <option th:each="currency: ${fields.get('currencies')}" th:value="${currency}">
+                        </datalist>
+                        <br></td>
                 </tr>
                 <tr>
                     <td><label for="time_zone">Time Zone</label></td>
-                    <td><input type="text" name="time_zone" id="time_zone"><br></td>
+                    <td><input type="text" list="time_zone" name="time_zone" autocomplete="off"/>
+                        <datalist id="time_zone">
+                            <option th:each="time_zone: ${fields.get('time_zones')}" th:value="${time_zone}">
+                        </datalist>
+                        <br></td>
                     <td></td>
                 </tr>
                 <tr>
                     <td colspan="3" style="text-align:center; vertical-align:middle">
-                        <button type="submit" style="background-color: #FFFF00; width: 150px"><b>CREATE</b></button>
+                        <button type="submit" style="background-color: #49cc90; width: 150px; color: #fff;
+                        font-weight: 700; border: none; border-radius: 4px; height: 28px;"><b>POST</b></button>
                     </td>
                 </tr>
                 </tbody>
