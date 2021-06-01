@@ -15,7 +15,6 @@ import org.apache.oltu.oauth2.client.response.OAuthAccessTokenResponse;
 import org.apache.oltu.oauth2.client.response.OAuthJSONAccessTokenResponse;
 import org.apache.oltu.oauth2.common.OAuth;
 import org.apache.oltu.oauth2.common.message.types.GrantType;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -54,7 +53,7 @@ public class AccountServiceImpl implements AccountService {
 
             OAuthAccessTokenResponse token = client.accessToken(request, OAuth.HttpMethod.POST, OAuthJSONAccessTokenResponse.class);
             String accessToken = token.getAccessToken();
-            System.out.println(token.getBody() + "\n");
+//            System.out.println(token.getBody() + "\n");
             ApiClient defaultClient = Configuration.getDefaultApiClient();
             io.swagger.client.auth.OAuth OAuth2ClientCredentials = (io.swagger.client.auth.OAuth) defaultClient.getAuthentication("OAuth2ClientCredentials");
             OAuth2ClientCredentials.setAccessToken(accessToken);
@@ -133,7 +132,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
-    public ResponseIdModel createAccount(@NotNull Map<String, String> account) {
+    public ResponseIdModel createAccount(Map<String, String> account) {
         Account accountDto = new Account();
         accountDto.setCode(account.get("code").toUpperCase());
 
