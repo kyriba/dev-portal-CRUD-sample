@@ -18,7 +18,7 @@ Set following environment variables:
 
 * TOKEN_URL
 * CLIENT_ID
-* CLIENT_SERVER
+* CLIENT_SECRET
 
 For example:
 
@@ -55,3 +55,19 @@ To terminate application press ***Ctrl + C*** and execute ***y*** after this app
 ```shell
 Terminate batch job (Y/N)?
 ```
+
+####Another way to run application:
+
+Build project:
+
+```shell
+gradle build
+```
+
+And execute jar file:
+
+```shell
+java -jar "localPath/build/libs/swagger-java-client-1.0.0.jar"
+```
+
+Instead of "localPath" input your local directory to the project together with project name.
