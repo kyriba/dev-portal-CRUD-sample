@@ -34,7 +34,7 @@ And execute jar file:
 java -jar build/libs/swagger-java-client.jar
 ```
 
-> :warning: Please notice that the path to your local directory is provided in MacOS/ Unix format. Windows is slash-sensitive, so if you are using a Windows system, replace "/" with "\"
+> :warning: Please notice that the path to your local directory is provided in MacOS/ Unix format. Windows is slash-sensitive, so if you are using a Windows system, replace "/" with "\\"
 
 If the application runs successfully, you can go to the link:
 
