@@ -250,7 +250,7 @@ public class AccountServiceImpl implements AccountService {
         Optional<Account> createdAccount = accounts.stream()
                 .filter(account1 -> code.equals(account1.getCode()))
                 .findFirst();
-        if (createdAccount.isEmpty()) {
+        if (!createdAccount.isPresent()) {
             throw new BadRequestException("There is no account with code " + code + " which can be delete");
         }
 

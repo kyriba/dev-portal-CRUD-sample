@@ -14,49 +14,13 @@ To copy the API client to your computer copy link of the repository, open comman
 git clone https://github.com/VitaliiYaremko/AccountsAPI.git
 ```
 
-Set following environment variables:
+Before building project go to .../src/main/resources/application and set up your credentials.
 
-* TOKEN_URL
-* CLIENT_ID
-* CLIENT_SECRET
-
-For example:
+Then open command prompt and go to project directory:
 
 ```shell
-set TOKEN_URL=*******
+cd .../AccountsAPI
 ```
-
-Open command prompt, go to your project directory and execute this command to install gradle wrapper:
-
-```shell
-gradlew wrapper --gradle-version 7.0.2
-```
-
-Then, to compile the project without executing any tests so build reports execute this  command:
-
-```shell
-gradlew assemble
-```
-
-Finally, to run application execute this:
-
-```shell
-gradlew clean bootRun
-```
-
-If the application runs successfully, you can go to the link:
-
-```shell
-http://localhost:8080/accounts
-```
-
-To terminate application press ***Ctrl + C*** and execute ***y*** after this appears:
-
-```shell
-Terminate batch job (Y/N)?
-```
-
-####Another way to run application:
 
 Build project:
 
@@ -67,7 +31,11 @@ gradle build
 And execute jar file:
 
 ```shell
-java -jar "localPath/build/libs/swagger-java-client-1.0.0.jar"
+java -jar build/libs/swagger-java-client-1.0.0.jar
 ```
 
-Instead of "localPath" input your local directory to the project together with project name.
+If the application runs successfully, you can go to the link:
+
+```shell
+http://localhost:8080/accounts
+```
