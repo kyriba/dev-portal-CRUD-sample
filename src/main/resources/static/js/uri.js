@@ -28,3 +28,14 @@ update_code.addEventListener('input', event => {
 delete_code.addEventListener('input', event => {
     cURL6.value = decodeURIComponent(uri6 + event.target.value);
 });
+
+function clear_all() {
+    document.getElementById('get_uuid').value = ''
+    document.getElementById('get_code').value = ''
+    document.getElementById('update_code').value = ''
+    document.getElementById('delete_code').value = ''
+    cURL2.value = decodeURIComponent(uri2);
+    cURL3.value = decodeURIComponent(uri3);
+    cURL5.value = decodeURIComponent(uri5);
+    cURL6.value = decodeURIComponent(uri6);
+}

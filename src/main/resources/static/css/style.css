@@ -15,3 +15,14 @@ td {
     border-bottom-right-radius: 3px;
     border-bottom-left-radius: 3px;
 }
+
+.copy {
+    position: absolute;
+    top: 6px;
+    cursor: pointer;
+    opacity: 0.2;
+}
+
+.copy:hover {
+    opacity: 1;
+}

@@ -11,10 +11,16 @@
 <body>
 
 <div class="container" th:replace="html/menu::menu-table"></div>
+<div class="curl" th:replace="html/menu::curls"></div>
 
-<button class="to_hide" onclick="do_hide()" style="width: 200px; margin: 10px; margin-left: 44%;">Hide all except the
-    menu
-</button>
+<div style="width: 250px; margin: auto;">
+    <div style="float: left; width: 120px">
+        <button onclick="do_hide()" style="width: 100px; margin: 10px;">Hide result</button>
+    </div>
+    <div style="float: right; width: 120px">
+        <button onclick="clear_all()" style="width: 100px; margin: 10px;">Clear inputs</button>
+    </div>
+</div>
 
 <h2 class="to_hide" align="center">Account</h2>
 <div class="to_hide" id="data"></div>
