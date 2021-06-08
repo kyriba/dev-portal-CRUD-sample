@@ -16,6 +16,8 @@ public class AccountApiController {
 
     @Value("${base.url}")
     private String BASE_URL;
+    @Value("${server.port}")
+    private String PORT;
     private AccountService accountService;
 
     public AccountApiController(AccountService accountService) {
@@ -38,6 +40,8 @@ public class AccountApiController {
 
     @GetMapping("/getAllAccounts")
     public String getAllAccounts(Model model) {
+        System.out.println(PORT);
+        model.addAttribute("port", PORT);
         model.addAttribute("codes_list", accountService.getAllCodes());
         model.addAttribute("created_accounts", accountService.getCreatedAccounts());
         model.addAttribute("base_url", BASE_URL);

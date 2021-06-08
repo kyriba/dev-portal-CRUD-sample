@@ -19,9 +19,14 @@
 <h2 class="to_hide" align="center">List of accounts</h2>
 <div class="to_hide" id="data"></div>
 <script type="text/javascript" src="renderjson.js"></script>
-<script>
-    renderjson.set_show_to_level(1);
-    var url = 'http://localhost:8080/accounts/getAll';
+<script th:inline="javascript">
+    renderjson.set_show_to_level("all");
+    var begin_url = 'http://localhost:';
+    var end_url = '/accounts/getAll';
+/*<![CDATA[*/
+    var port = /*[[${port}]]*/;
+/*]]>*/
+    var url = begin_url + port + end_url;
     fetch(url)
         .then(function (response) {
             return response.json();
@@ -35,7 +40,7 @@
 
 </script>
 
-<script th:src = "@{/js/uri.js}"></script>
+<script th:src="@{/js/uri.js}"></script>
 
 </body>
 </html>
