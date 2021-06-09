@@ -107,6 +107,9 @@ public class AccountApiController {
         }
         model.addAttribute("codes_list", accountService.getAllCodes());
         model.addAttribute("created_accounts", accountService.getCreatedAccounts());
+        model.addAttribute("request_body", accountService.getCreatedAccounts().stream()
+                .filter(account1 -> account1.getCode().equals(account.get("code")))
+                .findFirst());
         return "html/new-account";
     }
 

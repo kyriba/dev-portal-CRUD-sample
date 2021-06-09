@@ -24,6 +24,8 @@
 
 <h2 class="to_hide" align="center">Account was successfully created</h2>
 <div class="to_hide" id="data"></div>
+<h3 class="to_hide" align="center">Request Body</h3>
+<div class="to_hide" id="request_data"></div>
 
 <script type="text/javascript" src="renderjson.js"></script>
 <script th:inline="javascript">
@@ -61,6 +63,20 @@
         document.body.removeChild(elem);
         alert("Copied the text: " + uuidCopy);
     }
+
+</script>
+
+<script th:inline="javascript">
+    renderjson.set_show_to_level("all");
+
+/*<![CDATA[*/
+    var request_body = /*[[${request_body}]]*/;
+/*]]>*/
+
+    var refer = (function render() {
+        document.getElementById("request_data").appendChild(renderjson(request_body));
+        return render;
+    }());
 
 </script>
 
