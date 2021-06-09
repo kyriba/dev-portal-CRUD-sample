@@ -3,8 +3,8 @@
 ## Requirements
 
 Building the API client library requires:
-1. JDK 1.8 or higher
-2. Gradle (https://gradle.org/install/)
+1. JDK 1.8 or higher - [Installation](https://www.oracle.com/java/technologies/javase-downloads.html)
+2. Gradle - [Installation](https://gradle.org/install/)
 
 > :warning: If you also have JRE installed, create a new environment variable for Java and set a new path for the PATH environment to the JDK folder in "Program Files".
 > Guides for creating and setting a new path: 
@@ -16,7 +16,7 @@ Building the API client library requires:
 To copy the API client to your computer copy link of the repository, open command prompt, go to the location where project will be copied and execute git clone command:
 
 ```git
-git clone https://github.com/VitaliiYaremko/CRUD.git
+git clone https://github.com/kyriba/dev-portal-CRUD-sample.git
 ```
 
 > :warning: Before building project go to .../src/main/resources/application and update client_id and client_secret with your credentials.
@@ -48,3 +48,9 @@ http://localhost:2000/CRUD
 ```
 
 If you want to change the port, go to .../src/main/resources/application and replace the "port" value.
+
+To terminate application press **Ctrl + C** and execute **Y** if this appeared:
+
+```shell
+Terminate batch job (Y/N)?
+```

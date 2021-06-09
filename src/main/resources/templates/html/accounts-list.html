@@ -27,22 +27,15 @@
 <script type="text/javascript" src="renderjson.js"></script>
 <script th:inline="javascript">
     renderjson.set_show_to_level("all");
-    var begin_url = 'http://localhost:';
-    var end_url = '/CRUD/getAll';
+
 /*<![CDATA[*/
-    var port = /*[[${port}]]*/;
+    var list_accounts = /*[[${list_accounts}]]*/;
 /*]]>*/
-    var url = begin_url + port + end_url;
-    fetch(url)
-        .then(function (response) {
-            return response.json();
-        })
-        .then(function (data) {
-            document.getElementById("data").appendChild(renderjson(data));
-        })
-        .catch(function (err) {
-            console.log(err);
-        });
+
+    var refer = (function render() {
+        document.getElementById("data").appendChild(renderjson(list_accounts));
+        return render;
+    }());
 
 </script>
 

@@ -33,17 +33,12 @@ public class AccountApiController {
     }
 
     @GetMapping("/getAll")
-    @ResponseBody
-    public PageOfAccountSearchModel getAll() {
-        return accountService.getAllAccounts(null, null, null, null, null);
-    }
-
-    @GetMapping("/getAllAccounts")
     public String getAllAccounts(Model model) {
         model.addAttribute("port", PORT);
         model.addAttribute("codes_list", accountService.getAllCodes());
         model.addAttribute("created_accounts", accountService.getCreatedAccounts());
         model.addAttribute("base_url", BASE_URL);
+        model.addAttribute("list_accounts", accountService.getAllAccounts(null, null, null, null, null));
         return "html/accounts-list";
     }
 

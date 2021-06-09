@@ -33,35 +33,17 @@ import org.threeten.bp.LocalDate;
 @ApiModel(description = "Account search")
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-05-13T11:35:10.236Z")
 public class AccountSearchModel {
-  @SerializedName("accountCategory1")
-  private ReferenceModel accountCategory1 = null;
+  @SerializedName("uuid")
+  private UUID uuid = null;
 
-  @SerializedName("accountCategory2")
-  private ReferenceModel accountCategory2 = null;
+  @SerializedName("code")
+  private String code = null;
 
-  @SerializedName("accountCategory3")
-  private ReferenceModel accountCategory3 = null;
+  @SerializedName("description")
+  private String description = null;
 
-  @SerializedName("accountCategory4")
-  private ReferenceModel accountCategory4 = null;
-
-  @SerializedName("accountCategory5")
-  private ReferenceModel accountCategory5 = null;
-
-  @SerializedName("accountCategory6")
-  private ReferenceModel accountCategory6 = null;
-
-  @SerializedName("accountCategory7")
-  private ReferenceModel accountCategory7 = null;
-
-  @SerializedName("accountCategory8")
-  private ReferenceModel accountCategory8 = null;
-
-  @SerializedName("accountCategory9")
-  private ReferenceModel accountCategory9 = null;
-
-  @SerializedName("accountCategory10")
-  private ReferenceModel accountCategory10 = null;
+  @SerializedName("description2")
+  private String description2 = null;
 
   /**
    * Account type
@@ -69,11 +51,11 @@ public class AccountSearchModel {
   @JsonAdapter(AccountTypeEnum.Adapter.class)
   public enum AccountTypeEnum {
     BANK_ACCOUNT("BANK_ACCOUNT"),
-    
+
     INTERCOMPANY_ACCOUNT("INTERCOMPANY_ACCOUNT"),
-    
+
     OTHER_ACCOUNT("OTHER_ACCOUNT"),
-    
+
     SHARED_ACCOUNT("SHARED_ACCOUNT");
 
     private String value;
@@ -116,6 +98,172 @@ public class AccountSearchModel {
 
   @SerializedName("accountType")
   private AccountTypeEnum accountType = null;
+
+  @SerializedName("company")
+  private ReferenceModel company = null;
+
+  @SerializedName("bank")
+  private ReferenceModel bank = null;
+
+  @SerializedName("branch")
+  private ReferenceModel branch = null;
+
+  @SerializedName("branchDescription")
+  private String branchDescription = null;
+
+  @SerializedName("currency")
+  private ReferenceModel currency = null;
+
+  @SerializedName("countryCode")
+  private String countryCode = null;
+
+  @SerializedName("ibanCode")
+  private String ibanCode = null;
+
+  @SerializedName("banCode")
+  private String banCode = null;
+
+  @SerializedName("statementIdentifier")
+  private String statementIdentifier = null;
+
+  @SerializedName("zbaIdentifier")
+  private String zbaIdentifier = null;
+
+  @SerializedName("glAccount")
+  private ReferenceModel glAccount = null;
+
+  @SerializedName("internalAccountCode")
+  private String internalAccountCode = null;
+
+  @SerializedName("calendar")
+  private ReferenceModel calendar = null;
+
+  @SerializedName("signatoryUsers")
+  private Long signatoryUsers = null;
+
+  @SerializedName("documents")
+  private Boolean documents = null;
+
+  @SerializedName("closedAccount")
+  private Boolean closedAccount = null;
+
+  @SerializedName("creationDate")
+  private LocalDate creationDate = null;
+
+  @SerializedName("updateDate")
+  private LocalDate updateDate = null;
+
+  @SerializedName("closingDate")
+  private LocalDate closingDate = null;
+
+
+  /**
+   * Account status
+   */
+  @JsonAdapter(StatusEnum.Adapter.class)
+  public enum StatusEnum {
+    STANDARD("STANDARD"),
+
+    CREATION_TO_VALIDATE("CREATION_TO_VALIDATE"),
+
+    CREATION_VALIDATED("CREATION_VALIDATED"),
+
+    AVAILABLE_FOR_BANK_INTEGRATION("AVAILABLE_FOR_BANK_INTEGRATION"),
+
+    CLOSURE_REQUESTED("CLOSURE_REQUESTED"),
+
+    CLOSURE_VALIDATE("CLOSURE_VALIDATE"),
+
+    BANK_CONTRACT_TO_INACTIVATE("BANK_CONTRACT_TO_INACTIVATE"),
+
+    CLOSED("CLOSED");
+
+    private String value;
+
+    StatusEnum(String value) {
+      this.value = value;
+    }
+
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    public static StatusEnum fromValue(String text) {
+      for (StatusEnum b : StatusEnum.values()) {
+        if (String.valueOf(b.value).equals(text)) {
+          return b;
+        }
+      }
+      return null;
+    }
+
+    public static class Adapter extends TypeAdapter<StatusEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final StatusEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public StatusEnum read(final JsonReader jsonReader) throws IOException {
+        String value = jsonReader.nextString();
+        return StatusEnum.fromValue(String.valueOf(value));
+      }
+    }
+  }
+
+  @SerializedName("status")
+  private StatusEnum status = null;
+
+  @SerializedName("defaultGroup")
+  private ReferenceModel defaultGroup = null;
+
+  @SerializedName("accountCategory1")
+  private ReferenceModel accountCategory1 = null;
+
+  @SerializedName("accountCategory2")
+  private ReferenceModel accountCategory2 = null;
+
+  @SerializedName("accountCategory3")
+  private ReferenceModel accountCategory3 = null;
+
+  @SerializedName("accountCategory4")
+  private ReferenceModel accountCategory4 = null;
+
+  @SerializedName("accountCategory5")
+  private ReferenceModel accountCategory5 = null;
+
+  @SerializedName("accountCategory6")
+  private ReferenceModel accountCategory6 = null;
+
+  @SerializedName("accountCategory7")
+  private ReferenceModel accountCategory7 = null;
+
+  @SerializedName("accountCategory8")
+  private ReferenceModel accountCategory8 = null;
+
+  @SerializedName("accountCategory9")
+  private ReferenceModel accountCategory9 = null;
+
+  @SerializedName("accountCategory10")
+  private ReferenceModel accountCategory10 = null;
+
+  @SerializedName("marker1")
+  private Boolean marker1 = null;
+
+  @SerializedName("marker2")
+  private Boolean marker2 = null;
+
+  @SerializedName("marker3")
+  private Boolean marker3 = null;
+
+  @SerializedName("attachments")
+  private Boolean attachments = null;
+
 
   /**
    * Account status.
@@ -167,151 +315,6 @@ public class AccountSearchModel {
   @SerializedName("activeStatus")
   private ActiveStatusEnum activeStatus = null;
 
-  @SerializedName("attachments")
-  private Boolean attachments = null;
-
-  @SerializedName("banCode")
-  private String banCode = null;
-
-  @SerializedName("bank")
-  private ReferenceModel bank = null;
-
-  @SerializedName("branch")
-  private ReferenceModel branch = null;
-
-  @SerializedName("branchDescription")
-  private String branchDescription = null;
-
-  @SerializedName("calendar")
-  private ReferenceModel calendar = null;
-
-  @SerializedName("closedAccount")
-  private Boolean closedAccount = null;
-
-  @SerializedName("closingDate")
-  private LocalDate closingDate = null;
-
-  @SerializedName("code")
-  private String code = null;
-
-  @SerializedName("company")
-  private ReferenceModel company = null;
-
-  @SerializedName("countryCode")
-  private String countryCode = null;
-
-  @SerializedName("creationDate")
-  private LocalDate creationDate = null;
-
-  @SerializedName("currency")
-  private ReferenceModel currency = null;
-
-  @SerializedName("defaultGroup")
-  private ReferenceModel defaultGroup = null;
-
-  @SerializedName("description")
-  private String description = null;
-
-  @SerializedName("description2")
-  private String description2 = null;
-
-  @SerializedName("documents")
-  private Boolean documents = null;
-
-  @SerializedName("glAccount")
-  private ReferenceModel glAccount = null;
-
-  @SerializedName("ibanCode")
-  private String ibanCode = null;
-
-  @SerializedName("internalAccountCode")
-  private String internalAccountCode = null;
-
-  @SerializedName("marker1")
-  private Boolean marker1 = null;
-
-  @SerializedName("marker2")
-  private Boolean marker2 = null;
-
-  @SerializedName("marker3")
-  private Boolean marker3 = null;
-
-  @SerializedName("signatoryUsers")
-  private Long signatoryUsers = null;
-
-  @SerializedName("statementIdentifier")
-  private String statementIdentifier = null;
-
-  /**
-   * Account status
-   */
-  @JsonAdapter(StatusEnum.Adapter.class)
-  public enum StatusEnum {
-    STANDARD("STANDARD"),
-    
-    CREATION_TO_VALIDATE("CREATION_TO_VALIDATE"),
-    
-    CREATION_VALIDATED("CREATION_VALIDATED"),
-    
-    AVAILABLE_FOR_BANK_INTEGRATION("AVAILABLE_FOR_BANK_INTEGRATION"),
-    
-    CLOSURE_REQUESTED("CLOSURE_REQUESTED"),
-    
-    CLOSURE_VALIDATE("CLOSURE_VALIDATE"),
-    
-    BANK_CONTRACT_TO_INACTIVATE("BANK_CONTRACT_TO_INACTIVATE"),
-    
-    CLOSED("CLOSED");
-
-    private String value;
-
-    StatusEnum(String value) {
-      this.value = value;
-    }
-
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    public static StatusEnum fromValue(String text) {
-      for (StatusEnum b : StatusEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-
-    public static class Adapter extends TypeAdapter<StatusEnum> {
-      @Override
-      public void write(final JsonWriter jsonWriter, final StatusEnum enumeration) throws IOException {
-        jsonWriter.value(enumeration.getValue());
-      }
-
-      @Override
-      public StatusEnum read(final JsonReader jsonReader) throws IOException {
-        String value = jsonReader.nextString();
-        return StatusEnum.fromValue(String.valueOf(value));
-      }
-    }
-  }
-
-  @SerializedName("status")
-  private StatusEnum status = null;
-
-  @SerializedName("updateDate")
-  private LocalDate updateDate = null;
-
-  @SerializedName("uuid")
-  private UUID uuid = null;
-
-  @SerializedName("zbaIdentifier")
-  private String zbaIdentifier = null;
 
   public AccountSearchModel accountCategory1(ReferenceModel accountCategory1) {
     this.accountCategory1 = accountCategory1;
@@ -1114,7 +1117,33 @@ public class AccountSearchModel {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class AccountSearchModel {\n");
-    
+
+    sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
+    sb.append("    code: ").append(toIndentedString(code)).append("\n");
+    sb.append("    description: ").append(toIndentedString(description)).append("\n");
+    sb.append("    description2: ").append(toIndentedString(description2)).append("\n");
+    sb.append("    accountType: ").append(toIndentedString(accountType)).append("\n");
+    sb.append("    company: ").append(toIndentedString(company)).append("\n");
+    sb.append("    bank: ").append(toIndentedString(bank)).append("\n");
+    sb.append("    branch: ").append(toIndentedString(branch)).append("\n");
+    sb.append("    branchDescription: ").append(toIndentedString(branchDescription)).append("\n");
+    sb.append("    currency: ").append(toIndentedString(currency)).append("\n");
+    sb.append("    countryCode: ").append(toIndentedString(countryCode)).append("\n");
+    sb.append("    ibanCode: ").append(toIndentedString(ibanCode)).append("\n");
+    sb.append("    banCode: ").append(toIndentedString(banCode)).append("\n");
+    sb.append("    statementIdentifier: ").append(toIndentedString(statementIdentifier)).append("\n");
+    sb.append("    zbaIdentifier: ").append(toIndentedString(zbaIdentifier)).append("\n");
+    sb.append("    glAccount: ").append(toIndentedString(glAccount)).append("\n");
+    sb.append("    internalAccountCode: ").append(toIndentedString(internalAccountCode)).append("\n");
+    sb.append("    calendar: ").append(toIndentedString(calendar)).append("\n");
+    sb.append("    signatoryUsers: ").append(toIndentedString(signatoryUsers)).append("\n");
+    sb.append("    documents: ").append(toIndentedString(documents)).append("\n");
+    sb.append("    closedAccount: ").append(toIndentedString(closedAccount)).append("\n");
+    sb.append("    creationDate: ").append(toIndentedString(creationDate)).append("\n");
+    sb.append("    updateDate: ").append(toIndentedString(updateDate)).append("\n");
+    sb.append("    closingDate: ").append(toIndentedString(closingDate)).append("\n");
+    sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    defaultGroup: ").append(toIndentedString(defaultGroup)).append("\n");
     sb.append("    accountCategory1: ").append(toIndentedString(accountCategory1)).append("\n");
     sb.append("    accountCategory2: ").append(toIndentedString(accountCategory2)).append("\n");
     sb.append("    accountCategory3: ").append(toIndentedString(accountCategory3)).append("\n");
@@ -1125,37 +1154,11 @@ public class AccountSearchModel {
     sb.append("    accountCategory8: ").append(toIndentedString(accountCategory8)).append("\n");
     sb.append("    accountCategory9: ").append(toIndentedString(accountCategory9)).append("\n");
     sb.append("    accountCategory10: ").append(toIndentedString(accountCategory10)).append("\n");
-    sb.append("    accountType: ").append(toIndentedString(accountType)).append("\n");
-    sb.append("    activeStatus: ").append(toIndentedString(activeStatus)).append("\n");
-    sb.append("    attachments: ").append(toIndentedString(attachments)).append("\n");
-    sb.append("    banCode: ").append(toIndentedString(banCode)).append("\n");
-    sb.append("    bank: ").append(toIndentedString(bank)).append("\n");
-    sb.append("    branch: ").append(toIndentedString(branch)).append("\n");
-    sb.append("    branchDescription: ").append(toIndentedString(branchDescription)).append("\n");
-    sb.append("    calendar: ").append(toIndentedString(calendar)).append("\n");
-    sb.append("    closedAccount: ").append(toIndentedString(closedAccount)).append("\n");
-    sb.append("    closingDate: ").append(toIndentedString(closingDate)).append("\n");
-    sb.append("    code: ").append(toIndentedString(code)).append("\n");
-    sb.append("    company: ").append(toIndentedString(company)).append("\n");
-    sb.append("    countryCode: ").append(toIndentedString(countryCode)).append("\n");
-    sb.append("    creationDate: ").append(toIndentedString(creationDate)).append("\n");
-    sb.append("    currency: ").append(toIndentedString(currency)).append("\n");
-    sb.append("    defaultGroup: ").append(toIndentedString(defaultGroup)).append("\n");
-    sb.append("    description: ").append(toIndentedString(description)).append("\n");
-    sb.append("    description2: ").append(toIndentedString(description2)).append("\n");
-    sb.append("    documents: ").append(toIndentedString(documents)).append("\n");
-    sb.append("    glAccount: ").append(toIndentedString(glAccount)).append("\n");
-    sb.append("    ibanCode: ").append(toIndentedString(ibanCode)).append("\n");
-    sb.append("    internalAccountCode: ").append(toIndentedString(internalAccountCode)).append("\n");
     sb.append("    marker1: ").append(toIndentedString(marker1)).append("\n");
     sb.append("    marker2: ").append(toIndentedString(marker2)).append("\n");
     sb.append("    marker3: ").append(toIndentedString(marker3)).append("\n");
-    sb.append("    signatoryUsers: ").append(toIndentedString(signatoryUsers)).append("\n");
-    sb.append("    statementIdentifier: ").append(toIndentedString(statementIdentifier)).append("\n");
-    sb.append("    status: ").append(toIndentedString(status)).append("\n");
-    sb.append("    updateDate: ").append(toIndentedString(updateDate)).append("\n");
-    sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
-    sb.append("    zbaIdentifier: ").append(toIndentedString(zbaIdentifier)).append("\n");
+    sb.append("    attachments: ").append(toIndentedString(attachments)).append("\n");
+    sb.append("    activeStatus: ").append(toIndentedString(activeStatus)).append("\n");
     sb.append("}");
     return sb.toString();
   }
