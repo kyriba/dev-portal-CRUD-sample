@@ -24,7 +24,7 @@ git clone https://github.com/kyriba/dev-portal-CRUD-sample.git
 Then open command prompt and go to your project directory, for example:
 
 ```shell
-cd CRUD
+cd dev-portal-CRUD-sample
 ```
 
 Build project:
