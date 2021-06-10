@@ -2,7 +2,8 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Menu</title>
+    <title>CRUD</title>
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/img/logo.png}"/>
     <script th:src="@{/js/hiding.js}"></script>
     <link rel="stylesheet" th:href="@{/css/renderjson.css}">
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
@@ -10,7 +11,6 @@
 <body>
 
 <div class="container" th:replace="html/menu::menu-table"></div>
-<div class="curl" th:replace="html/menu::curls"></div>
 
 <h3 class="to_hide" align="center">Input must not be blank!</h3>
 

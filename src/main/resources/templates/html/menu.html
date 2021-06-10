@@ -2,19 +2,25 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Menu</title>
+    <title>CRUD</title>
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/img/logo.png}"/>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
 </head>
 <body>
 
 <div class="container" th:fragment="menu-table">
     <link th:href="@{/css/style.css}" rel="stylesheet">
+    <script>
+    var baseUrl = "[[${base_url}]]";
+    </script>
+    <script th:src="@{/js/copy_curl.js}"></script>
     <div class="row">
         <table class="table table-responsive table-bordered table-striped">
             <thead>
-            <tr>
-                <th colspan="3" style="text-align:center; vertical-align:middle"><h2>Operations</h2></th>
-            </tr>
+            <th colspan="3" style="text-align:center; vertical-align:middle"><h2>Operations</h2></th>
+            <th style="text-align:center; vertical-align:middle">
+                <h4>cURL</h4>
+            </th>
             </thead>
             <tbody>
             <tr>
@@ -24,6 +30,10 @@
                     <form th:action="@{/CRUD/getAll}" method="get">
                         <button type="submit" style="background-color: #1e90ff;" class="button">GET</button>
                     </form>
+                </td>
+                <td>
+                    <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
+                         onclick="copyCode('/v1/accounts', '')">
                 </td>
             </tr>
             <tr>
@@ -35,6 +45,10 @@
                     <form th:action="@{/CRUD/getByUuid}" method="post" id="form1">
                         <button type="submit" style="background-color: #1e90ff;" class="button">GET</button>
                     </form>
+                </td>
+                <td>
+                    <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
+                         onclick="copyCode('/v1/accounts/', 'get_uuid')">
                 </td>
             </tr>
             <tr>
@@ -51,6 +65,10 @@
                         <button type="submit" style="background-color: #1e90ff;" class="button">GET</button>
                     </form>
                 </td>
+                <td>
+                    <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
+                         onclick="copyCode('/v1/accounts/code=', 'get_code')">
+                </td>
             </tr>
             <tr>
                 <td>Create account</td>
@@ -59,6 +77,10 @@
                     <form th:action="@{/CRUD/create}" method="post">
                         <button type="submit" style="background-color: #49cc90;" class="button">POST</button>
                     </form>
+                </td>
+                <td>
+                    <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
+                         onclick="copyCode('/v1/accounts', '')">
                 </td>
             </tr>
             <tr>
@@ -75,6 +97,10 @@
                         <button type="submit" style="background-color: #fca130;" class="button">PUT</button>
                     </form>
                 </td>
+                <td>
+                    <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
+                         onclick="copyCode('/v1/accounts/code=', 'update_code')">
+                </td>
             </tr>
             <tr>
                 <td>Delete account</td>
@@ -90,56 +116,14 @@
                         <button type="submit" style="background-color: #f93e3e;" class="button">DELETE</button>
                     </form>
                 </td>
+                <td>
+                    <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
+                         onclick="copyCode('/v1/accounts/code=', 'delete_code')">
+                </td>
             </tr>
             </tbody>
         </table>
     </div>
-</div>
-
-<div class="curl" th:fragment="curls">
-    <div class="input-group" style="max-width: 1170px; margin: auto;">
-        <span class="input-group-addon" id="basic-addon1">cURL (Get all accounts)</span>
-        <input type="text" class="form-control" id="basic-url1" aria-describedby="basic-addon1"
-               th:value="${base_url + '/v1/accounts'}">
-        <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20" onclick="copyCode('basic-url1')">
-    </div>
-
-    <div class="input-group" style="max-width: 1170px; margin: auto;">
-        <span class="input-group-addon" id="basic-addon2">cURL (Get account by UUID)</span>
-        <input type="text" class="form-control" id="basic-url2" aria-describedby="basic-addon2"
-               th:value="${base_url + '/v1/accounts/'}">
-        <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20" onclick="copyCode('basic-url2')">
-    </div>
-
-    <div class="input-group" style="max-width: 1170px; margin: auto;">
-        <span class="input-group-addon" id="basic-addon3">cURL (Get account by Code)</span>
-        <input type="text" class="form-control" id="basic-url3" aria-describedby="basic-addon3"
-               th:value="${base_url + '/v1/accounts/code='}">
-        <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20" onclick="copyCode('basic-url3')">
-    </div>
-
-    <div class="input-group" style="max-width: 1170px; margin: auto;">
-        <span class="input-group-addon" id="basic-addon4">cURL (Create account)</span>
-        <input type="text" class="form-control" id="basic-url4" aria-describedby="basic-addon4"
-               th:value="${base_url + '/v1/accounts'}">
-        <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20" onclick="copyCode('basic-url4')">
-    </div>
-
-    <div class="input-group" style="max-width: 1170px; margin: auto;">
-        <span class="input-group-addon" id="basic-addon5">cURL (Update account)</span>
-        <input type="text" class="form-control" id="basic-url5" aria-describedby="basic-addon5"
-               th:value="${base_url + '/v1/accounts/code='}">
-        <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20" onclick="copyCode('basic-url5')">
-    </div>
-
-    <div class="input-group" style="max-width: 1170px; margin: auto;">
-        <span class="input-group-addon" id="basic-addon6">cURL (Delete account)</span>
-        <input type="text" class="form-control" id="basic-url6" aria-describedby="basic-addon6"
-               th:value="${base_url + '/v1/accounts/code='}">
-        <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20" onclick="copyCode('basic-url6')">
-    </div>
-    <script th:src = "@{/js/uri.js}"></script>
-    <script th:src = "@{/js/copy_curl.js}"></script>
 </div>
 
 <button onclick="clear_all()" style="width: 100px; margin: 10px; margin-left: 48%;">Clear inputs</button>

@@ -17,8 +17,8 @@ td {
 }
 
 .copy {
-    position: absolute;
-    top: 6px;
+    margin-left: auto;
+    margin-right: auto;
     cursor: pointer;
     opacity: 0.2;
 }
