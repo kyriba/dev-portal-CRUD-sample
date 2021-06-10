@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/CRUD")
@@ -102,9 +103,9 @@ public class AccountApiController {
         }
         model.addAttribute("codes_list", accountService.getAllCodes());
         model.addAttribute("created_accounts", accountService.getCreatedAccounts());
-        model.addAttribute("request_body", accountService.getCreatedAccounts().stream()
+        model.addAttribute("request_body", Optional.of(accountService.getCreatedAccounts().stream()
                 .filter(account1 -> account1.getCode().equals(account.get("code")))
-                .findFirst());
+                .findFirst()));
         return "html/new-account";
     }
 
@@ -145,6 +146,9 @@ public class AccountApiController {
         }
         model.addAttribute("codes_list", accountService.getAllCodes());
         model.addAttribute("created_accounts", accountService.getCreatedAccounts());
+        model.addAttribute("request_body", Optional.of(accountService.getCreatedAccounts().stream()
+                .filter(account1 -> account1.getCode().equals(account.get("code")))
+                .findFirst()));
         return "html/updated-account";
     }
 

@@ -36,7 +36,7 @@ gradle build
 And execute jar file:
 
 ```shell
-java -jar build/libs/CRUD.jar
+java -jar "build/libs/CRUD.jar"
 ```
 
 > :warning: *Please notice that the path to your local directory is provided in MacOS/ Unix format. Windows is slash-sensitive, so if you are using a Windows system, replace "/" with "\\"*

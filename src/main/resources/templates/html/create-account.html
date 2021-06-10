@@ -5,6 +5,7 @@
     <title>CRUD</title>
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/img/logo.png}"/>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <script th:src="@{/js/populating.js}"></script>
 </head>
 <body>
 <form th:action="@{/CRUD/created}" method="post" id="create_form">
@@ -30,7 +31,7 @@
                 <tr>
                     <td></td>
                     <td><label for="country">Country</label></td>
-                    <td><input type="text" list="country" name="country" autocomplete="off"/>
+                    <td><input type="text" list="country" name="country" id="country_input" autocomplete="off"/>
                         <datalist id="country">
                             <option th:each="country_code: ${fields.get('countries')}" th:value="${country_code}">
                         </datalist>
@@ -67,7 +68,7 @@
                 <tr>
                     <td></td>
                     <td><label for="branch_code">Code</label></td>
-                    <td><input type="text" list="branch_code" name="branch_code" autocomplete="off"/>
+                    <td><input type="text" list="branch_code" name="branch_code" id="branch_input" autocomplete="off"/>
                         <datalist id="branch_code">
                             <option th:each="branch: ${fields.get('branches')}" th:value="${branch}">
                         </datalist>
@@ -81,7 +82,8 @@
                 <tr>
                     <td></td>
                     <td><label for="calendar_code">Code</label></td>
-                    <td><input type="text" list="calendar_code" name="calendar_code" autocomplete="off"/>
+                    <td><input type="text" list="calendar_code" name="calendar_code" id="calendar_input"
+                               autocomplete="off"/>
                         <datalist id="calendar_code">
                             <option th:each="calendar: ${fields.get('calendars')}" th:value="${calendar}">
                         </datalist>
@@ -95,7 +97,8 @@
                 <tr>
                     <td></td>
                     <td><label for="company_code">Code</label></td>
-                    <td><input type="text" list="company_code" name="company_code" autocomplete="off"/>
+                    <td><input type="text" list="company_code" name="company_code" id="company_input"
+                               autocomplete="off"/>
                         <datalist id="company_code">
                             <option th:each="company: ${fields.get('companies')}" th:value="${company}">
                         </datalist>
@@ -109,7 +112,8 @@
                 <tr>
                     <td></td>
                     <td><label for="currency_code">Code</label></td>
-                    <td><input type="text" list="currency_code" name="currency_code" autocomplete="off"/>
+                    <td><input type="text" list="currency_code" name="currency_code" id="currency_input"
+                               autocomplete="off"/>
                         <datalist id="currency_code">
                             <option th:each="currency: ${fields.get('currencies')}" th:value="${currency}">
                         </datalist>
@@ -117,12 +121,17 @@
                 </tr>
                 <tr>
                     <td><label for="time_zone">Time Zone</label></td>
-                    <td><input type="text" list="time_zone" name="time_zone" autocomplete="off"/>
+                    <td><input type="text" list="time_zone" name="time_zone" id="time_zone_input" autocomplete="off"/>
                         <datalist id="time_zone">
                             <option th:each="time_zone: ${fields.get('time_zones')}" th:value="${time_zone}">
                         </datalist>
                         <br></td>
                     <td></td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="text-align:center; vertical-align:middle">
+                        <button type="button" style="width: 150px" onclick="populate()"><b>Populate</b></button>
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="3" style="text-align:center; vertical-align:middle">
