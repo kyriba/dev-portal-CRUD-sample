@@ -1,5 +1,6 @@
 package io.swagger.client.controller;
 
+import io.swagger.client.JSON;
 import io.swagger.client.exception.BadRequestException;
 import io.swagger.client.model.*;
 import io.swagger.client.service.AccountService;
@@ -20,9 +21,11 @@ public class AccountApiController {
     @Value("${server.port}")
     private String PORT;
     private AccountService accountService;
+    private JSON json;
 
     public AccountApiController(AccountService accountService) {
         this.accountService = accountService;
+        json = new JSON();
     }
 
     @GetMapping
@@ -55,7 +58,7 @@ public class AccountApiController {
             model.addAttribute("account", accountService.getAccountByCode(get_code));
         } catch (BadRequestException e) {
             if (e.getMessage().contains("There is no account with code")) {
-                model.addAttribute("error_message", e.getMessage());
+                model.addAttribute("error_message", json.serialize(e.getMessage()));
                 return "exception/bad-request-exception";
             }
         }
@@ -74,11 +77,11 @@ public class AccountApiController {
             model.addAttribute("account", accountService.getAccountByUuid(get_uuid));
         } catch (BadRequestException e) {
             if (e.getMessage().contains("There is no account with uuid")) {
-                model.addAttribute("error_message", e.getMessage());
+                model.addAttribute("error_message", json.serialize(e.getMessage()));
                 return "exception/bad-request-exception";
             }
         } catch (IllegalArgumentException e2) {
-            model.addAttribute("error_message", e2.getMessage());
+            model.addAttribute("error_message", json.serialize(e2.getMessage()));
             return "exception/bad-request-exception";
         }
         return "html/account-uuid-renderjson";
@@ -125,7 +128,7 @@ public class AccountApiController {
                 throw new BadRequestException("There is no account with code " + update_code + " which can be update");
         } catch (BadRequestException e) {
             if (e.getMessage().contains("There is no account with code")) {
-                model.addAttribute("error_message", e.getMessage());
+                model.addAttribute("error_message", json.serialize(e.getMessage()));
                 return "exception/bad-request-exception";
             }
         }
@@ -164,7 +167,7 @@ public class AccountApiController {
             model.addAttribute("account", accountService.deleteAccount(delete_code));
         } catch (BadRequestException e) {
             if (e.getMessage().contains("There is no account with code")) {
-                model.addAttribute("error_message", e.getMessage());
+                model.addAttribute("error_message", json.serialize(e.getMessage()));
                 return "exception/bad-request-exception";
             }
         }
