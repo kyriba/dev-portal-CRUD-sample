@@ -49,8 +49,8 @@ http://localhost:2000/CRUD
 
 If you want to change the port, go to .../src/main/resources/application.yml and replace the "port" value.
 
-To terminate application press **Ctrl + C** and execute **Y** if this appeared:
+To terminate application press **Ctrl + C** and execute **Y**.
 
-```shell
-Terminate batch job (Y/N)?
-```
+If everything was done accordingly with provided steps, the result should look as presented in the image below:
+
+![img.png](img.png)
