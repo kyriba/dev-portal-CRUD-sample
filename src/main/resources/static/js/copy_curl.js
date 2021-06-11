@@ -11,6 +11,7 @@ function copyCode(endPoint, copyId) {
     document.body.appendChild(copyText);
     copyText.select();
     document.execCommand('copy');
+    alert("cURL successfully copied!")
     document.body.removeChild(copyText);
 }
 

@@ -8,6 +8,7 @@
     <script th:src="@{/js/populating.js}"></script>
 </head>
 <body>
+
 <form th:action="@{/CRUD/created}" method="post" id="create_form">
     <div class="container">
         <div class="row">
@@ -18,6 +19,11 @@
                 </tr>
                 </thead>
                 <tbody>
+                <tr>
+                    <td colspan="3" style="text-align:center; vertical-align:middle">
+                        <button type="button" style="width: 150px" onclick="populate()"><b>Populate</b></button>
+                    </td>
+                </tr>
                 <tr>
                     <td><label for="code">Code</label></td>
                     <td><input type="text" name="code" id="code"><br></td>
@@ -68,7 +74,7 @@
                 <tr>
                     <td></td>
                     <td><label for="branch_code">Code</label></td>
-                    <td><input type="text" list="branch_code" name="branch_code" id="branch_input" autocomplete="off"/>
+                    <td><input type="text" list="branch_code" name="branch_code" id="branch_code_input" autocomplete="off"/>
                         <datalist id="branch_code">
                             <option th:each="branch: ${fields.get('branches')}" th:value="${branch}">
                         </datalist>
@@ -82,7 +88,7 @@
                 <tr>
                     <td></td>
                     <td><label for="calendar_code">Code</label></td>
-                    <td><input type="text" list="calendar_code" name="calendar_code" id="calendar_input"
+                    <td><input type="text" list="calendar_code" name="calendar_code" id="calendar_code_input"
                                autocomplete="off"/>
                         <datalist id="calendar_code">
                             <option th:each="calendar: ${fields.get('calendars')}" th:value="${calendar}">
@@ -97,7 +103,7 @@
                 <tr>
                     <td></td>
                     <td><label for="company_code">Code</label></td>
-                    <td><input type="text" list="company_code" name="company_code" id="company_input"
+                    <td><input type="text" list="company_code" name="company_code" id="company_code_input"
                                autocomplete="off"/>
                         <datalist id="company_code">
                             <option th:each="company: ${fields.get('companies')}" th:value="${company}">
@@ -112,7 +118,7 @@
                 <tr>
                     <td></td>
                     <td><label for="currency_code">Code</label></td>
-                    <td><input type="text" list="currency_code" name="currency_code" id="currency_input"
+                    <td><input type="text" list="currency_code" name="currency_code" id="currency_code_input"
                                autocomplete="off"/>
                         <datalist id="currency_code">
                             <option th:each="currency: ${fields.get('currencies')}" th:value="${currency}">
@@ -127,11 +133,6 @@
                         </datalist>
                         <br></td>
                     <td></td>
-                </tr>
-                <tr>
-                    <td colspan="3" style="text-align:center; vertical-align:middle">
-                        <button type="button" style="width: 150px" onclick="populate()"><b>Populate</b></button>
-                    </td>
                 </tr>
                 <tr>
                     <td colspan="3" style="text-align:center; vertical-align:middle">
@@ -158,6 +159,18 @@
         </div>
     </div>
 </form>
+
+<script th:inline="javascript">
+
+/*<![CDATA[*/
+    var session_data = /*[[${session_data}]]*/;
+/*]]>*/
+
+    if(session_data != null) {
+        populateWithSessionData(session_data);
+    }
+
+</script>
 
 </body>
 </html>

@@ -9,8 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/CRUD")
@@ -88,13 +90,17 @@ public class AccountApiController {
     }
 
     @PostMapping("/create")
-    public String createAccount(Model model) {
+    public String createAccount(Model model, HttpSession session, HttpServletRequest request) {
         model.addAttribute("fields", accountService.getAndSortDistinctValuesOfAccountsFields());
+        @SuppressWarnings("unchecked")
+        Map<String, String> map = (Map<String, String>) session.getAttribute("ERROR_SESSION");
+        model.addAttribute("session_data", map);
+        request.getSession().invalidate();
         return "html/create-account";
     }
 
     @PostMapping("/created")
-    public String createdAccount(@RequestParam Map<String, String> account, Model model) {
+    public String createdAccount(@RequestParam Map<String, String> account, Model model, HttpServletRequest request) {
         model.addAttribute("base_url", BASE_URL);
         try {
             model.addAttribute("account", accountService.createAccount(account));
@@ -102,13 +108,14 @@ public class AccountApiController {
             model.addAttribute("codes_list", accountService.getAllCodes());
             model.addAttribute("created_accounts", accountService.getCreatedAccounts());
             model.addAttribute("error_message", e.getMessage());
+            request.getSession().setAttribute("ERROR_SESSION", account);
             return "exception/bad-request-exception";
         }
         model.addAttribute("codes_list", accountService.getAllCodes());
         model.addAttribute("created_accounts", accountService.getCreatedAccounts());
-        model.addAttribute("request_body", Optional.of(accountService.getCreatedAccounts().stream()
+        accountService.getCreatedAccounts().stream()
                 .filter(account1 -> account1.getCode().equals(account.get("code")))
-                .findFirst()));
+                .findFirst().ifPresent(value -> model.addAttribute("request_body", value));
         return "html/new-account";
     }
 
@@ -149,9 +156,9 @@ public class AccountApiController {
         }
         model.addAttribute("codes_list", accountService.getAllCodes());
         model.addAttribute("created_accounts", accountService.getCreatedAccounts());
-        model.addAttribute("request_body", Optional.of(accountService.getCreatedAccounts().stream()
+        accountService.getCreatedAccounts().stream()
                 .filter(account1 -> account1.getCode().equals(account.get("code")))
-                .findFirst()));
+                .findFirst().ifPresent(value -> model.addAttribute("request_body", value));
         return "html/updated-account";
     }
 
