@@ -26,5 +26,5 @@ public interface AccountService {
 
     List<String> getAllCodes();
 
-    Map<String, List<String>> getAndSortDistinctValuesOfAccountsFields();
+    Map<String, List<String>> getSortedDistinctValuesOfAccountsFields();
 }

@@ -35,6 +35,7 @@ public class AccountServiceImpl implements AccountService {
 
     private AccountsApi accountsApi;
     private List<Account> accounts = new ArrayList<>();
+    private Map<String, List<String>> distinctAccountValues;
 
     private void refreshToken() {
 
@@ -68,6 +69,11 @@ public class AccountServiceImpl implements AccountService {
         return accounts;
     }
 
+    @Override
+    public Map<String, List<String>> getSortedDistinctValuesOfAccountsFields() {
+        return distinctAccountValues;
+    }
+
     private String base64EncodedBasicAuthentication() {
         String auth = CLIENT_ID + ":" + CLIENT_SECRET;
         return Base64.getEncoder().encodeToString(auth.getBytes());
@@ -80,6 +86,7 @@ public class AccountServiceImpl implements AccountService {
     @PostConstruct
     private void authenticate() {
         refreshToken();
+        distinctAccountValues = getAndSortDistinctValuesOfAccountsFields();
     }
 
     @Override
@@ -180,7 +187,7 @@ public class AccountServiceImpl implements AccountService {
         if (responseIdModel != null) {
             accountDto.setUuid(responseIdModel.getUuid());
             accounts.add(accountDto);
-            System.out.println(accounts.size());
+            distinctAccountValues = getAndSortDistinctValuesOfAccountsFields();
         }
         return responseIdModel;
     }
@@ -239,7 +246,7 @@ public class AccountServiceImpl implements AccountService {
         if (responseIdModel != null) {
             removeAccountByCode(account.get("code"));
             accounts.add(accountDto);
-            System.out.println(accounts.size());
+            distinctAccountValues = getAndSortDistinctValuesOfAccountsFields();
         }
         return responseIdModel;
     }
@@ -267,7 +274,7 @@ public class AccountServiceImpl implements AccountService {
         }
         if (responseIdModel != null) {
             removeAccountByCode(code);
-            System.out.println(accounts.size());
+            distinctAccountValues = getAndSortDistinctValuesOfAccountsFields();
         }
         return responseIdModel;
     }
@@ -291,8 +298,7 @@ public class AccountServiceImpl implements AccountService {
         return codes;
     }
 
-    @Override
-    public Map<String, List<String>> getAndSortDistinctValuesOfAccountsFields() {
+    private Map<String, List<String>> getAndSortDistinctValuesOfAccountsFields() {
         Map<String, List<String>> fields = new HashMap<>();
         List<String> codes = getAllCodes();
         List<AccountDetailsDto> accountDetailsDtoList = new ArrayList<>();

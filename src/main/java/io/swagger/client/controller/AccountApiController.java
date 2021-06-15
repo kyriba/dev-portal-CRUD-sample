@@ -2,16 +2,12 @@ package io.swagger.client.controller;
 
 import io.swagger.client.JSON;
 import io.swagger.client.exception.BadRequestException;
-import io.swagger.client.model.*;
 import io.swagger.client.service.AccountService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.util.Collection;
 import java.util.Map;
 
 @Controller
@@ -90,26 +86,21 @@ public class AccountApiController {
     }
 
     @PostMapping("/create")
-    public String createAccount(Model model, HttpSession session, HttpServletRequest request) {
-        model.addAttribute("fields", accountService.getAndSortDistinctValuesOfAccountsFields());
-        @SuppressWarnings("unchecked")
-        Map<String, String> map = (Map<String, String>) session.getAttribute("ERROR_SESSION");
-        model.addAttribute("session_data", map);
-        request.getSession().invalidate();
+    public String createAccount(Model model) {
+        model.addAttribute("fields", accountService.getSortedDistinctValuesOfAccountsFields());
         return "html/create-account";
     }
 
     @PostMapping("/created")
-    public String createdAccount(@RequestParam Map<String, String> account, Model model, HttpServletRequest request) {
+    public String createdAccount(@RequestParam Map<String, String> account, Model model) {
         model.addAttribute("base_url", BASE_URL);
         try {
             model.addAttribute("account", accountService.createAccount(account));
         } catch (BadRequestException e) {
-            model.addAttribute("codes_list", accountService.getAllCodes());
-            model.addAttribute("created_accounts", accountService.getCreatedAccounts());
+            model.addAttribute("fields", accountService.getSortedDistinctValuesOfAccountsFields());
             model.addAttribute("error_message", e.getMessage());
-            request.getSession().setAttribute("ERROR_SESSION", account);
-            return "exception/bad-request-exception";
+            model.addAttribute("account", account);
+            return "html/create-account";
         }
         model.addAttribute("codes_list", accountService.getAllCodes());
         model.addAttribute("created_accounts", accountService.getCreatedAccounts());
@@ -139,7 +130,7 @@ public class AccountApiController {
                 return "exception/bad-request-exception";
             }
         }
-        model.addAttribute("fields", accountService.getAndSortDistinctValuesOfAccountsFields());
+        model.addAttribute("fields", accountService.getSortedDistinctValuesOfAccountsFields());
         return "html/update-account";
     }
 
