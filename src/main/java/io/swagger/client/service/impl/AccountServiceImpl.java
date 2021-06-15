@@ -187,7 +187,7 @@ public class AccountServiceImpl implements AccountService {
         if (responseIdModel != null) {
             accountDto.setUuid(responseIdModel.getUuid());
             accounts.add(accountDto);
-            distinctAccountValues = getAndSortDistinctValuesOfAccountsFields();
+            checkToAdd(account);
         }
         return responseIdModel;
     }
@@ -246,7 +246,7 @@ public class AccountServiceImpl implements AccountService {
         if (responseIdModel != null) {
             removeAccountByCode(account.get("code"));
             accounts.add(accountDto);
-            distinctAccountValues = getAndSortDistinctValuesOfAccountsFields();
+            checkToAdd(account);
         }
         return responseIdModel;
     }
@@ -274,7 +274,6 @@ public class AccountServiceImpl implements AccountService {
         }
         if (responseIdModel != null) {
             removeAccountByCode(code);
-            distinctAccountValues = getAndSortDistinctValuesOfAccountsFields();
         }
         return responseIdModel;
     }
@@ -341,5 +340,32 @@ public class AccountServiceImpl implements AccountService {
         fields.put("time_zones", time_zones);
 
         return fields;
+    }
+
+    private void checkToAdd(Map<String, String> account) {
+        if (distinctAccountValues.get("countries").stream()
+                .noneMatch(country -> account.get("country").equals(country))) {
+            distinctAccountValues.get("countries").add(account.get("country"));
+        }
+        if (distinctAccountValues.get("branches").stream()
+                .noneMatch(country -> account.get("branch_code").equals(country))) {
+            distinctAccountValues.get("branches").add(account.get("branch_code"));
+        }
+        if (distinctAccountValues.get("calendars").stream()
+                .noneMatch(country -> account.get("calendar_code").equals(country))) {
+            distinctAccountValues.get("calendars").add(account.get("calendar_code"));
+        }
+        if (distinctAccountValues.get("companies").stream()
+                .noneMatch(country -> account.get("company_code").equals(country))) {
+            distinctAccountValues.get("companies").add(account.get("company_code"));
+        }
+        if (distinctAccountValues.get("currencies").stream()
+                .noneMatch(country -> account.get("currency_code").equals(country))) {
+            distinctAccountValues.get("currencies").add(account.get("currency_code"));
+        }
+        if (distinctAccountValues.get("time_zones").stream()
+                .noneMatch(country -> account.get("time_zone").equals(country))) {
+            distinctAccountValues.get("time_zones").add(account.get("time_zone"));
+        }
     }
 }
