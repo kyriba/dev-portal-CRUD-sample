@@ -25,15 +25,17 @@ function populate() {
     }
 }
 
-function populateWithSessionData(session_data) {
-    document.getElementById('code').value = session_data.code
-    document.getElementById('country_input').value = session_data.country;
-    document.getElementById('city').value = session_data.city;
-    document.getElementById('value').value = session_data.value;
-    document.getElementById('ban_structure').value = session_data.ban_structure;
-    document.getElementById('branch_code_input').value = session_data.branch_code;
-    document.getElementById('calendar_code_input').value = session_data.calendar_code;
-    document.getElementById('company_code_input').value = session_data.company_code;
-    document.getElementById('currency_code_input').value = session_data.currency_code;
-    document.getElementById('time_zone_input').value = session_data.time_zone;
+function populateWithErrorData(data, methodType) {
+    if (methodType == "POST") {
+        document.getElementById('code').value = data.code
+    }
+    document.getElementById('country_input').value = data.country;
+    document.getElementById('city').value = data.city;
+    document.getElementById('value').value = data.value;
+    document.getElementById('ban_structure').value = data.ban_structure;
+    document.getElementById('branch_code_input').value = data.branch_code;
+    document.getElementById('calendar_code_input').value = data.calendar_code;
+    document.getElementById('company_code_input').value = data.company_code;
+    document.getElementById('currency_code_input').value = data.currency_code;
+    document.getElementById('time_zone_input').value = data.time_zone;
 }

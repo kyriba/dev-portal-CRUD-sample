@@ -43,7 +43,7 @@
                 <tr>
                     <td></td>
                     <td><label for="country">Country</label></td>
-                    <td><input type="text" list="country" name="country" autocomplete="off"
+                    <td><input type="text" list="country" name="country" autocomplete="off" id="country_input"
                                th:value="${account.address.country.code}"/>
                         <datalist id="country">
                             <option th:each="country_code: ${fields.get('countries')}" th:value="${country_code}">
@@ -84,6 +84,7 @@
                     <td></td>
                     <td><label for="branch_code">Code</label></td>
                     <td><input type="text" list="branch_code" name="branch_code" autocomplete="off"
+                               id="branch_code_input"
                                th:value="${account.branch.code}"/>
                         <datalist id="branch_code">
                             <option th:each="branch: ${fields.get('branches')}" th:value="${branch}">
@@ -99,6 +100,7 @@
                     <td></td>
                     <td><label for="calendar_code">Code</label></td>
                     <td><input type="text" list="calendar_code" name="calendar_code" autocomplete="off"
+                               id="calendar_code_input"
                                th:value="${account.calendar.code}"/>
                         <datalist id="calendar_code">
                             <option th:each="calendar: ${fields.get('calendars')}" th:value="${calendar}">
@@ -114,6 +116,7 @@
                     <td></td>
                     <td><label for="company_code">Code</label></td>
                     <td><input type="text" list="company_code" name="company_code" autocomplete="off"
+                               id="company_code_input"
                                th:value="${account.company.code}"/>
                         <datalist id="company_code">
                             <option th:each="company: ${fields.get('companies')}" th:value="${company}">
@@ -129,6 +132,7 @@
                     <td></td>
                     <td><label for="currency_code">Code</label></td>
                     <td><input type="text" list="currency_code" name="currency_code" autocomplete="off"
+                               id="currency_code_input"
                                th:value="${account.currency.code}"/>
                         <datalist id="currency_code">
                             <option th:each="currency: ${fields.get('currencies')}" th:value="${currency}">
@@ -137,7 +141,7 @@
                 </tr>
                 <tr>
                     <td><label for="time_zone">Time Zone</label></td>
-                    <td><input type="text" list="time_zone" name="time_zone" autocomplete="off"
+                    <td><input type="text" list="time_zone" name="time_zone" autocomplete="off" id="time_zone_input"
                                th:value="${account.timeZone}"/>
                         <datalist id="time_zone">
                             <option th:each="time_zone: ${fields.get('time_zones')}" th:value="${time_zone}">
@@ -181,7 +185,7 @@
 /*]]>*/
 
     if (error_message != null) {
-        populateWithSessionData(account);
+        populateWithErrorData(account, "PUT");
         const obj = JSON.parse(error_message);
         var refer = (function render() {
             document.getElementById("data").appendChild(renderjson(obj));

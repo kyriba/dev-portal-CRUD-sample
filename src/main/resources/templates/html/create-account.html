@@ -78,7 +78,8 @@
                 <tr>
                     <td></td>
                     <td><label for="branch_code">Code</label></td>
-                    <td><input type="text" list="branch_code" name="branch_code" id="branch_code_input" autocomplete="off"/>
+                    <td><input type="text" list="branch_code" name="branch_code" id="branch_code_input"
+                               autocomplete="off"/>
                         <datalist id="branch_code">
                             <option th:each="branch: ${fields.get('branches')}" th:value="${branch}">
                         </datalist>
@@ -174,7 +175,7 @@
 /*]]>*/
 
     if (error_message != null) {
-        populateWithSessionData(account);
+        populateWithErrorData(account, "POST");
         const obj = JSON.parse(error_message);
         var refer = (function render() {
             document.getElementById("data").appendChild(renderjson(obj));
