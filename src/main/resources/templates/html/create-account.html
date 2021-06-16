@@ -175,7 +175,7 @@
 /*]]>*/
 
     if (error_message != null) {
-        populateWithErrorData(account, "POST");
+        populateWithErrorData(account);
         const obj = JSON.parse(error_message);
         var refer = (function render() {
             document.getElementById("data").appendChild(renderjson(obj));

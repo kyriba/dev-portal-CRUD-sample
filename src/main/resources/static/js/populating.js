@@ -25,10 +25,8 @@ function populate() {
     }
 }
 
-function populateWithErrorData(data, methodType) {
-    if (methodType == "POST") {
-        document.getElementById('code').value = data.code
-    }
+function populateWithErrorData(data) {
+    document.getElementById('code').value = data.code
     document.getElementById('country_input').value = data.country;
     document.getElementById('city').value = data.city;
     document.getElementById('value').value = data.value;

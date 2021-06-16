@@ -140,10 +140,8 @@ public class AccountApiController {
         try {
             model.addAttribute("account", accountService.updateAccount(account));
         } catch (BadRequestException e) {
-            model.addAttribute("fields", accountService.getSortedDistinctValuesOfAccountsFields());
             model.addAttribute("error_message", e.getMessage());
-            model.addAttribute("account", account);
-            return "html/update-account";
+            updateAccount(account.get("code"), model);
         }
         model.addAttribute("codes_list", accountService.getAllCodes());
         model.addAttribute("created_accounts", accountService.getCreatedAccounts());
