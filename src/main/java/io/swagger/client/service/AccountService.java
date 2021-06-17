@@ -1,10 +1,7 @@
 
 package io.swagger.client.service;
 
-import io.swagger.client.model.Account;
-import io.swagger.client.model.AccountDetailsDto;
-import io.swagger.client.model.PageOfAccountSearchModel;
-import io.swagger.client.model.ResponseIdModel;
+import io.swagger.client.model.*;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +19,7 @@ public interface AccountService {
 
     ResponseIdModel deleteAccount(String code);
 
-    List<Account> getCreatedAccounts();
+    List<AccountCRUD> getCreatedAccounts();
 
     List<String> getAllCodes();
 

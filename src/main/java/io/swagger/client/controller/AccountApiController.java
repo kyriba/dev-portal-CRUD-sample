@@ -105,7 +105,7 @@ public class AccountApiController {
         model.addAttribute("codes_list", accountService.getAllCodes());
         model.addAttribute("created_accounts", accountService.getCreatedAccounts());
         accountService.getCreatedAccounts().stream()
-                .filter(account1 -> account1.getCode().equals(account.get("code")))
+                .filter(account1 -> account1.getCode().equals(account.get("code").toUpperCase()))
                 .findFirst().ifPresent(value -> model.addAttribute("request_body", value));
         return "html/new-account";
     }
@@ -142,13 +142,13 @@ public class AccountApiController {
         } catch (BadRequestException e) {
             model.addAttribute("fields", accountService.getSortedDistinctValuesOfAccountsFields());
             model.addAttribute("error_message", e.getMessage());
-            model.addAttribute("account", accountService.getAccountByCode(account.get("code")));
+            model.addAttribute("account", accountService.getAccountByCode(account.get("code").toUpperCase()));
             return "html/update-account";
         }
         model.addAttribute("codes_list", accountService.getAllCodes());
         model.addAttribute("created_accounts", accountService.getCreatedAccounts());
         accountService.getCreatedAccounts().stream()
-                .filter(account1 -> account1.getCode().equals(account.get("code")))
+                .filter(account1 -> account1.getCode().equals(account.get("code").toUpperCase()))
                 .findFirst().ifPresent(value -> model.addAttribute("request_body", value));
         return "html/updated-account";
     }
@@ -169,6 +169,8 @@ public class AccountApiController {
                 return "exception/bad-request-exception";
             }
         }
+        model.addAttribute("codes_list", accountService.getAllCodes());
+        model.addAttribute("created_accounts", accountService.getCreatedAccounts());
         return "html/deleted-account";
     }
 }

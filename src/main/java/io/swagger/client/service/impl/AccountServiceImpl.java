@@ -34,7 +34,7 @@ public class AccountServiceImpl implements AccountService {
     public String CLIENT_SECRET;
 
     private AccountsApi accountsApi;
-    private List<Account> accounts = new ArrayList<>();
+    private List<AccountCRUD> accounts = new ArrayList<>();
     private Map<String, List<String>> distinctAccountValues;
 
     private void refreshToken() {
@@ -65,7 +65,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<Account> getCreatedAccounts() {
+    public List<AccountCRUD> getCreatedAccounts() {
         return accounts;
     }
 
@@ -140,38 +140,11 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
     public ResponseIdModel createAccount(Map<String, String> account) {
+        AccountCRUD accountDtoCRUD = new AccountCRUD();
         Account accountDto = new Account();
-        accountDto.setCode(account.get("code").toUpperCase());
 
-        AddressModel_ addressModel = new AddressModel_();
-        ReferenceModel country = new ReferenceModel();
-        country.setCode(account.get("country"));
-        addressModel.setCountry(country);
-        addressModel.setCity(account.get("city"));
-        accountDto.setAddress(addressModel);
-
-        ReferenceModel currency = new ReferenceModel();
-        currency.setCode(account.get("currency_code"));
-        accountDto.setCurrency(currency);
-
-        ReferenceModel company = new ReferenceModel();
-        company.setCode(account.get("company_code"));
-        accountDto.setCompany(company);
-
-        ReferenceModel branch = new ReferenceModel();
-        branch.setCode(account.get("branch_code"));
-        accountDto.setBranch(branch);
-
-        AccountIdModel accountIdModel = new AccountIdModel();
-        accountIdModel.setValue(account.get("value"));
-        accountIdModel.setBanStructure(AccountIdModel.BanStructureEnum.fromValue(account.get("ban_structure")));
-        accountDto.setBankAccountID(accountIdModel);
-
-        ReferenceModel calendar = new ReferenceModel();
-        calendar.setCode(account.get("calendar_code"));
-        accountDto.setCalendar(calendar);
-
-        accountDto.setTimeZone(account.get("time_zone"));
+        fillAccountCRUD(accountDtoCRUD, account, "POST");
+        fillAccount(accountDto, account, "POST");
 
         AccountsApi accountsApi = new AccountsApi();
         ResponseIdModel responseIdModel;
@@ -185,8 +158,8 @@ public class AccountServiceImpl implements AccountService {
                 throw new BadRequestException(e.getResponseBody());
         }
         if (responseIdModel != null) {
-            accountDto.setUuid(responseIdModel.getUuid());
-            accounts.add(accountDto);
+            accountDtoCRUD.setUuid(responseIdModel.getUuid());
+            accounts.add(accountDtoCRUD);
             checkToAdd(account);
         }
         return responseIdModel;
@@ -196,41 +169,11 @@ public class AccountServiceImpl implements AccountService {
     @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
     public ResponseIdModel updateAccount(Map<String, String> account) {
 
+        AccountCRUD accountDtoCRUD = new AccountCRUD();
         Account accountDto = new Account();
 
-        accountDto.setCode(account.get("code"));
-
-        accountDto.setUuid(UUID.fromString(account.get("uuid")));
-
-        AddressModel_ addressModel = new AddressModel_();
-        ReferenceModel country = new ReferenceModel();
-        country.setCode(account.get("country"));
-        addressModel.setCountry(country);
-        addressModel.setCity(account.get("city"));
-        accountDto.setAddress(addressModel);
-
-        ReferenceModel currency = new ReferenceModel();
-        currency.setCode(account.get("currency_code"));
-        accountDto.setCurrency(currency);
-
-        ReferenceModel company = new ReferenceModel();
-        company.setCode(account.get("company_code"));
-        accountDto.setCompany(company);
-
-        ReferenceModel branch = new ReferenceModel();
-        branch.setCode(account.get("branch_code"));
-        accountDto.setBranch(branch);
-
-        AccountIdModel accountIdModel = new AccountIdModel();
-        accountIdModel.setValue(account.get("value"));
-        accountIdModel.setBanStructure(AccountIdModel.BanStructureEnum.fromValue(account.get("ban_structure")));
-        accountDto.setBankAccountID(accountIdModel);
-
-        ReferenceModel calendar = new ReferenceModel();
-        calendar.setCode(account.get("calendar_code"));
-        accountDto.setCalendar(calendar);
-
-        accountDto.setTimeZone(account.get("time_zone"));
+        fillAccountCRUD(accountDtoCRUD, account, "PUT");
+        fillAccount(accountDto, account, "PUT");
 
         AccountsApi accountsApi = new AccountsApi();
         ResponseIdModel responseIdModel;
@@ -245,7 +188,7 @@ public class AccountServiceImpl implements AccountService {
         }
         if (responseIdModel != null) {
             removeAccountByCode(account.get("code"));
-            accounts.add(accountDto);
+            accounts.add(accountDtoCRUD);
             checkToAdd(account);
         }
         return responseIdModel;
@@ -254,7 +197,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
     public ResponseIdModel deleteAccount(String code) {
-        Optional<Account> createdAccount = accounts.stream()
+        Optional<AccountCRUD> createdAccount = accounts.stream()
                 .filter(account1 -> code.equals(account1.getCode()))
                 .findFirst();
         if (!createdAccount.isPresent()) {
@@ -352,5 +295,85 @@ public class AccountServiceImpl implements AccountService {
                 distinctAccountValues.get(mapKeys.get(i)).add(account.get(accountKeys.get(i)));
             }
         }
+    }
+
+    private Account fillAccount(Account account, Map<String, String> map, String method) {
+        if (method.equals("POST")) {
+            account.setCode(map.get("code").toUpperCase());
+        } else {
+            account.setCode(map.get("code"));
+            account.setUuid(UUID.fromString(map.get("uuid")));
+        }
+
+        AddressModel_ addressModel = new AddressModel_();
+        ReferenceModel country = new ReferenceModel();
+        country.setCode(map.get("country"));
+        addressModel.setCountry(country);
+        addressModel.setCity(map.get("city"));
+        account.setAddress(addressModel);
+
+        ReferenceModel currency = new ReferenceModel();
+        currency.setCode(map.get("currency_code"));
+        account.setCurrency(currency);
+
+        ReferenceModel company = new ReferenceModel();
+        company.setCode(map.get("company_code"));
+        account.setCompany(company);
+
+        ReferenceModel branch = new ReferenceModel();
+        branch.setCode(map.get("branch_code"));
+        account.setBranch(branch);
+
+        AccountIdModel accountIdModel = new AccountIdModel();
+        accountIdModel.setValue(map.get("value"));
+        accountIdModel.setBanStructure(AccountIdModel.BanStructureEnum.fromValue(map.get("ban_structure")));
+        account.setBankAccountID(accountIdModel);
+
+        ReferenceModel calendar = new ReferenceModel();
+        calendar.setCode(map.get("calendar_code"));
+        account.setCalendar(calendar);
+
+        account.setTimeZone(map.get("time_zone"));
+        return account;
+    }
+
+    private AccountCRUD fillAccountCRUD(AccountCRUD account, Map<String, String> map, String method) {
+        if (method.equals("POST")) {
+            account.setCode(map.get("code").toUpperCase());
+        } else {
+            account.setCode(map.get("code"));
+            account.setUuid(UUID.fromString(map.get("uuid")));
+        }
+
+        AddressModel_ addressModel = new AddressModel_();
+        ReferenceModel country = new ReferenceModel();
+        country.setCode(map.get("country"));
+        addressModel.setCountry(country);
+        addressModel.setCity(map.get("city"));
+        account.setAddress(addressModel);
+
+        ReferenceModel currency = new ReferenceModel();
+        currency.setCode(map.get("currency_code"));
+        account.setCurrency(currency);
+
+        ReferenceModel company = new ReferenceModel();
+        company.setCode(map.get("company_code"));
+        account.setCompany(company);
+
+        ReferenceModel branch = new ReferenceModel();
+        branch.setCode(map.get("branch_code"));
+        account.setBranch(branch);
+
+        AccountIdModel accountIdModel = new AccountIdModel();
+        accountIdModel.setValue(map.get("value"));
+        accountIdModel.setBanStructure(AccountIdModel.BanStructureEnum.fromValue(map.get("ban_structure")));
+        account.setBankAccountID(accountIdModel);
+
+        ReferenceModel calendar = new ReferenceModel();
+        calendar.setCode(map.get("calendar_code"));
+        account.setCalendar(calendar);
+
+        account.setTimeZone(map.get("time_zone"));
+        return account;
     }
 }

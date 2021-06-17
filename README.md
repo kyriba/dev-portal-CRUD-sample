@@ -51,6 +51,6 @@ If you want to change the port, go to .../src/main/resources/application.yml and
 
 If everything was done accordingly with provided steps, the result should look as presented in the image below:
 
-![img.png](img.png)
+![img_1.png](img_1.png)
 
 To terminate application press **Ctrl + C** and execute **Y**.
