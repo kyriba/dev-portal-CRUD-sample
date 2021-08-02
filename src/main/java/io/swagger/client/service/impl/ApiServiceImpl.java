@@ -2,12 +2,13 @@ package io.swagger.client.service.impl;
 
 import io.swagger.client.ApiClient;
 import io.swagger.client.ApiException;
-import io.swagger.client.Configuration;
-import io.swagger.client.api.AccountsApi;
+import io.swagger.client.api.Api;
+import io.swagger.client.config.FieldsConfig;
+import io.swagger.client.config.InitialApiBean;
 import io.swagger.client.exception.BadRequestException;
 import io.swagger.client.exception.InvalidTokenException;
 import io.swagger.client.model.*;
-import io.swagger.client.service.AccountService;
+import io.swagger.client.service.ApiService;
 import org.apache.oltu.oauth2.client.OAuthClient;
 import org.apache.oltu.oauth2.client.URLConnectionClient;
 import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
@@ -21,10 +22,12 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
-public class AccountServiceImpl implements AccountService {
+public class ApiServiceImpl implements ApiService {
 
     @Value("${access.token.url}")
     public String ACCESS_TOKEN_URL;
@@ -33,9 +36,38 @@ public class AccountServiceImpl implements AccountService {
     @Value("${client.secret}")
     public String CLIENT_SECRET;
 
-    private AccountsApi accountsApi;
+    private final Api api;
+
+    private final InitialApiBean initialApiBean;
+
+    private final FieldsConfig fieldsConfig;
+
+    private List<String> apiFields;
     private List<AccountCRUD> accounts = new ArrayList<>();
-    private Map<String, List<String>> distinctAccountValues;
+    private Map<String, Set<String>> distinctAndSortedValuesOfFields;
+
+    public ApiServiceImpl(Api api, InitialApiBean initialApiBean, FieldsConfig fieldsConfig) {
+        this.api = api;
+        this.initialApiBean = initialApiBean;
+        this.fieldsConfig = fieldsConfig;
+    }
+
+    @PostConstruct
+    private void authenticate() {
+        refreshToken();
+        this.apiFields = fieldsConfig.getFields().get(initialApiBean.getApiName().replaceAll("/", ""));
+        distinctAndSortedValuesOfFields = getAndSortDistinctValuesOfFields();
+    }
+
+    @Override
+    public List<AccountCRUD> getCreated() {
+        return accounts;
+    }
+
+    @Override
+    public Map<String, Set<String>> getSortedDistinctValuesOfFields() {
+        return distinctAndSortedValuesOfFields;
+    }
 
     private void refreshToken() {
 
@@ -55,7 +87,7 @@ public class AccountServiceImpl implements AccountService {
             OAuthAccessTokenResponse token = client.accessToken(request, OAuth.HttpMethod.POST, OAuthJSONAccessTokenResponse.class);
             String accessToken = token.getAccessToken();
 //            System.out.println(token.getBody() + "\n");
-            ApiClient defaultClient = Configuration.getDefaultApiClient();
+            ApiClient defaultClient = api.getApiClient();
             io.swagger.client.auth.OAuth OAuth2ClientCredentials = (io.swagger.client.auth.OAuth) defaultClient.getAuthentication("OAuth2ClientCredentials");
             OAuth2ClientCredentials.setAccessToken(accessToken);
 
@@ -64,37 +96,17 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
-    @Override
-    public List<AccountCRUD> getCreatedAccounts() {
-        return accounts;
-    }
-
-    @Override
-    public Map<String, List<String>> getSortedDistinctValuesOfAccountsFields() {
-        return distinctAccountValues;
-    }
-
     private String base64EncodedBasicAuthentication() {
         String auth = CLIENT_ID + ":" + CLIENT_SECRET;
         return Base64.getEncoder().encodeToString(auth.getBytes());
     }
 
-    public AccountServiceImpl(AccountsApi accountsApi) {
-        this.accountsApi = accountsApi;
-    }
-
-    @PostConstruct
-    private void authenticate() {
-        refreshToken();
-        distinctAccountValues = getAndSortDistinctValuesOfAccountsFields();
-    }
-
     @Override
     @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
-    public PageOfAccountSearchModel getAllAccounts(String activeStatus, String filter, Integer pageLimit, Integer pageOffset, List<String> sort) {
-        PageOfAccountSearchModel result;
+    public String getAll(String activeStatus, String filter, Integer pageLimit, Integer pageOffset, List<String> sort) {
+        String result;
         try {
-            result = accountsApi.readAccountsUsingGET1(activeStatus, filter, pageLimit, pageOffset, sort);
+            result = api.readAccountsUsingGET1(activeStatus, filter, pageLimit, pageOffset, sort);
         } catch (ApiException e) {
             if (e.getResponseBody().contains("invalid_token")) {
                 refreshToken();
@@ -107,49 +119,69 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
-    public AccountDetailsDto getAccountByCode(String code) {
-        AccountDetailsDto result;
+    public String getByCode(String code) {
+        String result;
         try {
-            result = accountsApi.readAccountUsingGET1(code);
+            result = api.readAccountUsingGET1(code);
         } catch (ApiException e) {
             if (e.getResponseBody().contains("invalid_token")) {
                 refreshToken();
                 throw new InvalidTokenException(e.getResponseBody());
             } else
-                throw new BadRequestException("There is no account with code " + code);
+                throw new BadRequestException("There is no result with code " + code);
         }
         return result;
     }
 
     @Override
     @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
-    public AccountDetailsDto getAccountByUuid(String uuid) {
-        AccountDetailsDto result;
+    public String getByUuid(String uuid) {
+        String result;
         try {
-            result = accountsApi.readAccountUsingGET3(UUID.fromString(uuid));
+            result = api.readAccountUsingGET3(UUID.fromString(uuid));
         } catch (ApiException e) {
             if (e.getResponseBody().contains("invalid_token")) {
                 refreshToken();
                 throw new InvalidTokenException(e.getResponseBody());
             } else
-                throw new BadRequestException("There is no account with uuid " + uuid);
+                throw new BadRequestException("There is no result with uuid " + uuid);
         }
         return result;
     }
 
     @Override
     @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
-    public ResponseIdModel createAccount(Map<String, String> account) {
-        AccountCRUD accountDtoCRUD = new AccountCRUD();
-        Account accountDto = new Account();
+    public ResponseIdModel create(Map<String, String> account) {
+        String accountDto = "{\n" +
+                "    \"address\": {\n" +
+                "        \"country\": {\n" +
+                "            \"code\": \"US\"\n" +
+                "        },\n" +
+                "        \"city\": \"San Diego\"\n" +
+                "    },\n" +
+                "    \"bankAccountID\": {\n" +
+                "        \"value\": \"BF1030134020015400945000643\",\n" +
+                "        \"banStructure\": \"BBAN_STRUCTURE\"\n" +
+                "    },\n" +
+                "    \"branch\": {\n" +
+                "        \"code\": \"USBANK01\"\n" +
+                "    },\n" +
+                "    \"calendar\": {\n" +
+                "        \"code\": \"FR\"\n" +
+                "    },\n" +
+                "    \"code\": \"VITALII\",\n" +
+                "    \"company\": {\n" +
+                "        \"code\": \"COMPANY03\"\n" +
+                "    },\n" +
+                "    \"currency\": {\n" +
+                "        \"code\": \"USD\"\n" +
+                "    },\n" +
+                "    \"timeZone\": \"GMT\"\n" +
+                "}";
 
-        fillAccountCRUD(accountDtoCRUD, account, "POST");
-        fillAccount(accountDto, account, "POST");
-
-        AccountsApi accountsApi = new AccountsApi();
         ResponseIdModel responseIdModel;
         try {
-            responseIdModel = accountsApi.createUsingPOST1(accountDto);
+            responseIdModel = api.createUsingPOST1(accountDto);
         } catch (ApiException e) {
             if (e.getResponseBody().contains("invalid_token")) {
                 refreshToken();
@@ -158,16 +190,16 @@ public class AccountServiceImpl implements AccountService {
                 throw new BadRequestException(e.getResponseBody());
         }
         if (responseIdModel != null) {
-            accountDtoCRUD.setUuid(responseIdModel.getUuid());
-            accounts.add(accountDtoCRUD);
-            checkToAdd(account);
+//            accountDtoCRUD.setUuid(responseIdModel.getUuid());
+//            accounts.add(accountDtoCRUD);
+//            checkToAdd(account);
         }
         return responseIdModel;
     }
 
     @Override
     @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
-    public ResponseIdModel updateAccount(Map<String, String> account) {
+    public ResponseIdModel update(Map<String, String> account) {
 
         AccountCRUD accountDtoCRUD = new AccountCRUD();
         Account accountDto = new Account();
@@ -175,10 +207,9 @@ public class AccountServiceImpl implements AccountService {
         fillAccountCRUD(accountDtoCRUD, account, "PUT");
         fillAccount(accountDto, account, "PUT");
 
-        AccountsApi accountsApi = new AccountsApi();
         ResponseIdModel responseIdModel;
         try {
-            responseIdModel = accountsApi.updateUsingPUT1(accountDto, account.get("code"));
+            responseIdModel = api.updateUsingPUT1(accountDto, account.get("code"));
         } catch (ApiException e) {
             if (e.getResponseBody().contains("invalid_token")) {
                 refreshToken();
@@ -187,7 +218,7 @@ public class AccountServiceImpl implements AccountService {
                 throw new BadRequestException(e.getResponseBody());
         }
         if (responseIdModel != null) {
-            removeAccountByCode(account.get("code"));
+            removeByCode(account.get("code"));
             accounts.add(accountDtoCRUD);
             checkToAdd(account);
         }
@@ -196,18 +227,17 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
-    public ResponseIdModel deleteAccount(String code) {
+    public ResponseIdModel delete(String code) {
         Optional<AccountCRUD> createdAccount = accounts.stream()
                 .filter(account1 -> code.equals(account1.getCode()))
                 .findFirst();
         if (!createdAccount.isPresent()) {
-            throw new BadRequestException("There is no account with code " + code + " which can be delete");
+            throw new BadRequestException("There is no result with code " + code + " which can be delete");
         }
 
-        AccountsApi accountsApi = new AccountsApi();
         ResponseIdModel responseIdModel;
         try {
-            responseIdModel = accountsApi.deleteByCodeUsingDELETE1(code);
+            responseIdModel = api.deleteByCodeUsingDELETE1(code);
         } catch (ApiException e) {
             if (e.getResponseBody().contains("invalid_token")) {
                 refreshToken();
@@ -216,12 +246,12 @@ public class AccountServiceImpl implements AccountService {
                 throw new BadRequestException(e.getResponseBody());
         }
         if (responseIdModel != null) {
-            removeAccountByCode(code);
+            removeByCode(code);
         }
         return responseIdModel;
     }
 
-    private void removeAccountByCode(String code) {
+    private void removeByCode(String code) {
         for (int i = 0; i < accounts.size(); i++) {
             if (accounts.get(i).getCode().equals(code)) {
                 accounts.remove(i);
@@ -233,56 +263,65 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<String> getAllCodes() {
         List<String> codes = new ArrayList<>();
-        PageOfAccountSearchModel result = getAllAccounts(null, null, null, null, null);
-        for (int i = 0; i < result.getResults().size(); i++) {
-            codes.add(result.getResults().get(i).getCode());
+        String result = getAll(null, null, null, null, null);
+        Pattern pattern = Pattern.compile("(?<=\\[\\{)(.+)(?=\\}\\])");
+        Matcher matcher = pattern.matcher(result);
+        if (matcher.find()){
+            result = matcher.group().replaceAll(":\\{(.+?)\\}", "");
+        }
+        pattern = Pattern.compile("(?<=\"code\":\")(.+?)(?=\",)");
+        matcher = pattern.matcher(result);
+        while (matcher.find()){
+            codes.add(matcher.group());
         }
         return codes;
     }
 
-    private Map<String, List<String>> getAndSortDistinctValuesOfAccountsFields() {
-        Map<String, List<String>> fields = new HashMap<>();
+    private Map<String, Set<String>> getAndSortDistinctValuesOfFields() {
+        Map<String, Set<String>> mapOfDistinctAndSortedValuesOfFields = new HashMap<>();
         List<String> codes = getAllCodes();
-        List<AccountDetailsDto> accountDetailsDtoList = new ArrayList<>();
+        StringBuilder results = new StringBuilder();
         for (String code : codes) {
-            accountDetailsDtoList.add(getAccountByCode(code));
+            results.append(getByCode(code));
         }
-        List<String> country_codes = accountDetailsDtoList.stream()
-                .map(accountDetailsDto -> accountDetailsDto.getAddress().getCountry().getCode())
-                .distinct().sorted().collect(Collectors.toList());
-        fields.put("countries", country_codes);
 
-        List<String> ban_structures = Arrays.stream(AccountIdModel.BanStructureEnum.values())
-                .map(AccountIdModel.BanStructureEnum::getValue)
-                .collect(Collectors.toList());
-        fields.put("ban_structures", ban_structures);
+        AtomicInteger inc = new AtomicInteger();
+        apiFields.stream().map(field -> field.split("\\."))
+                .forEach(fieldPart -> mapOfDistinctAndSortedValuesOfFields.put(apiFields.get(inc.getAndIncrement()),
+                        findDistinctAndSortedValuesOfFields(fieldPart, String.valueOf(results))));
 
-        List<String> branch_codes = accountDetailsDtoList.stream()
-                .map(accountDetailsDto -> accountDetailsDto.getBranch().getCode())
-                .distinct().sorted().collect(Collectors.toList());
-        fields.put("branches", branch_codes);
+        return mapOfDistinctAndSortedValuesOfFields;
+    }
 
-        List<String> calendar_codes = accountDetailsDtoList.stream()
-                .map(accountDetailsDto -> accountDetailsDto.getCalendar().getCode())
-                .distinct().sorted().collect(Collectors.toList());
-        fields.put("calendars", calendar_codes);
+    private static Set<String> findDistinctAndSortedValuesOfFields(String[] fieldParts, String results) {
+        Set<String> distinctAndSortedValuesOfField = new TreeSet<>();
+        StringBuilder stringBuilder = new StringBuilder();
+        Pattern pattern = Pattern.compile(String.valueOf(buildRegex(fieldParts, stringBuilder, 0)));
+        Matcher matcher = pattern.matcher(results);
 
-        List<String> company_codes = accountDetailsDtoList.stream()
-                .map(accountDetailsDto -> accountDetailsDto.getCompany().getCode())
-                .distinct().sorted().collect(Collectors.toList());
-        fields.put("companies", company_codes);
+        while (matcher.find()) {
+            final String valueOfField = matcher.group(1);
+            distinctAndSortedValuesOfField.add(valueOfField);
+        }
+        return distinctAndSortedValuesOfField;
+    }
 
-        List<String> currency_codes = accountDetailsDtoList.stream()
-                .map(accountDetailsDto -> accountDetailsDto.getCurrency().getCode())
-                .distinct().sorted().collect(Collectors.toList());
-        fields.put("currencies", currency_codes);
-
-        List<String> time_zones = accountDetailsDtoList.stream()
-                .map(AccountDetailsDto::getTimeZone)
-                .distinct().sorted().collect(Collectors.toList());
-        fields.put("time_zones", time_zones);
-
-        return fields;
+    private static StringBuilder buildRegex(String[] fieldParts, StringBuilder regexBuilder, int position) {
+        String part1OfRegex1And2 = "(?<=\"";
+        String part2OfRegex1 = "\":\\{)";
+        String part3OfRegex1 = "(?:.*?)";
+        String part4OfRegex1 = "(?=\\})";
+        String part2OfRegex2 = "\":\")(.*?)(?:\")";
+        if (fieldParts.length == 1) {
+            return regexBuilder.append(part1OfRegex1And2).append(fieldParts[position]).append(part2OfRegex2);
+        }
+        if (position == fieldParts.length - 1) {
+            return regexBuilder.append(part1OfRegex1And2).append(fieldParts[position]).append(part2OfRegex2);
+        }
+        regexBuilder.append(part1OfRegex1And2).append(fieldParts[position]).append(part2OfRegex1).append(part3OfRegex1);
+        regexBuilder = buildRegex(fieldParts, regexBuilder, position + 1);
+        regexBuilder.append(part3OfRegex1).append(part4OfRegex1);
+        return regexBuilder;
     }
 
     private void checkToAdd(Map<String, String> account) {
@@ -290,9 +329,9 @@ public class AccountServiceImpl implements AccountService {
         List<String> accountKeys = Arrays.asList("country", "branch_code", "calendar_code", "company_code", "currency_code", "time_zone");
         for (int i = 0; i < mapKeys.size(); i++) {
             int finalI = i;
-            if (distinctAccountValues.get(mapKeys.get(i)).stream()
+            if (distinctAndSortedValuesOfFields.get(mapKeys.get(i)).stream()
                     .noneMatch(field -> account.get(accountKeys.get(finalI)).equals(field))) {
-                distinctAccountValues.get(mapKeys.get(i)).add(account.get(accountKeys.get(i)));
+                distinctAndSortedValuesOfFields.get(mapKeys.get(i)).add(account.get(accountKeys.get(i)));
             }
         }
     }

@@ -134,7 +134,7 @@
                     <td><label for="time_zone">Time Zone</label></td>
                     <td><input type="text" list="time_zone" name="time_zone" id="time_zone_input" autocomplete="off"/>
                         <datalist id="time_zone">
-                            <option th:each="time_zone: ${fields.get('time_zones')}" th:value="${time_zone}">
+                            <option th:each="time_zone: ${fields.get('timeZone')}" th:value="${time_zone}">
                         </datalist>
                         <br></td>
                     <td></td>

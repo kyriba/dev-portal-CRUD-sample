@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class AccountAPIExceptionHandler {
+public class ApiExceptionHandler {
 
 
     @ExceptionHandler(value = BadRequestException.class)

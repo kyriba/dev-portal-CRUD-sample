@@ -35,8 +35,9 @@
     var list_accounts = /*[[${list_accounts}]]*/;
 /*]]>*/
 
+    const obj = JSON.parse(list_accounts);
     var refer = (function render() {
-        document.getElementById("data").appendChild(renderjson(list_accounts));
+        document.getElementById("data").appendChild(renderjson(obj));
         return render;
     }());
 

@@ -2,7 +2,7 @@ package io.swagger.client.controller;
 
 import io.swagger.client.JSON;
 import io.swagger.client.exception.BadRequestException;
-import io.swagger.client.service.AccountService;
+import io.swagger.client.service.ApiService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,50 +12,50 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/CRUD")
-public class AccountApiController {
+public class ApiController {
 
     @Value("${base.url}")
     private String BASE_URL;
     @Value("${server.port}")
     private String PORT;
-    private AccountService accountService;
+    private final ApiService apiService;
     private JSON json;
 
-    public AccountApiController(AccountService accountService) {
-        this.accountService = accountService;
+    public ApiController(ApiService apiService) {
+        this.apiService = apiService;
         json = new JSON();
     }
 
     @GetMapping
     public String getMenu(Model model) {
-        model.addAttribute("codes_list", accountService.getAllCodes());
-        model.addAttribute("created_accounts", accountService.getCreatedAccounts());
+        model.addAttribute("codes_list", apiService.getAllCodes());
+        model.addAttribute("created_accounts", apiService.getCreated());
         model.addAttribute("base_url", BASE_URL);
         return "html/menu";
     }
 
     @GetMapping("/getAll")
-    public String getAllAccounts(Model model) {
+    public String getAll(Model model) {
         model.addAttribute("port", PORT);
-        model.addAttribute("codes_list", accountService.getAllCodes());
-        model.addAttribute("created_accounts", accountService.getCreatedAccounts());
+        model.addAttribute("codes_list", apiService.getAllCodes());
+        model.addAttribute("created_accounts", apiService.getCreated());
         model.addAttribute("base_url", BASE_URL);
-        model.addAttribute("list_accounts", accountService.getAllAccounts(null, null, null, null, null));
+        model.addAttribute("list_accounts", apiService.getAll(null, null, null, null, null));
         return "html/accounts-list";
     }
 
     @PostMapping("/getByCode")
     public String getByCode(@RequestParam String get_code, Model model) {
-        model.addAttribute("codes_list", accountService.getAllCodes());
-        model.addAttribute("created_accounts", accountService.getCreatedAccounts());
+        model.addAttribute("codes_list", apiService.getAllCodes());
+        model.addAttribute("created_accounts", apiService.getCreated());
         model.addAttribute("base_url", BASE_URL);
         if (get_code.equals("")) {
             return "exception/blank-input-exception";
         }
         try {
-            model.addAttribute("account", accountService.getAccountByCode(get_code));
+            model.addAttribute("account", apiService.getByCode(get_code));
         } catch (BadRequestException e) {
-            if (e.getMessage().contains("There is no account with code")) {
+            if (e.getMessage().contains("There is no result with code")) {
                 model.addAttribute("error_message", json.serialize(e.getMessage()));
                 return "exception/bad-request-exception";
             }
@@ -65,16 +65,16 @@ public class AccountApiController {
 
     @PostMapping("/getByUuid")
     public String getByUuid(@RequestParam String get_uuid, Model model) {
-        model.addAttribute("codes_list", accountService.getAllCodes());
-        model.addAttribute("created_accounts", accountService.getCreatedAccounts());
+        model.addAttribute("codes_list", apiService.getAllCodes());
+        model.addAttribute("created_accounts", apiService.getCreated());
         model.addAttribute("base_url", BASE_URL);
         if (get_uuid.equals("")) {
             return "exception/blank-input-exception";
         }
         try {
-            model.addAttribute("account", accountService.getAccountByUuid(get_uuid));
+            model.addAttribute("account", apiService.getByUuid(get_uuid));
         } catch (BadRequestException e) {
-            if (e.getMessage().contains("There is no account with uuid")) {
+            if (e.getMessage().contains("There is no result with uuid")) {
                 model.addAttribute("error_message", json.serialize(e.getMessage()));
                 return "exception/bad-request-exception";
             }
@@ -87,7 +87,7 @@ public class AccountApiController {
 
     @PostMapping("/create")
     public String createAccount(Model model) {
-        model.addAttribute("fields", accountService.getSortedDistinctValuesOfAccountsFields());
+        model.addAttribute("fields", apiService.getSortedDistinctValuesOfFields());
         return "html/create-account";
     }
 
@@ -95,16 +95,16 @@ public class AccountApiController {
     public String createdAccount(@RequestParam Map<String, String> account, Model model) {
         model.addAttribute("base_url", BASE_URL);
         try {
-            model.addAttribute("account", accountService.createAccount(account));
+            model.addAttribute("account", apiService.create(account));
         } catch (BadRequestException e) {
-            model.addAttribute("fields", accountService.getSortedDistinctValuesOfAccountsFields());
+            model.addAttribute("fields", apiService.getSortedDistinctValuesOfFields());
             model.addAttribute("error_message", e.getMessage());
             model.addAttribute("account", account);
             return "html/create-account";
         }
-        model.addAttribute("codes_list", accountService.getAllCodes());
-        model.addAttribute("created_accounts", accountService.getCreatedAccounts());
-        accountService.getCreatedAccounts().stream()
+        model.addAttribute("codes_list", apiService.getAllCodes());
+        model.addAttribute("created_accounts", apiService.getCreated());
+        apiService.getCreated().stream()
                 .filter(account1 -> account1.getCode().equals(account.get("code").toUpperCase()))
                 .findFirst().ifPresent(value -> model.addAttribute("request_body", value));
         return "html/new-account";
@@ -112,25 +112,25 @@ public class AccountApiController {
 
     @PostMapping("/update")
     public String updateAccount(@RequestParam String update_code, Model model) {
-        model.addAttribute("codes_list", accountService.getAllCodes());
-        model.addAttribute("created_accounts", accountService.getCreatedAccounts());
+        model.addAttribute("codes_list", apiService.getAllCodes());
+        model.addAttribute("created_accounts", apiService.getCreated());
         model.addAttribute("base_url", BASE_URL);
         if (update_code.equals("")) {
             return "exception/blank-input-exception";
         }
         try {
-            if (accountService.getCreatedAccounts().stream()
+            if (apiService.getCreated().stream()
                     .anyMatch(account -> update_code.equals(account.getCode()))) {
-                model.addAttribute("account", accountService.getAccountByCode(update_code));
+                model.addAttribute("account", apiService.getByCode(update_code));
             } else
-                throw new BadRequestException("There is no account with code " + update_code + " which can be update");
+                throw new BadRequestException("There is no result with code " + update_code + " which can be update");
         } catch (BadRequestException e) {
-            if (e.getMessage().contains("There is no account with code")) {
+            if (e.getMessage().contains("There is no result with code")) {
                 model.addAttribute("error_message", json.serialize(e.getMessage()));
                 return "exception/bad-request-exception";
             }
         }
-        model.addAttribute("fields", accountService.getSortedDistinctValuesOfAccountsFields());
+        model.addAttribute("fields", apiService.getSortedDistinctValuesOfFields());
         return "html/update-account";
     }
 
@@ -138,16 +138,16 @@ public class AccountApiController {
     public String updatedAccount(@RequestParam Map<String, String> account, Model model) {
         model.addAttribute("base_url", BASE_URL);
         try {
-            model.addAttribute("account", accountService.updateAccount(account));
+            model.addAttribute("account", apiService.update(account));
         } catch (BadRequestException e) {
-            model.addAttribute("fields", accountService.getSortedDistinctValuesOfAccountsFields());
+            model.addAttribute("fields", apiService.getSortedDistinctValuesOfFields());
             model.addAttribute("error_message", e.getMessage());
-            model.addAttribute("account", accountService.getAccountByCode(account.get("code").toUpperCase()));
+            model.addAttribute("account", apiService.getByCode(account.get("code").toUpperCase()));
             return "html/update-account";
         }
-        model.addAttribute("codes_list", accountService.getAllCodes());
-        model.addAttribute("created_accounts", accountService.getCreatedAccounts());
-        accountService.getCreatedAccounts().stream()
+        model.addAttribute("codes_list", apiService.getAllCodes());
+        model.addAttribute("created_accounts", apiService.getCreated());
+        apiService.getCreated().stream()
                 .filter(account1 -> account1.getCode().equals(account.get("code").toUpperCase()))
                 .findFirst().ifPresent(value -> model.addAttribute("request_body", value));
         return "html/updated-account";
@@ -155,22 +155,22 @@ public class AccountApiController {
 
     @PostMapping("/delete")
     public String deleteAccount(@RequestParam String delete_code, Model model) {
-        model.addAttribute("codes_list", accountService.getAllCodes());
-        model.addAttribute("created_accounts", accountService.getCreatedAccounts());
+        model.addAttribute("codes_list", apiService.getAllCodes());
+        model.addAttribute("created_accounts", apiService.getCreated());
         model.addAttribute("base_url", BASE_URL);
         if (delete_code.equals("")) {
             return "exception/blank-input-exception";
         }
         try {
-            model.addAttribute("account", accountService.deleteAccount(delete_code));
+            model.addAttribute("account", apiService.delete(delete_code));
         } catch (BadRequestException e) {
-            if (e.getMessage().contains("There is no account with code")) {
+            if (e.getMessage().contains("There is no result with code")) {
                 model.addAttribute("error_message", json.serialize(e.getMessage()));
                 return "exception/bad-request-exception";
             }
         }
-        model.addAttribute("codes_list", accountService.getAllCodes());
-        model.addAttribute("created_accounts", accountService.getCreatedAccounts());
+        model.addAttribute("codes_list", apiService.getAllCodes());
+        model.addAttribute("created_accounts", apiService.getCreated());
         return "html/deleted-account";
     }
 }

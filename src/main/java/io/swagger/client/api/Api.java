@@ -27,6 +27,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 
 
+import io.swagger.client.config.InitialApiBean;
 import io.swagger.client.model.Account;
 import io.swagger.client.model.AccountDetailsDto;
 import io.swagger.client.model.PageOfAccountSearchModel;
@@ -43,15 +44,17 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class AccountsApi {
+public class Api {
     private ApiClient apiClient;
 
-    public AccountsApi() {
-        this(Configuration.getDefaultApiClient());
-    }
+    private final String requestPath;
 
-    public AccountsApi(ApiClient apiClient) {
+    private final InitialApiBean bean;
+
+    public Api(ApiClient apiClient, InitialApiBean bean) {
         this.apiClient = apiClient;
+        this.bean = bean;
+        requestPath = bean.getApiName();
     }
 
     public ApiClient getApiClient() {
@@ -70,11 +73,10 @@ public class AccountsApi {
      * @return Call to execute
      * @throws ApiException If fail to serialize the request body object
      */
-    public com.squareup.okhttp.Call createUsingPOST1Call(Account accountCreateDto, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+    public com.squareup.okhttp.Call createUsingPOST1Call(String accountCreateDto, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
         Object localVarPostBody = accountCreateDto;
 
         // create path and map variables
-        String localVarPath = "/v1/accounts";
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
         List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
@@ -108,11 +110,11 @@ public class AccountsApi {
         }
 
         String[] localVarAuthNames = new String[] { "OAuth2ClientCredentials" };
-        return apiClient.buildCall(localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient.buildCall(requestPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
     }
 
     @SuppressWarnings("rawtypes")
-    private com.squareup.okhttp.Call createUsingPOST1ValidateBeforeCall(Account accountCreateDto, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+    private com.squareup.okhttp.Call createUsingPOST1ValidateBeforeCall(String accountCreateDto, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
         
         // verify the required parameter 'accountCreateDto' is set
         if (accountCreateDto == null) {
@@ -132,7 +134,7 @@ public class AccountsApi {
      * @return ResponseIdModel
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public ResponseIdModel createUsingPOST1(Account accountCreateDto) throws ApiException {
+    public ResponseIdModel createUsingPOST1(String accountCreateDto) throws ApiException {
         ApiResponse<ResponseIdModel> resp = createUsingPOST1WithHttpInfo(accountCreateDto);
         return resp.getData();
     }
@@ -144,7 +146,7 @@ public class AccountsApi {
      * @return ApiResponse&lt;ResponseIdModel&gt;
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public ApiResponse<ResponseIdModel> createUsingPOST1WithHttpInfo(Account accountCreateDto) throws ApiException {
+    public ApiResponse<ResponseIdModel> createUsingPOST1WithHttpInfo(String accountCreateDto) throws ApiException {
         com.squareup.okhttp.Call call = createUsingPOST1ValidateBeforeCall(accountCreateDto, null, null);
         Type localVarReturnType = new TypeToken<ResponseIdModel>(){}.getType();
         return apiClient.execute(call, localVarReturnType);
@@ -158,7 +160,7 @@ public class AccountsApi {
      * @return The request call
      * @throws ApiException If fail to process the API call, e.g. serializing the request body object
      */
-    public com.squareup.okhttp.Call createUsingPOST1Async(Account accountCreateDto, final ApiCallback<ResponseIdModel> callback) throws ApiException {
+    public com.squareup.okhttp.Call createUsingPOST1Async(String accountCreateDto, final ApiCallback<ResponseIdModel> callback) throws ApiException {
 
         ProgressResponseBody.ProgressListener progressListener = null;
         ProgressRequestBody.ProgressRequestListener progressRequestListener = null;
@@ -196,7 +198,7 @@ public class AccountsApi {
         Object localVarPostBody = null;
 
         // create path and map variables
-        String localVarPath = "/v1/accounts/code={code}"
+        String localVarPath = "/code={code}"
             .replaceAll("\\{" + "code" + "\\}", apiClient.escapeString(code.toString()));
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -231,7 +233,7 @@ public class AccountsApi {
         }
 
         String[] localVarAuthNames = new String[] { "OAuth2ClientCredentials" };
-        return apiClient.buildCall(localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient.buildCall(requestPath + localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
     }
 
     @SuppressWarnings("rawtypes")
@@ -319,7 +321,7 @@ public class AccountsApi {
         Object localVarPostBody = null;
 
         // create path and map variables
-        String localVarPath = "/v1/accounts/{uuid}"
+        String localVarPath = "/{uuid}"
             .replaceAll("\\{" + "uuid" + "\\}", apiClient.escapeString(uuid.toString()));
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -354,7 +356,7 @@ public class AccountsApi {
         }
 
         String[] localVarAuthNames = new String[] { "OAuth2ClientCredentials" };
-        return apiClient.buildCall(localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient.buildCall(requestPath + localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
     }
 
     @SuppressWarnings("rawtypes")
@@ -442,7 +444,7 @@ public class AccountsApi {
         Object localVarPostBody = null;
 
         // create path and map variables
-        String localVarPath = "/v1/accounts/code={code}"
+        String localVarPath = "/code={code}"
             .replaceAll("\\{" + "code" + "\\}", apiClient.escapeString(code.toString()));
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -477,7 +479,7 @@ public class AccountsApi {
         }
 
         String[] localVarAuthNames = new String[] { "OAuth2ClientCredentials" };
-        return apiClient.buildCall(localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient.buildCall(requestPath + localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
     }
 
     @SuppressWarnings("rawtypes")
@@ -501,8 +503,8 @@ public class AccountsApi {
      * @return AccountDetailsDto
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public AccountDetailsDto readAccountUsingGET1(String code) throws ApiException {
-        ApiResponse<AccountDetailsDto> resp = readAccountUsingGET1WithHttpInfo(code);
+    public String readAccountUsingGET1(String code) throws ApiException {
+        ApiResponse<String> resp = readAccountUsingGET1WithHttpInfo(code);
         return resp.getData();
     }
 
@@ -513,9 +515,9 @@ public class AccountsApi {
      * @return ApiResponse&lt;AccountDetailsDto&gt;
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public ApiResponse<AccountDetailsDto> readAccountUsingGET1WithHttpInfo(String code) throws ApiException {
+    public ApiResponse<String> readAccountUsingGET1WithHttpInfo(String code) throws ApiException {
         com.squareup.okhttp.Call call = readAccountUsingGET1ValidateBeforeCall(code, null, null);
-        Type localVarReturnType = new TypeToken<AccountDetailsDto>(){}.getType();
+        Type localVarReturnType = new TypeToken<String>(){}.getType();
         return apiClient.execute(call, localVarReturnType);
     }
 
@@ -527,7 +529,7 @@ public class AccountsApi {
      * @return The request call
      * @throws ApiException If fail to process the API call, e.g. serializing the request body object
      */
-    public com.squareup.okhttp.Call readAccountUsingGET1Async(String code, final ApiCallback<AccountDetailsDto> callback) throws ApiException {
+    public com.squareup.okhttp.Call readAccountUsingGET1Async(String code, final ApiCallback<String> callback) throws ApiException {
 
         ProgressResponseBody.ProgressListener progressListener = null;
         ProgressRequestBody.ProgressRequestListener progressRequestListener = null;
@@ -549,7 +551,7 @@ public class AccountsApi {
         }
 
         com.squareup.okhttp.Call call = readAccountUsingGET1ValidateBeforeCall(code, progressListener, progressRequestListener);
-        Type localVarReturnType = new TypeToken<AccountDetailsDto>(){}.getType();
+        Type localVarReturnType = new TypeToken<String>(){}.getType();
         apiClient.executeAsync(call, localVarReturnType, callback);
         return call;
     }
@@ -565,7 +567,7 @@ public class AccountsApi {
         Object localVarPostBody = null;
 
         // create path and map variables
-        String localVarPath = "/v1/accounts/{uuid}"
+        String localVarPath = "/{uuid}"
             .replaceAll("\\{" + "uuid" + "\\}", apiClient.escapeString(uuid.toString()));
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -600,7 +602,7 @@ public class AccountsApi {
         }
 
         String[] localVarAuthNames = new String[] { "OAuth2ClientCredentials" };
-        return apiClient.buildCall(localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient.buildCall(requestPath + localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
     }
 
     @SuppressWarnings("rawtypes")
@@ -624,8 +626,8 @@ public class AccountsApi {
      * @return AccountDetailsDto
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public AccountDetailsDto readAccountUsingGET3(UUID uuid) throws ApiException {
-        ApiResponse<AccountDetailsDto> resp = readAccountUsingGET3WithHttpInfo(uuid);
+    public String readAccountUsingGET3(UUID uuid) throws ApiException {
+        ApiResponse<String> resp = readAccountUsingGET3WithHttpInfo(uuid);
         return resp.getData();
     }
 
@@ -636,9 +638,9 @@ public class AccountsApi {
      * @return ApiResponse&lt;AccountDetailsDto&gt;
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public ApiResponse<AccountDetailsDto> readAccountUsingGET3WithHttpInfo(UUID uuid) throws ApiException {
+    public ApiResponse<String> readAccountUsingGET3WithHttpInfo(UUID uuid) throws ApiException {
         com.squareup.okhttp.Call call = readAccountUsingGET3ValidateBeforeCall(uuid, null, null);
-        Type localVarReturnType = new TypeToken<AccountDetailsDto>(){}.getType();
+        Type localVarReturnType = new TypeToken<String>(){}.getType();
         return apiClient.execute(call, localVarReturnType);
     }
 
@@ -672,7 +674,7 @@ public class AccountsApi {
         }
 
         com.squareup.okhttp.Call call = readAccountUsingGET3ValidateBeforeCall(uuid, progressListener, progressRequestListener);
-        Type localVarReturnType = new TypeToken<AccountDetailsDto>(){}.getType();
+        Type localVarReturnType = new TypeToken<String>(){}.getType();
         apiClient.executeAsync(call, localVarReturnType, callback);
         return call;
     }
@@ -692,7 +694,6 @@ public class AccountsApi {
         Object localVarPostBody = null;
 
         // create path and map variables
-        String localVarPath = "/v1/accounts";
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
         List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
@@ -736,7 +737,7 @@ public class AccountsApi {
         }
 
         String[] localVarAuthNames = new String[] { "OAuth2ClientCredentials" };
-        return apiClient.buildCall(localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient.buildCall(requestPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
     }
 
     @SuppressWarnings("rawtypes")
@@ -759,8 +760,8 @@ public class AccountsApi {
      * @return PageOfAccountSearchModel
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public PageOfAccountSearchModel readAccountsUsingGET1(String activeStatus, String filter, Integer pageLimit, Integer pageOffset, List<String> sort) throws ApiException {
-        ApiResponse<PageOfAccountSearchModel> resp = readAccountsUsingGET1WithHttpInfo(activeStatus, filter, pageLimit, pageOffset, sort);
+    public String readAccountsUsingGET1(String activeStatus, String filter, Integer pageLimit, Integer pageOffset, List<String> sort) throws ApiException {
+        ApiResponse<String> resp = readAccountsUsingGET1WithHttpInfo(activeStatus, filter, pageLimit, pageOffset, sort);
         return resp.getData();
     }
 
@@ -775,9 +776,9 @@ public class AccountsApi {
      * @return ApiResponse&lt;PageOfAccountSearchModel&gt;
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public ApiResponse<PageOfAccountSearchModel> readAccountsUsingGET1WithHttpInfo(String activeStatus, String filter, Integer pageLimit, Integer pageOffset, List<String> sort) throws ApiException {
+    public ApiResponse<String> readAccountsUsingGET1WithHttpInfo(String activeStatus, String filter, Integer pageLimit, Integer pageOffset, List<String> sort) throws ApiException {
         com.squareup.okhttp.Call call = readAccountsUsingGET1ValidateBeforeCall(activeStatus, filter, pageLimit, pageOffset, sort, null, null);
-        Type localVarReturnType = new TypeToken<PageOfAccountSearchModel>(){}.getType();
+        Type localVarReturnType = new TypeToken<String>(){}.getType();
         return apiClient.execute(call, localVarReturnType);
     }
 
@@ -815,7 +816,7 @@ public class AccountsApi {
         }
 
         com.squareup.okhttp.Call call = readAccountsUsingGET1ValidateBeforeCall(activeStatus, filter, pageLimit, pageOffset, sort, progressListener, progressRequestListener);
-        Type localVarReturnType = new TypeToken<PageOfAccountSearchModel>(){}.getType();
+        Type localVarReturnType = new TypeToken<String>(){}.getType();
         apiClient.executeAsync(call, localVarReturnType, callback);
         return call;
     }
@@ -832,7 +833,7 @@ public class AccountsApi {
         Object localVarPostBody = accountDto;
 
         // create path and map variables
-        String localVarPath = "/v1/accounts/code={code}"
+        String localVarPath = "/code={code}"
             .replaceAll("\\{" + "code" + "\\}", apiClient.escapeString(code.toString()));
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -867,7 +868,7 @@ public class AccountsApi {
         }
 
         String[] localVarAuthNames = new String[] { "OAuth2ClientCredentials" };
-        return apiClient.buildCall(localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient.buildCall(requestPath + localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
     }
 
     @SuppressWarnings("rawtypes")
@@ -964,7 +965,7 @@ public class AccountsApi {
         Object localVarPostBody = accountDto;
 
         // create path and map variables
-        String localVarPath = "/v1/accounts/{uuid}"
+        String localVarPath = "/{uuid}"
             .replaceAll("\\{" + "uuid" + "\\}", apiClient.escapeString(uuid.toString()));
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -999,7 +1000,7 @@ public class AccountsApi {
         }
 
         String[] localVarAuthNames = new String[] { "OAuth2ClientCredentials" };
-        return apiClient.buildCall(localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient.buildCall(requestPath + localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
     }
 
     @SuppressWarnings("rawtypes")

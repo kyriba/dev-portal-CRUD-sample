@@ -35,8 +35,9 @@
     var account = /*[[${account}]]*/;
 /*]]>*/
 
+    const obj = JSON.parse(account);
     var refer = (function render() {
-        document.getElementById("data").appendChild(renderjson(account));
+        document.getElementById("data").appendChild(renderjson(obj));
         return render;
     }());
 

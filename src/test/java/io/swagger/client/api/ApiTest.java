@@ -15,26 +15,25 @@ package io.swagger.client.api;
 
 import io.swagger.client.ApiException;
 import io.swagger.client.model.Account;
-import io.swagger.client.model.AccountDetailsDto;
-import io.swagger.client.model.PageOfAccountSearchModel;
 import io.swagger.client.model.ResponseIdModel;
-import io.swagger.client.model.RestApiErrorResponse;
+
 import java.util.UUID;
 import org.junit.Test;
 import org.junit.Ignore;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * API tests for AccountsApi
  */
 @Ignore
-public class AccountsApiTest {
+public class ApiTest {
 
-    private final AccountsApi api = new AccountsApi();
+    private final Api api;
+
+    public ApiTest(Api api) {
+        this.api = api;
+    }
 
     
     /**
@@ -47,7 +46,7 @@ public class AccountsApiTest {
      */
     @Test
     public void createUsingPOST1Test() throws ApiException {
-        Account accountCreateDto = null;
+        String accountCreateDto = null;
         ResponseIdModel response = api.createUsingPOST1(accountCreateDto);
 
         // TODO: test validations
@@ -96,7 +95,7 @@ public class AccountsApiTest {
     @Test
     public void readAccountUsingGET1Test() throws ApiException {
         String code = null;
-        AccountDetailsDto response = api.readAccountUsingGET1(code);
+        String response = api.readAccountUsingGET1(code);
 
         // TODO: test validations
     }
@@ -112,7 +111,7 @@ public class AccountsApiTest {
     @Test
     public void readAccountUsingGET3Test() throws ApiException {
         UUID uuid = null;
-        AccountDetailsDto response = api.readAccountUsingGET3(uuid);
+        String response = api.readAccountUsingGET3(uuid);
 
         // TODO: test validations
     }
@@ -132,7 +131,7 @@ public class AccountsApiTest {
         Integer pageLimit = null;
         Integer pageOffset = null;
         List<String> sort = null;
-        PageOfAccountSearchModel response = api.readAccountsUsingGET1(activeStatus, filter, pageLimit, pageOffset, sort);
+        String response = api.readAccountsUsingGET1(activeStatus, filter, pageLimit, pageOffset, sort);
 
         // TODO: test validations
     }

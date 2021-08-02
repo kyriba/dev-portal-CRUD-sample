@@ -11,3 +11,70 @@ access:
 
 base:
   url: https://demo.kyriba.com/gateway/api
+
+list:
+  apis:
+    - /v1/accounts
+    - /v1/third-parties
+    - /v1/users
+
+api:
+  fields:
+    /v1/accounts:
+      - code
+      - uuid
+      - calendar.code
+      - currency.code
+      - company.code
+      - branch.code
+      - bankAccountID.banStructure
+      - bankAccountID.value
+      - address.country.code
+      - timeZone
+
+    /v1/third-parties:
+      - code
+      - name
+      - address.country.code
+
+    /v1/users:
+      - acceleratorForMillions
+      - acceleratorForThousands
+      - accessProfile.code
+      - code
+      - decimalSeparator
+      - email
+      - firstName
+      - lastName
+      - preferredContactChannel
+      - thousandSeparator
+      - timeZone
+      - title
+
+  methods:
+    /v1/accounts:
+      - GET_ALL
+      - GET_CODE
+      - GET_UUID
+      - POST
+      - PUT_CODE
+      - PUT_UUID
+      - DELETE_CODE
+      - DELETE_UUID
+
+    /v1/third-parties:
+      - GET_ALL
+      - GET_CODE
+      - GET_UUID
+      - POST
+      - PUT_CODE
+      - PUT_UUID
+      - DELETE_CODE
+      - DELETE_UUID
+
+    /v1/users:
+      - GET_ALL
+      - GET_UUID
+      - POST
+      - PUT_UUID
+      - DELETE_UUID
