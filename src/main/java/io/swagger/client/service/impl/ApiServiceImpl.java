@@ -42,8 +42,10 @@ public class ApiServiceImpl implements ApiService {
 
     private final FieldsConfig fieldsConfig;
 
+    private StringBuilder requestBody;
     private List<String> apiFields;
-    private List<AccountCRUD> accounts = new ArrayList<>();
+    private List<String> codes = new ArrayList<>();
+    private final List<String> createdCodes = new ArrayList<>();
     private Map<String, Set<String>> distinctAndSortedValuesOfFields;
 
     public ApiServiceImpl(Api api, InitialApiBean initialApiBean, FieldsConfig fieldsConfig) {
@@ -56,12 +58,24 @@ public class ApiServiceImpl implements ApiService {
     private void authenticate() {
         refreshToken();
         this.apiFields = fieldsConfig.getFields().get(initialApiBean.getApiName().replaceAll("/", ""));
+        System.out.println("Wait a minute");
+        codes = findAllCodes();
         distinctAndSortedValuesOfFields = getAndSortDistinctValuesOfFields();
     }
 
     @Override
-    public List<AccountCRUD> getCreated() {
-        return accounts;
+    public List<String> getAllCodes() {
+        return codes;
+    }
+
+    @Override
+    public String getRequestBody() {
+        return String.valueOf(requestBody);
+    }
+
+    @Override
+    public List<String> getCreatedCodes() {
+        return createdCodes;
     }
 
     @Override
@@ -151,37 +165,26 @@ public class ApiServiceImpl implements ApiService {
 
     @Override
     @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
-    public ResponseIdModel create(Map<String, String> account) {
-        String accountDto = "{\n" +
-                "    \"address\": {\n" +
-                "        \"country\": {\n" +
-                "            \"code\": \"US\"\n" +
-                "        },\n" +
-                "        \"city\": \"San Diego\"\n" +
-                "    },\n" +
-                "    \"bankAccountID\": {\n" +
-                "        \"value\": \"BF1030134020015400945000643\",\n" +
-                "        \"banStructure\": \"BBAN_STRUCTURE\"\n" +
-                "    },\n" +
-                "    \"branch\": {\n" +
-                "        \"code\": \"USBANK01\"\n" +
-                "    },\n" +
-                "    \"calendar\": {\n" +
-                "        \"code\": \"FR\"\n" +
-                "    },\n" +
-                "    \"code\": \"VITALII\",\n" +
-                "    \"company\": {\n" +
-                "        \"code\": \"COMPANY03\"\n" +
-                "    },\n" +
-                "    \"currency\": {\n" +
-                "        \"code\": \"USD\"\n" +
-                "    },\n" +
-                "    \"timeZone\": \"GMT\"\n" +
-                "}";
+    public ResponseIdModel create(Map<String, String> map) {
+        requestBody = new StringBuilder("{");
+
+        List<String[]> listOfFields = new ArrayList<>();
+        List<String> listOfValues = new ArrayList<>(map.values());
+
+        for (String s : map.keySet()) {
+            listOfFields.add(s.split("\\."));
+        }
+
+        listOfFields.add(new String[]{""});
+        listOfValues.add("");
+
+        requestBody = buildJsonRequestBody(requestBody, listOfFields,
+                listOfValues, 0, 0, listOfValues.size());
+        requestBody.deleteCharAt(requestBody.length() - 1).append("}");
 
         ResponseIdModel responseIdModel;
         try {
-            responseIdModel = api.createUsingPOST1(accountDto);
+            responseIdModel = api.createUsingPOST1(String.valueOf(requestBody));
         } catch (ApiException e) {
             if (e.getResponseBody().contains("invalid_token")) {
                 refreshToken();
@@ -190,26 +193,36 @@ public class ApiServiceImpl implements ApiService {
                 throw new BadRequestException(e.getResponseBody());
         }
         if (responseIdModel != null) {
-//            accountDtoCRUD.setUuid(responseIdModel.getUuid());
-//            accounts.add(accountDtoCRUD);
-//            checkToAdd(account);
+            codes.add(map.get("code").toUpperCase());
+            createdCodes.add(map.get("code").toUpperCase());
+            addNewDistinctValuesOfFields(map);
         }
         return responseIdModel;
     }
 
     @Override
     @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
-    public ResponseIdModel update(Map<String, String> account) {
+    public ResponseIdModel update(Map<String, String> map) {
 
-        AccountCRUD accountDtoCRUD = new AccountCRUD();
-        Account accountDto = new Account();
+        requestBody = new StringBuilder("{");
 
-        fillAccountCRUD(accountDtoCRUD, account, "PUT");
-        fillAccount(accountDto, account, "PUT");
+        List<String[]> listOfFields = new ArrayList<>();
+        List<String> listOfValues = new ArrayList<>(map.values());
+
+        for (String s : map.keySet()) {
+            listOfFields.add(s.split("\\."));
+        }
+
+        listOfFields.add(new String[]{""});
+        listOfValues.add("");
+
+        requestBody = buildJsonRequestBody(requestBody, listOfFields,
+                listOfValues, 0, 0, listOfValues.size());
+        requestBody.deleteCharAt(requestBody.length() - 1).append("}");
 
         ResponseIdModel responseIdModel;
         try {
-            responseIdModel = api.updateUsingPUT1(accountDto, account.get("code"));
+            responseIdModel = api.updateUsingPUT1(String.valueOf(requestBody), map.get("code"));
         } catch (ApiException e) {
             if (e.getResponseBody().contains("invalid_token")) {
                 refreshToken();
@@ -218,9 +231,7 @@ public class ApiServiceImpl implements ApiService {
                 throw new BadRequestException(e.getResponseBody());
         }
         if (responseIdModel != null) {
-            removeByCode(account.get("code"));
-            accounts.add(accountDtoCRUD);
-            checkToAdd(account);
+            addNewDistinctValuesOfFields(map);
         }
         return responseIdModel;
     }
@@ -228,10 +239,8 @@ public class ApiServiceImpl implements ApiService {
     @Override
     @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
     public ResponseIdModel delete(String code) {
-        Optional<AccountCRUD> createdAccount = accounts.stream()
-                .filter(account1 -> code.equals(account1.getCode()))
-                .findFirst();
-        if (!createdAccount.isPresent()) {
+
+        if (!createdCodes.contains(code)) {
             throw new BadRequestException("There is no result with code " + code + " which can be delete");
         }
 
@@ -246,23 +255,13 @@ public class ApiServiceImpl implements ApiService {
                 throw new BadRequestException(e.getResponseBody());
         }
         if (responseIdModel != null) {
-            removeByCode(code);
+            createdCodes.remove(code);
+            codes.remove(code);
         }
         return responseIdModel;
     }
 
-    private void removeByCode(String code) {
-        for (int i = 0; i < accounts.size(); i++) {
-            if (accounts.get(i).getCode().equals(code)) {
-                accounts.remove(i);
-                return;
-            }
-        }
-    }
-
-    @Override
-    public List<String> getAllCodes() {
-        List<String> codes = new ArrayList<>();
+    private List<String> findAllCodes() {
         String result = getAll(null, null, null, null, null);
         Pattern pattern = Pattern.compile("(?<=\\[\\{)(.+)(?=\\}\\])");
         Matcher matcher = pattern.matcher(result);
@@ -278,8 +277,7 @@ public class ApiServiceImpl implements ApiService {
     }
 
     private Map<String, Set<String>> getAndSortDistinctValuesOfFields() {
-        Map<String, Set<String>> mapOfDistinctAndSortedValuesOfFields = new HashMap<>();
-        List<String> codes = getAllCodes();
+        Map<String, Set<String>> mapOfDistinctAndSortedValuesOfFields = new TreeMap<>();
         StringBuilder results = new StringBuilder();
         for (String code : codes) {
             results.append(getByCode(code));
@@ -324,95 +322,53 @@ public class ApiServiceImpl implements ApiService {
         return regexBuilder;
     }
 
-    private void checkToAdd(Map<String, String> account) {
-        List<String> mapKeys = Arrays.asList("countries", "branches", "calendars", "companies", "currencies", "time_zones");
-        List<String> accountKeys = Arrays.asList("country", "branch_code", "calendar_code", "company_code", "currency_code", "time_zone");
-        for (int i = 0; i < mapKeys.size(); i++) {
-            int finalI = i;
-            if (distinctAndSortedValuesOfFields.get(mapKeys.get(i)).stream()
-                    .noneMatch(field -> account.get(accountKeys.get(finalI)).equals(field))) {
-                distinctAndSortedValuesOfFields.get(mapKeys.get(i)).add(account.get(accountKeys.get(i)));
+    private static StringBuilder buildJsonRequestBody(StringBuilder requestBody, List<String[]> listOfFields,
+                                                      List<String> listOfValues, int position, int loopStart, int loopEnd) {
+        String curlyBracket1 = "{";
+        String curlyBracket2 = "}";
+        String quotes = "\"";
+        String fieldEnd = "\": ";
+        String comma = ",";
+
+        for (int i = loopStart; i < listOfFields.size() - 1
+                && position < listOfFields.get(i).length && i <= loopEnd; i++) {
+
+            if (position < listOfFields.get(i + 1).length &&
+                    compareFields(listOfFields.get(i), listOfFields.get(i + 1), position)) {
+                continue;
             }
+            requestBody.append(quotes).append(listOfFields.get(i)[position]).append(fieldEnd);
+            if (position == listOfFields.get(loopStart).length - 1) {
+                requestBody.append(quotes).append(listOfValues.get(loopStart)).append(quotes);
+            } else {
+                requestBody.append(curlyBracket1);
+            }
+            requestBody = buildJsonRequestBody(requestBody, listOfFields, listOfValues, position + 1, loopStart, i);
+            if (position > listOfFields.get(loopStart + 1).length - 1 || loopStart == loopEnd) {
+                requestBody.append(curlyBracket2);
+            } else if (position <= listOfFields.get(loopStart + 1).length - 1) {
+                requestBody.append(comma);
+            }
+            loopStart = i + 1;
         }
+
+        return requestBody;
     }
 
-    private Account fillAccount(Account account, Map<String, String> map, String method) {
-        if (method.equals("POST")) {
-            account.setCode(map.get("code").toUpperCase());
-        } else {
-            account.setCode(map.get("code"));
-            account.setUuid(UUID.fromString(map.get("uuid")));
+    private static boolean compareFields(String[] fields1, String[] fields2, int position) {
+        for (int i = 0; i <= position; i++) {
+            if (!(fields1[i].equals(fields2[i])))
+                return false;
         }
-
-        AddressModel_ addressModel = new AddressModel_();
-        ReferenceModel country = new ReferenceModel();
-        country.setCode(map.get("country"));
-        addressModel.setCountry(country);
-        addressModel.setCity(map.get("city"));
-        account.setAddress(addressModel);
-
-        ReferenceModel currency = new ReferenceModel();
-        currency.setCode(map.get("currency_code"));
-        account.setCurrency(currency);
-
-        ReferenceModel company = new ReferenceModel();
-        company.setCode(map.get("company_code"));
-        account.setCompany(company);
-
-        ReferenceModel branch = new ReferenceModel();
-        branch.setCode(map.get("branch_code"));
-        account.setBranch(branch);
-
-        AccountIdModel accountIdModel = new AccountIdModel();
-        accountIdModel.setValue(map.get("value"));
-        accountIdModel.setBanStructure(AccountIdModel.BanStructureEnum.fromValue(map.get("ban_structure")));
-        account.setBankAccountID(accountIdModel);
-
-        ReferenceModel calendar = new ReferenceModel();
-        calendar.setCode(map.get("calendar_code"));
-        account.setCalendar(calendar);
-
-        account.setTimeZone(map.get("time_zone"));
-        return account;
+        return true;
     }
 
-    private AccountCRUD fillAccountCRUD(AccountCRUD account, Map<String, String> map, String method) {
-        if (method.equals("POST")) {
-            account.setCode(map.get("code").toUpperCase());
-        } else {
-            account.setCode(map.get("code"));
-            account.setUuid(UUID.fromString(map.get("uuid")));
+    private void addNewDistinctValuesOfFields(Map<String, String> map) {
+        Iterator<String> iterator = map.keySet().iterator();
+        String key;
+        while (iterator.hasNext()) {
+            key = iterator.next();
+            distinctAndSortedValuesOfFields.get(key).add(map.get(key));
         }
-
-        AddressModel_ addressModel = new AddressModel_();
-        ReferenceModel country = new ReferenceModel();
-        country.setCode(map.get("country"));
-        addressModel.setCountry(country);
-        addressModel.setCity(map.get("city"));
-        account.setAddress(addressModel);
-
-        ReferenceModel currency = new ReferenceModel();
-        currency.setCode(map.get("currency_code"));
-        account.setCurrency(currency);
-
-        ReferenceModel company = new ReferenceModel();
-        company.setCode(map.get("company_code"));
-        account.setCompany(company);
-
-        ReferenceModel branch = new ReferenceModel();
-        branch.setCode(map.get("branch_code"));
-        account.setBranch(branch);
-
-        AccountIdModel accountIdModel = new AccountIdModel();
-        accountIdModel.setValue(map.get("value"));
-        accountIdModel.setBanStructure(AccountIdModel.BanStructureEnum.fromValue(map.get("ban_structure")));
-        account.setBankAccountID(accountIdModel);
-
-        ReferenceModel calendar = new ReferenceModel();
-        calendar.setCode(map.get("calendar_code"));
-        account.setCalendar(calendar);
-
-        account.setTimeZone(map.get("time_zone"));
-        return account;
     }
 }

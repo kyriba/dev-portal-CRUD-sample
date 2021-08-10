@@ -146,7 +146,7 @@ public class ApiTest {
      */
     @Test
     public void updateUsingPUT1Test() throws ApiException {
-        Account accountDto = null;
+        String accountDto = null;
         String code = null;
         ResponseIdModel response = api.updateUsingPUT1(accountDto, code);
 
@@ -163,7 +163,7 @@ public class ApiTest {
      */
     @Test
     public void updateUsingPUT3Test() throws ApiException {
-        Account accountDto = null;
+        String accountDto = null;
         UUID uuid = null;
         ResponseIdModel response = api.updateUsingPUT3(accountDto, uuid);
 

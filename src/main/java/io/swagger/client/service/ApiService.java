@@ -20,7 +20,9 @@ public interface ApiService {
 
     ResponseIdModel delete(String code);
 
-    List<AccountCRUD> getCreated();
+    String getRequestBody();
+
+    List<String> getCreatedCodes();
 
     List<String> getAllCodes();
 

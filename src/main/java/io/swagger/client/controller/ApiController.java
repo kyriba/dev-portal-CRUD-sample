@@ -29,7 +29,7 @@ public class ApiController {
     @GetMapping
     public String getMenu(Model model) {
         model.addAttribute("codes_list", apiService.getAllCodes());
-        model.addAttribute("created_accounts", apiService.getCreated());
+        model.addAttribute("created_codes", apiService.getCreatedCodes());
         model.addAttribute("base_url", BASE_URL);
         return "html/menu";
     }
@@ -38,7 +38,7 @@ public class ApiController {
     public String getAll(Model model) {
         model.addAttribute("port", PORT);
         model.addAttribute("codes_list", apiService.getAllCodes());
-        model.addAttribute("created_accounts", apiService.getCreated());
+        model.addAttribute("created_codes", apiService.getCreatedCodes());
         model.addAttribute("base_url", BASE_URL);
         model.addAttribute("list_accounts", apiService.getAll(null, null, null, null, null));
         return "html/accounts-list";
@@ -47,7 +47,7 @@ public class ApiController {
     @PostMapping("/getByCode")
     public String getByCode(@RequestParam String get_code, Model model) {
         model.addAttribute("codes_list", apiService.getAllCodes());
-        model.addAttribute("created_accounts", apiService.getCreated());
+        model.addAttribute("created_codes", apiService.getCreatedCodes());
         model.addAttribute("base_url", BASE_URL);
         if (get_code.equals("")) {
             return "exception/blank-input-exception";
@@ -66,7 +66,7 @@ public class ApiController {
     @PostMapping("/getByUuid")
     public String getByUuid(@RequestParam String get_uuid, Model model) {
         model.addAttribute("codes_list", apiService.getAllCodes());
-        model.addAttribute("created_accounts", apiService.getCreated());
+        model.addAttribute("created_codes", apiService.getCreatedCodes());
         model.addAttribute("base_url", BASE_URL);
         if (get_uuid.equals("")) {
             return "exception/blank-input-exception";
@@ -92,35 +92,33 @@ public class ApiController {
     }
 
     @PostMapping("/created")
-    public String createdAccount(@RequestParam Map<String, String> account, Model model) {
+    public String createdAccount(@RequestParam Map<String, String> requestParams, Model model) {
         model.addAttribute("base_url", BASE_URL);
         try {
-            model.addAttribute("account", apiService.create(account));
+            model.addAttribute("responseModel", apiService.create(requestParams));
         } catch (BadRequestException e) {
             model.addAttribute("fields", apiService.getSortedDistinctValuesOfFields());
             model.addAttribute("error_message", e.getMessage());
-            model.addAttribute("account", account);
+            model.addAttribute("inputFields", requestParams.keySet());
+            model.addAttribute("inputs", requestParams.values());
             return "html/create-account";
         }
         model.addAttribute("codes_list", apiService.getAllCodes());
-        model.addAttribute("created_accounts", apiService.getCreated());
-        apiService.getCreated().stream()
-                .filter(account1 -> account1.getCode().equals(account.get("code").toUpperCase()))
-                .findFirst().ifPresent(value -> model.addAttribute("request_body", value));
+        model.addAttribute("created_codes", apiService.getCreatedCodes());
+        model.addAttribute("request_body", apiService.getRequestBody());
         return "html/new-account";
     }
 
     @PostMapping("/update")
     public String updateAccount(@RequestParam String update_code, Model model) {
         model.addAttribute("codes_list", apiService.getAllCodes());
-        model.addAttribute("created_accounts", apiService.getCreated());
+        model.addAttribute("created_codes", apiService.getCreatedCodes());
         model.addAttribute("base_url", BASE_URL);
         if (update_code.equals("")) {
             return "exception/blank-input-exception";
         }
         try {
-            if (apiService.getCreated().stream()
-                    .anyMatch(account -> update_code.equals(account.getCode()))) {
+            if (apiService.getCreatedCodes().contains(update_code)) {
                 model.addAttribute("account", apiService.getByCode(update_code));
             } else
                 throw new BadRequestException("There is no result with code " + update_code + " which can be update");
@@ -146,17 +144,15 @@ public class ApiController {
             return "html/update-account";
         }
         model.addAttribute("codes_list", apiService.getAllCodes());
-        model.addAttribute("created_accounts", apiService.getCreated());
-        apiService.getCreated().stream()
-                .filter(account1 -> account1.getCode().equals(account.get("code").toUpperCase()))
-                .findFirst().ifPresent(value -> model.addAttribute("request_body", value));
+        model.addAttribute("created_codes", apiService.getCreatedCodes());
+        model.addAttribute("request_body", apiService.getRequestBody());
         return "html/updated-account";
     }
 
     @PostMapping("/delete")
     public String deleteAccount(@RequestParam String delete_code, Model model) {
         model.addAttribute("codes_list", apiService.getAllCodes());
-        model.addAttribute("created_accounts", apiService.getCreated());
+        model.addAttribute("created_codes", apiService.getCreatedCodes());
         model.addAttribute("base_url", BASE_URL);
         if (delete_code.equals("")) {
             return "exception/blank-input-exception";
@@ -170,7 +166,7 @@ public class ApiController {
             }
         }
         model.addAttribute("codes_list", apiService.getAllCodes());
-        model.addAttribute("created_accounts", apiService.getCreated());
+        model.addAttribute("created_codes", apiService.getCreatedCodes());
         return "html/deleted-account";
     }
 }

@@ -24,7 +24,7 @@
             </thead>
             <tbody>
             <tr>
-                <td>Get all accounts</td>
+                <td>Get all</td>
                 <td></td>
                 <td align="center">
                     <form th:action="@{/CRUD/getAll}" method="get">
@@ -34,13 +34,14 @@
                 <td>
                     <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
                          onclick="copyCode('/v1/accounts', '')">
+                    <!--                    todo-->
                 </td>
             </tr>
             <tr>
-                <td>Get account by UUID</td>
+                <td>Get by UUID</td>
                 <td><label for="get_uuid"></label>
                     <input type="text" name="get_uuid" id="get_uuid" form="form1"
-                           placeholder="UUID of account you want to get" size="28"></td>
+                           placeholder="Enter the UUID here" size="28"></td>
                 <td align="center">
                     <form th:action="@{/CRUD/getByUuid}" method="post" id="form1">
                         <button type="submit" style="background-color: #1e90ff;" class="button">GET</button>
@@ -49,13 +50,14 @@
                 <td>
                     <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
                          onclick="copyCode('/v1/accounts/', 'get_uuid')">
+                    <!--                    todo-->
                 </td>
             </tr>
             <tr>
-                <td>Get account by Code</td>
+                <td>Get by Code</td>
                 <td><label for="get_code"></label>
                     <input type="text" list="get_codes" name="get_code" id="get_code" form="form2"
-                           placeholder="Code of account you want to get" size="28" autocomplete="off"/>
+                           placeholder="Enter the code here" size="28" autocomplete="off"/>
                     <datalist id="get_codes">
                         <option th:each="code_list: ${codes_list}" th:value="${code_list}">
                     </datalist>
@@ -68,10 +70,11 @@
                 <td>
                     <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
                          onclick="copyCode('/v1/accounts/code=', 'get_code')">
+                    <!--                    todo-->
                 </td>
             </tr>
             <tr>
-                <td>Create account</td>
+                <td>Create</td>
                 <td></td>
                 <td align="center">
                     <form th:action="@{/CRUD/create}" method="post">
@@ -81,15 +84,16 @@
                 <td>
                     <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
                          onclick="copyCode('/v1/accounts', '')">
+                    <!--                    todo-->
                 </td>
             </tr>
             <tr>
-                <td>Update account</td>
+                <td>Update</td>
                 <td><label for="update_code"></label>
                     <input type="text" list="update_codes" name="update_code" id="update_code" form="form3"
-                           placeholder="Code of account you want to change" size="28" autocomplete="off"/>
+                           placeholder="Enter the code here" size="28" autocomplete="off"/>
                     <datalist id="update_codes">
-                        <option th:each="account: ${created_accounts}" th:value="${account.code}">
+                        <option th:each="created_code: ${created_codes}" th:value="${created_code}">
                     </datalist>
                 </td>
                 <td align="center">
@@ -100,15 +104,16 @@
                 <td>
                     <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
                          onclick="copyCode('/v1/accounts/code=', 'update_code')">
+                    <!--                    todo-->
                 </td>
             </tr>
             <tr>
-                <td>Delete account</td>
+                <td>Delete</td>
                 <td><label for="delete_code"></label>
                     <input type="text" list="delete_codes" name="delete_code" id="delete_code" form="form4"
-                           placeholder="Code of account you want to delete" size="28" autocomplete="off"/>
+                           placeholder="Enter the code here" size="28" autocomplete="off"/>
                     <datalist id="delete_codes">
-                        <option th:each="account: ${created_accounts}" th:value="${account.code}">
+                        <option th:each="created_code: ${created_codes}" th:value="${created_code}">
                     </datalist>
                 </td>
                 <td align="center">
@@ -119,6 +124,7 @@
                 <td>
                     <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
                          onclick="copyCode('/v1/accounts/code=', 'delete_code')">
+                    <!--                    todo-->
                 </td>
             </tr>
             </tbody>
