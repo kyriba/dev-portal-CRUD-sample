@@ -78,3 +78,21 @@ api:
       - POST
       - PUT_UUID
       - DELETE_UUID
+
+enums:
+  available:
+    values:
+      /v1/accounts:
+        bankAccountID.banStructure:
+          - BBAN_STRUCTURE
+          - IBAN_STRUCTURE
+          - LBAN_0_STRUCTURE
+          - LBAN_1_STRUCTURE
+          - LBAN_2_STRUCTURE
+          - LBAN_3_STRUCTURE
+          - LBAN_4_STRUCTURE
+          - LBAN_5_STRUCTURE
+          - LBAN_6_STRUCTURE
+          - LBAN_7_STRUCTURE
+          - LBAN_8_STRUCTURE
+          - LBAN_9_STRUCTURE

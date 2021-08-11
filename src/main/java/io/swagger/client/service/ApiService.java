@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 public interface ApiService {
+
     String getAll(String activeStatus, String filter, Integer pageLimit, Integer pageOffset, List<String> sort);
 
     String getByCode(String code);
@@ -27,4 +28,8 @@ public interface ApiService {
     List<String> getAllCodes();
 
     Map<String, Set<String>> getSortedDistinctValuesOfFields();
+
+    Map<String, List<String>> getAvailableValues();
+
+    Map<String, Set<String>> getByCodeToUpdate(String code);
 }

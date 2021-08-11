@@ -76,8 +76,9 @@ renderjson.set_show_to_level(0);
     var request_body = /*[[${request_body}]]*/;
 /*]]>*/
 
+    const obj = JSON.parse(request_body);
     var refer = (function render() {
-        document.getElementById("request_data").appendChild(renderjson(request_body));
+        document.getElementById("request_data").appendChild(renderjson(obj));
         return render;
     }());
 

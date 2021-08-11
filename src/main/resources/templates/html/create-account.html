@@ -154,7 +154,7 @@
 <form th:action="@{/CRUD/created}" method="post" id="creating_form">
     <div class="container">
         <div class="row">
-            <table class="table table-responsive table-bordered table-striped" id="myTable">
+            <table class="table table-responsive table-bordered table-striped" id="create_table">
             </table>
         </div>
     </div>
@@ -179,6 +179,9 @@
 /*<![CDATA[*/
     var values = /*[[${fields.values()}]]*/;
     var keySet = /*[[${fields.keySet()}]]*/;
+    var availableValues = /*[[${available_values}]]*/;
+    var availableValuesKeySet = /*[[${available_values.keySet()}]]*/;
+    var availableValuesLists = /*[[${available_values.values()}]]*/;
 /*]]>*/
 
 </script>

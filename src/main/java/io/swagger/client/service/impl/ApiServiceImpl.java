@@ -3,6 +3,7 @@ package io.swagger.client.service.impl;
 import io.swagger.client.ApiClient;
 import io.swagger.client.ApiException;
 import io.swagger.client.api.Api;
+import io.swagger.client.config.AvailableValuesConfig;
 import io.swagger.client.config.FieldsConfig;
 import io.swagger.client.config.InitialApiBean;
 import io.swagger.client.exception.BadRequestException;
@@ -37,27 +38,31 @@ public class ApiServiceImpl implements ApiService {
     public String CLIENT_SECRET;
 
     private final Api api;
-
     private final InitialApiBean initialApiBean;
-
     private final FieldsConfig fieldsConfig;
+    private final AvailableValuesConfig availableValuesConfig;
 
     private StringBuilder requestBody;
     private List<String> apiFields;
     private List<String> codes = new ArrayList<>();
     private final List<String> createdCodes = new ArrayList<>();
     private Map<String, Set<String>> distinctAndSortedValuesOfFields;
+    private Map<String, List<String>> availableValues;
 
-    public ApiServiceImpl(Api api, InitialApiBean initialApiBean, FieldsConfig fieldsConfig) {
+    public ApiServiceImpl(Api api, InitialApiBean initialApiBean, FieldsConfig fieldsConfig, AvailableValuesConfig availableValuesConfig) {
         this.api = api;
         this.initialApiBean = initialApiBean;
         this.fieldsConfig = fieldsConfig;
+        this.availableValuesConfig = availableValuesConfig;
     }
 
     @PostConstruct
-    private void authenticate() {
+    private void postConstruct() {
         refreshToken();
         this.apiFields = fieldsConfig.getFields().get(initialApiBean.getApiName().replaceAll("/", ""));
+        availableValues = availableValuesConfig.getValues().get(initialApiBean.getApiName().replaceAll("/", ""));
+        if (availableValues == null)
+            availableValues = new TreeMap<>();
         System.out.println("Wait a minute");
         codes = findAllCodes();
         distinctAndSortedValuesOfFields = getAndSortDistinctValuesOfFields();
@@ -81,6 +86,11 @@ public class ApiServiceImpl implements ApiService {
     @Override
     public Map<String, Set<String>> getSortedDistinctValuesOfFields() {
         return distinctAndSortedValuesOfFields;
+    }
+
+    @Override
+    public Map<String, List<String>> getAvailableValues() {
+        return availableValues;
     }
 
     private void refreshToken() {
@@ -261,16 +271,29 @@ public class ApiServiceImpl implements ApiService {
         return responseIdModel;
     }
 
+    @Override
+    public Map<String, Set<String>> getByCodeToUpdate(String code) {
+        Map<String, Set<String>> updateBody = new TreeMap<>();
+        String result = getByCode(code);
+
+        AtomicInteger inc = new AtomicInteger();
+        apiFields.stream().map(field -> field.split("\\."))
+                .forEach(fieldPart -> updateBody.put(apiFields.get(inc.getAndIncrement()),
+                        findDistinctAndSortedValuesOfFields(fieldPart, String.valueOf(result))));
+
+        return updateBody;
+    }
+
     private List<String> findAllCodes() {
         String result = getAll(null, null, null, null, null);
         Pattern pattern = Pattern.compile("(?<=\\[\\{)(.+)(?=\\}\\])");
         Matcher matcher = pattern.matcher(result);
-        if (matcher.find()){
+        if (matcher.find()) {
             result = matcher.group().replaceAll(":\\{(.+?)\\}", "");
         }
         pattern = Pattern.compile("(?<=\"code\":\")(.+?)(?=\",)");
         matcher = pattern.matcher(result);
-        while (matcher.find()){
+        while (matcher.find()) {
             codes.add(matcher.group());
         }
         return codes;
@@ -291,7 +314,9 @@ public class ApiServiceImpl implements ApiService {
         return mapOfDistinctAndSortedValuesOfFields;
     }
 
-    private static Set<String> findDistinctAndSortedValuesOfFields(String[] fieldParts, String results) {
+    private Set<String> findDistinctAndSortedValuesOfFields(String[] fieldParts, String results) {
+        if (fieldParts.length == 1)
+            results = results.replaceAll(":\\{(.+?)\\}", "");
         Set<String> distinctAndSortedValuesOfField = new TreeSet<>();
         StringBuilder stringBuilder = new StringBuilder();
         Pattern pattern = Pattern.compile(String.valueOf(buildRegex(fieldParts, stringBuilder, 0)));
@@ -304,7 +329,7 @@ public class ApiServiceImpl implements ApiService {
         return distinctAndSortedValuesOfField;
     }
 
-    private static StringBuilder buildRegex(String[] fieldParts, StringBuilder regexBuilder, int position) {
+    private StringBuilder buildRegex(String[] fieldParts, StringBuilder regexBuilder, int position) {
         String part1OfRegex1And2 = "(?<=\"";
         String part2OfRegex1 = "\":\\{)";
         String part3OfRegex1 = "(?:.*?)";
@@ -322,8 +347,8 @@ public class ApiServiceImpl implements ApiService {
         return regexBuilder;
     }
 
-    private static StringBuilder buildJsonRequestBody(StringBuilder requestBody, List<String[]> listOfFields,
-                                                      List<String> listOfValues, int position, int loopStart, int loopEnd) {
+    private StringBuilder buildJsonRequestBody(StringBuilder requestBody, List<String[]> listOfFields,
+                                               List<String> listOfValues, int position, int loopStart, int loopEnd) {
         String curlyBracket1 = "{";
         String curlyBracket2 = "}";
         String quotes = "\"";
@@ -355,7 +380,7 @@ public class ApiServiceImpl implements ApiService {
         return requestBody;
     }
 
-    private static boolean compareFields(String[] fields1, String[] fields2, int position) {
+    private boolean compareFields(String[] fields1, String[] fields2, int position) {
         for (int i = 0; i <= position; i++) {
             if (!(fields1[i].equals(fields2[i])))
                 return false;

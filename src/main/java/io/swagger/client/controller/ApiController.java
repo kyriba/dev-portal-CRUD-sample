@@ -1,6 +1,7 @@
 package io.swagger.client.controller;
 
 import io.swagger.client.JSON;
+import io.swagger.client.config.InitialApiBean;
 import io.swagger.client.exception.BadRequestException;
 import io.swagger.client.service.ApiService;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,10 +20,12 @@ public class ApiController {
     @Value("${server.port}")
     private String PORT;
     private final ApiService apiService;
-    private JSON json;
+    private final InitialApiBean apiBean;
+    private final JSON json;
 
-    public ApiController(ApiService apiService) {
+    public ApiController(ApiService apiService, InitialApiBean apiBean) {
         this.apiService = apiService;
+        this.apiBean = apiBean;
         json = new JSON();
     }
 
@@ -31,6 +34,7 @@ public class ApiController {
         model.addAttribute("codes_list", apiService.getAllCodes());
         model.addAttribute("created_codes", apiService.getCreatedCodes());
         model.addAttribute("base_url", BASE_URL);
+        model.addAttribute("api_url", apiBean.getApiName());
         return "html/menu";
     }
 
@@ -40,6 +44,7 @@ public class ApiController {
         model.addAttribute("codes_list", apiService.getAllCodes());
         model.addAttribute("created_codes", apiService.getCreatedCodes());
         model.addAttribute("base_url", BASE_URL);
+        model.addAttribute("api_url", apiBean.getApiName());
         model.addAttribute("list_accounts", apiService.getAll(null, null, null, null, null));
         return "html/accounts-list";
     }
@@ -49,6 +54,7 @@ public class ApiController {
         model.addAttribute("codes_list", apiService.getAllCodes());
         model.addAttribute("created_codes", apiService.getCreatedCodes());
         model.addAttribute("base_url", BASE_URL);
+        model.addAttribute("api_url", apiBean.getApiName());
         if (get_code.equals("")) {
             return "exception/blank-input-exception";
         }
@@ -68,6 +74,7 @@ public class ApiController {
         model.addAttribute("codes_list", apiService.getAllCodes());
         model.addAttribute("created_codes", apiService.getCreatedCodes());
         model.addAttribute("base_url", BASE_URL);
+        model.addAttribute("api_url", apiBean.getApiName());
         if (get_uuid.equals("")) {
             return "exception/blank-input-exception";
         }
@@ -88,16 +95,19 @@ public class ApiController {
     @PostMapping("/create")
     public String createAccount(Model model) {
         model.addAttribute("fields", apiService.getSortedDistinctValuesOfFields());
+        model.addAttribute("available_values", apiService.getAvailableValues());
         return "html/create-account";
     }
 
     @PostMapping("/created")
     public String createdAccount(@RequestParam Map<String, String> requestParams, Model model) {
         model.addAttribute("base_url", BASE_URL);
+        model.addAttribute("api_url", apiBean.getApiName());
         try {
             model.addAttribute("responseModel", apiService.create(requestParams));
         } catch (BadRequestException e) {
             model.addAttribute("fields", apiService.getSortedDistinctValuesOfFields());
+            model.addAttribute("available_values", apiService.getAvailableValues());
             model.addAttribute("error_message", e.getMessage());
             model.addAttribute("inputFields", requestParams.keySet());
             model.addAttribute("inputs", requestParams.values());
@@ -114,12 +124,13 @@ public class ApiController {
         model.addAttribute("codes_list", apiService.getAllCodes());
         model.addAttribute("created_codes", apiService.getCreatedCodes());
         model.addAttribute("base_url", BASE_URL);
+        model.addAttribute("api_url", apiBean.getApiName());
         if (update_code.equals("")) {
             return "exception/blank-input-exception";
         }
         try {
             if (apiService.getCreatedCodes().contains(update_code)) {
-                model.addAttribute("account", apiService.getByCode(update_code));
+                model.addAttribute("initial_data", apiService.getByCodeToUpdate(update_code));
             } else
                 throw new BadRequestException("There is no result with code " + update_code + " which can be update");
         } catch (BadRequestException e) {
@@ -129,18 +140,21 @@ public class ApiController {
             }
         }
         model.addAttribute("fields", apiService.getSortedDistinctValuesOfFields());
+        model.addAttribute("available_values", apiService.getAvailableValues());
         return "html/update-account";
     }
 
     @PostMapping("/updated")
     public String updatedAccount(@RequestParam Map<String, String> account, Model model) {
         model.addAttribute("base_url", BASE_URL);
+        model.addAttribute("api_url", apiBean.getApiName());
         try {
             model.addAttribute("account", apiService.update(account));
         } catch (BadRequestException e) {
             model.addAttribute("fields", apiService.getSortedDistinctValuesOfFields());
+            model.addAttribute("available_values", apiService.getAvailableValues());
             model.addAttribute("error_message", e.getMessage());
-            model.addAttribute("account", apiService.getByCode(account.get("code").toUpperCase()));
+            model.addAttribute("initial_data", apiService.getByCodeToUpdate(account.get("code")));
             return "html/update-account";
         }
         model.addAttribute("codes_list", apiService.getAllCodes());
@@ -154,6 +168,7 @@ public class ApiController {
         model.addAttribute("codes_list", apiService.getAllCodes());
         model.addAttribute("created_codes", apiService.getCreatedCodes());
         model.addAttribute("base_url", BASE_URL);
+        model.addAttribute("api_url", apiBean.getApiName());
         if (delete_code.equals("")) {
             return "exception/blank-input-exception";
         }

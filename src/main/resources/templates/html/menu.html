@@ -12,6 +12,7 @@
     <link th:href="@{/css/style.css}" rel="stylesheet">
     <script>
     var baseUrl = "[[${base_url}]]";
+    var apiUrl = "[[${api_url}]]";
     </script>
     <script th:src="@{/js/copy_curl.js}"></script>
     <div class="row">
@@ -33,8 +34,7 @@
                 </td>
                 <td>
                     <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
-                         onclick="copyCode('/v1/accounts', '')">
-                    <!--                    todo-->
+                         onclick="copyCode('', '')">
                 </td>
             </tr>
             <tr>
@@ -49,8 +49,7 @@
                 </td>
                 <td>
                     <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
-                         onclick="copyCode('/v1/accounts/', 'get_uuid')">
-                    <!--                    todo-->
+                         onclick="copyCode('/', 'get_uuid')">
                 </td>
             </tr>
             <tr>
@@ -69,8 +68,7 @@
                 </td>
                 <td>
                     <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
-                         onclick="copyCode('/v1/accounts/code=', 'get_code')">
-                    <!--                    todo-->
+                         onclick="copyCode('/code=', 'get_code')">
                 </td>
             </tr>
             <tr>
@@ -83,8 +81,7 @@
                 </td>
                 <td>
                     <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
-                         onclick="copyCode('/v1/accounts', '')">
-                    <!--                    todo-->
+                         onclick="copyCode('', '')">
                 </td>
             </tr>
             <tr>
@@ -103,8 +100,7 @@
                 </td>
                 <td>
                     <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
-                         onclick="copyCode('/v1/accounts/code=', 'update_code')">
-                    <!--                    todo-->
+                         onclick="copyCode('/code=', 'update_code')">
                 </td>
             </tr>
             <tr>
@@ -123,8 +119,7 @@
                 </td>
                 <td>
                     <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
-                         onclick="copyCode('/v1/accounts/code=', 'delete_code')">
-                    <!--                    todo-->
+                         onclick="copyCode('/code=', 'delete_code')">
                 </td>
             </tr>
             </tbody>

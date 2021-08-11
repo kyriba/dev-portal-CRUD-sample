@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class InitialApiBean {
 
-    private String apiName;
+    private final String apiName;
 
-    private ApiConfig apiConfig;
+    private final ApiConfig apiConfig;
 
     public InitialApiBean(ApiConfig apiConfig) {
         this.apiConfig = apiConfig;
