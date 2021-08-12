@@ -2,13 +2,13 @@ package io.swagger.client.service.impl;
 
 import io.swagger.client.ApiClient;
 import io.swagger.client.ApiException;
+import io.swagger.client.ResponseIdModel;
 import io.swagger.client.api.Api;
 import io.swagger.client.config.AvailableValuesConfig;
 import io.swagger.client.config.FieldsConfig;
 import io.swagger.client.config.InitialApiBean;
 import io.swagger.client.exception.BadRequestException;
 import io.swagger.client.exception.InvalidTokenException;
-import io.swagger.client.model.*;
 import io.swagger.client.service.ApiService;
 import org.apache.oltu.oauth2.client.OAuthClient;
 import org.apache.oltu.oauth2.client.URLConnectionClient;
@@ -130,7 +130,7 @@ public class ApiServiceImpl implements ApiService {
     public String getAll(String activeStatus, String filter, Integer pageLimit, Integer pageOffset, List<String> sort) {
         String result;
         try {
-            result = api.readAccountsUsingGET1(activeStatus, filter, pageLimit, pageOffset, sort);
+            result = api.readItemsUsingGET1(activeStatus, filter, pageLimit, pageOffset, sort);
         } catch (ApiException e) {
             if (e.getResponseBody().contains("invalid_token")) {
                 refreshToken();
@@ -146,13 +146,13 @@ public class ApiServiceImpl implements ApiService {
     public String getByCode(String code) {
         String result;
         try {
-            result = api.readAccountUsingGET1(code);
+            result = api.readItemUsingGET1(code);
         } catch (ApiException e) {
             if (e.getResponseBody().contains("invalid_token")) {
                 refreshToken();
                 throw new InvalidTokenException(e.getResponseBody());
             } else
-                throw new BadRequestException("There is no result with code " + code);
+                throw new BadRequestException("There is no item with code " + code);
         }
         return result;
     }
@@ -162,26 +162,26 @@ public class ApiServiceImpl implements ApiService {
     public String getByUuid(String uuid) {
         String result;
         try {
-            result = api.readAccountUsingGET3(UUID.fromString(uuid));
+            result = api.readItemUsingGET3(UUID.fromString(uuid));
         } catch (ApiException e) {
             if (e.getResponseBody().contains("invalid_token")) {
                 refreshToken();
                 throw new InvalidTokenException(e.getResponseBody());
             } else
-                throw new BadRequestException("There is no result with uuid " + uuid);
+                throw new BadRequestException("There is no item with uuid " + uuid);
         }
         return result;
     }
 
     @Override
     @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
-    public ResponseIdModel create(Map<String, String> map) {
+    public ResponseIdModel create(Map<String, String> item) {
         requestBody = new StringBuilder("{");
 
         List<String[]> listOfFields = new ArrayList<>();
-        List<String> listOfValues = new ArrayList<>(map.values());
+        List<String> listOfValues = new ArrayList<>(item.values());
 
-        for (String s : map.keySet()) {
+        for (String s : item.keySet()) {
             listOfFields.add(s.split("\\."));
         }
 
@@ -203,23 +203,23 @@ public class ApiServiceImpl implements ApiService {
                 throw new BadRequestException(e.getResponseBody());
         }
         if (responseIdModel != null) {
-            codes.add(map.get("code").toUpperCase());
-            createdCodes.add(map.get("code").toUpperCase());
-            addNewDistinctValuesOfFields(map);
+            codes.add(item.get("code").toUpperCase());
+            createdCodes.add(item.get("code").toUpperCase());
+            addNewDistinctValuesOfFields(item);
         }
         return responseIdModel;
     }
 
     @Override
     @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
-    public ResponseIdModel update(Map<String, String> map) {
+    public ResponseIdModel update(Map<String, String> item) {
 
         requestBody = new StringBuilder("{");
 
         List<String[]> listOfFields = new ArrayList<>();
-        List<String> listOfValues = new ArrayList<>(map.values());
+        List<String> listOfValues = new ArrayList<>(item.values());
 
-        for (String s : map.keySet()) {
+        for (String s : item.keySet()) {
             listOfFields.add(s.split("\\."));
         }
 
@@ -232,7 +232,7 @@ public class ApiServiceImpl implements ApiService {
 
         ResponseIdModel responseIdModel;
         try {
-            responseIdModel = api.updateUsingPUT1(String.valueOf(requestBody), map.get("code"));
+            responseIdModel = api.updateUsingPUT1(String.valueOf(requestBody), item.get("code"));
         } catch (ApiException e) {
             if (e.getResponseBody().contains("invalid_token")) {
                 refreshToken();
@@ -241,7 +241,7 @@ public class ApiServiceImpl implements ApiService {
                 throw new BadRequestException(e.getResponseBody());
         }
         if (responseIdModel != null) {
-            addNewDistinctValuesOfFields(map);
+            addNewDistinctValuesOfFields(item);
         }
         return responseIdModel;
     }
@@ -251,7 +251,7 @@ public class ApiServiceImpl implements ApiService {
     public ResponseIdModel delete(String code) {
 
         if (!createdCodes.contains(code)) {
-            throw new BadRequestException("There is no result with code " + code + " which can be delete");
+            throw new BadRequestException("There is no item with code " + code + " which can be delete");
         }
 
         ResponseIdModel responseIdModel;
@@ -388,12 +388,12 @@ public class ApiServiceImpl implements ApiService {
         return true;
     }
 
-    private void addNewDistinctValuesOfFields(Map<String, String> map) {
-        Iterator<String> iterator = map.keySet().iterator();
+    private void addNewDistinctValuesOfFields(Map<String, String> item) {
+        Iterator<String> iterator = item.keySet().iterator();
         String key;
         while (iterator.hasNext()) {
             key = iterator.next();
-            distinctAndSortedValuesOfFields.get(key).add(map.get(key));
+            distinctAndSortedValuesOfFields.get(key).add(item.get(key));
         }
     }
 }

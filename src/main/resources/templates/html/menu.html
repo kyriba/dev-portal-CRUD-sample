@@ -25,7 +25,7 @@
             </thead>
             <tbody>
             <tr>
-                <td>Get all</td>
+                <td>Get all items</td>
                 <td></td>
                 <td align="center">
                     <form th:action="@{/CRUD/getAll}" method="get">
@@ -34,14 +34,14 @@
                 </td>
                 <td>
                     <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
-                         onclick="copyCode('', '')">
+                         onclick="copy_curl('', '')">
                 </td>
             </tr>
             <tr>
-                <td>Get by UUID</td>
+                <td>Get item by UUID</td>
                 <td><label for="get_uuid"></label>
                     <input type="text" name="get_uuid" id="get_uuid" form="form1"
-                           placeholder="Enter the UUID here" size="28"></td>
+                           placeholder="UUID of item you want to get" size="28"></td>
                 <td align="center">
                     <form th:action="@{/CRUD/getByUuid}" method="post" id="form1">
                         <button type="submit" style="background-color: #1e90ff;" class="button">GET</button>
@@ -49,14 +49,14 @@
                 </td>
                 <td>
                     <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
-                         onclick="copyCode('/', 'get_uuid')">
+                         onclick="copy_curl('/', 'get_uuid')">
                 </td>
             </tr>
             <tr>
-                <td>Get by Code</td>
+                <td>Get item by Code</td>
                 <td><label for="get_code"></label>
                     <input type="text" list="get_codes" name="get_code" id="get_code" form="form2"
-                           placeholder="Enter the code here" size="28" autocomplete="off"/>
+                           placeholder="Code of item you want to get" size="28" autocomplete="off"/>
                     <datalist id="get_codes">
                         <option th:each="code_list: ${codes_list}" th:value="${code_list}">
                     </datalist>
@@ -68,11 +68,11 @@
                 </td>
                 <td>
                     <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
-                         onclick="copyCode('/code=', 'get_code')">
+                         onclick="copy_curl('/code=', 'get_code')">
                 </td>
             </tr>
             <tr>
-                <td>Create</td>
+                <td>Create item</td>
                 <td></td>
                 <td align="center">
                     <form th:action="@{/CRUD/create}" method="post">
@@ -81,14 +81,14 @@
                 </td>
                 <td>
                     <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
-                         onclick="copyCode('', '')">
+                         onclick="copy_curl('', '')">
                 </td>
             </tr>
             <tr>
-                <td>Update</td>
+                <td>Update item</td>
                 <td><label for="update_code"></label>
                     <input type="text" list="update_codes" name="update_code" id="update_code" form="form3"
-                           placeholder="Enter the code here" size="28" autocomplete="off"/>
+                           placeholder="Code of item you want to change" size="28" autocomplete="off"/>
                     <datalist id="update_codes">
                         <option th:each="created_code: ${created_codes}" th:value="${created_code}">
                     </datalist>
@@ -100,14 +100,14 @@
                 </td>
                 <td>
                     <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
-                         onclick="copyCode('/code=', 'update_code')">
+                         onclick="copy_curl('/code=', 'update_code')">
                 </td>
             </tr>
             <tr>
-                <td>Delete</td>
+                <td>Delete item</td>
                 <td><label for="delete_code"></label>
                     <input type="text" list="delete_codes" name="delete_code" id="delete_code" form="form4"
-                           placeholder="Enter the code here" size="28" autocomplete="off"/>
+                           placeholder="Code of item you want to change" size="28" autocomplete="off"/>
                     <datalist id="delete_codes">
                         <option th:each="created_code: ${created_codes}" th:value="${created_code}">
                     </datalist>
@@ -119,7 +119,7 @@
                 </td>
                 <td>
                     <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
-                         onclick="copyCode('/code=', 'delete_code')">
+                         onclick="copy_curl('/code=', 'delete_code')">
                 </td>
             </tr>
             </tbody>

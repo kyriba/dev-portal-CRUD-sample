@@ -25,19 +25,19 @@
     </div>
 </div>
 
-<h2 class="to_hide" align="center">Account</h2>
+<h2 class="to_hide" align="center">Item was successfully deleted</h2>
 <div class="to_hide" id="data"></div>
+
 <script type="text/javascript" src="renderjson.js"></script>
 <script th:inline="javascript">
     renderjson.set_show_to_level("all");
 
 /*<![CDATA[*/
-    var account = /*[[${account}]]*/;
+    var item = /*[[${item}]]*/;
 /*]]>*/
 
-    const obj = JSON.parse(account);
     var refer = (function render() {
-        document.getElementById("data").appendChild(renderjson(obj));
+        document.getElementById("data").appendChild(renderjson(item));
         return render;
     }());
 

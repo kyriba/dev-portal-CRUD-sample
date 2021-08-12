@@ -1,7 +1,7 @@
 
 package io.swagger.client.service;
 
-import io.swagger.client.model.*;
+import io.swagger.client.ResponseIdModel;
 
 import java.util.List;
 import java.util.Map;
@@ -15,9 +15,9 @@ public interface ApiService {
 
     String  getByUuid(String uuid);
 
-    ResponseIdModel create(Map<String, String> account);
+    ResponseIdModel create(Map<String, String> item);
 
-    ResponseIdModel update(Map<String, String> account);
+    ResponseIdModel update(Map<String, String> item);
 
     ResponseIdModel delete(String code);
 

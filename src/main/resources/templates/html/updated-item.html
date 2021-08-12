@@ -27,7 +27,7 @@
 
 <h3 class="to_hide" align="center">Request Body</h3>
 <div class="to_hide" id="request_data"></div>
-<h2 class="to_hide" align="center">Account was successfully created</h2>
+<h2 class="to_hide" align="center">Item was successfully updated</h2>
 <div class="to_hide" id="data"></div>
 
 <script type="text/javascript" src="renderjson.js"></script>
@@ -37,13 +37,13 @@
     renderjson.set_show_to_level("all");
 
 /*<![CDATA[*/
-    var responseModel = /*[[${responseModel}]]*/;
+    var item = /*[[${item}]]*/;
 /*]]>*/
 
     var refer = (function render() {
-        codeCopy = responseModel.code;
-        uuidCopy = responseModel.uuid;
-        document.getElementById("data").appendChild(renderjson(responseModel));
+        codeCopy = item.code;
+        uuidCopy = item.uuid;
+        document.getElementById("data").appendChild(renderjson(item));
         return render;
     }());
 

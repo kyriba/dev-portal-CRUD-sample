@@ -1,4 +1,4 @@
-function copyCode(parameters, copyId) {
+function copy_curl(parameters, copyId) {
     var inputText = '';
     if (copyId != '') {
         inputText = document.getElementById(copyId).value;
