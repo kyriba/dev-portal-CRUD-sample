@@ -231,7 +231,10 @@ public class ApiServiceImpl implements ApiService {
         List<String> listOfValues = new ArrayList<>(item.values());
 
         for (String s : item.keySet()) {
-            listOfFields.add(s.split("\\."));
+            if (apiFields.contains(s))
+                listOfFields.add(s.split("\\."));
+            else
+                listOfValues.remove(item.get(s));
         }
 
         listOfFields.add(new String[]{""});
@@ -316,7 +319,6 @@ public class ApiServiceImpl implements ApiService {
         final String CODE = "code";
 
         if (!distinctAndSortedValuesOfFields.containsKey(CODE)) {
-            apiFields.add(CODE);
             distinctAndSortedValuesOfFields.put(CODE, new TreeSet<>());
         }
 
@@ -339,7 +341,6 @@ public class ApiServiceImpl implements ApiService {
         final String UUID = "uuid";
 
         if (!distinctAndSortedValuesOfFields.containsKey(UUID)) {
-            apiFields.add(UUID);
             distinctAndSortedValuesOfFields.put(UUID, new TreeSet<>());
         }
 

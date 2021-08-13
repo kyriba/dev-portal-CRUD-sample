@@ -130,7 +130,6 @@ public class ApiController {
         try {
             if (apiService.getCreatedCodes().contains(update_code)) {
                 model.addAttribute("initial_data", apiService.getByCodeToUpdate(update_code));
-                System.out.println(apiService.getByCodeToUpdate(update_code));
             } else
                 throw new BadRequestException("There is no item with code " + update_code + " which can be update");
         } catch (BadRequestException e) {
@@ -138,8 +137,6 @@ public class ApiController {
             return "exception/bad-request-exception";
         }
         model.addAttribute("fields", apiService.getSortedDistinctValuesOfFields());
-        System.out.println(apiService.getSortedDistinctValuesOfFields());
-        System.out.println(apiService.getAvailableValues());
         model.addAttribute("available_values", apiService.getAvailableValues());
         return "html/update-item";
     }

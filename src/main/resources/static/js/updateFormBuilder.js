@@ -13,7 +13,11 @@
     for (let position = 0; position < keySet.length; position++) {
         var key = keySet[position];
         var value = values[position];
-        var initial_data_value = initial_data_values[position][0];
+        if (position < initial_data_values.length) {
+            var initial_data_value = initial_data_values[position][0];
+        } else {
+            var initial_data_value = '';
+        }
         var bodyRow = tbody.insertRow(position);
         if (availableValues != null) {
             for (let i = 0; i < availableValuesKeySet.length; i++) {
@@ -36,11 +40,15 @@
             }
         }
         if (key === 'uuid') {
-            bodyRow.innerHTML = '<td hidden><label for="uuid_input">uuid</label></td>' +
-            '<td hidden><input type="text" name="uuid" id="uuid_input" value="' + initial_data_value + '"><br></td>';
+            if (initial_data_value != '') {
+                bodyRow.innerHTML = '<td hidden><label for="uuid_input">uuid</label></td>' +
+                '<td hidden><input type="text" name="uuid" id="uuid_input" value="' + initial_data_value + '"><br></td>';
+            }
         } else if (key === 'code') {
-            bodyRow.innerHTML = '<td hidden><label for="code_input">code</label></td>' +
-            '<td hidden><input type="text" name="code" id="code_input" value="' + initial_data_value + '"><br></td>';
+            if (initial_data_value != '') {
+                bodyRow.innerHTML = '<td hidden><label for="code_input">code</label></td>' +
+                '<td hidden><input type="text" name="code" id="code_input" value="' + initial_data_value + '"><br></td>';
+            }
         } else if (!isCheckbox) {
             var htmlCode ='<td><label for="' + key + '">' + key + '</label><br></td>' +
             '<td style="text-align:center; vertical-align:middle"><input type="text" list="' + key +
