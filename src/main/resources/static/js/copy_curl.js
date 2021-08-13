@@ -19,5 +19,7 @@ function clear_all() {
     document.getElementById('get_uuid').value = ''
     document.getElementById('get_code').value = ''
     document.getElementById('update_code').value = ''
+    document.getElementById('update_uuid').value = ''
     document.getElementById('delete_code').value = ''
+    document.getElementById('delete_uuid').value = ''
 }

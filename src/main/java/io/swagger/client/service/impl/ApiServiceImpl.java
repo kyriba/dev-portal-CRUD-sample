@@ -7,6 +7,7 @@ import io.swagger.client.api.Api;
 import io.swagger.client.config.AvailableValuesConfig;
 import io.swagger.client.config.FieldsConfig;
 import io.swagger.client.config.InitialApiBean;
+import io.swagger.client.config.MethodsConfig;
 import io.swagger.client.exception.BadRequestException;
 import io.swagger.client.exception.InvalidTokenException;
 import io.swagger.client.service.ApiService;
@@ -40,19 +41,23 @@ public class ApiServiceImpl implements ApiService {
     private final Api api;
     private final InitialApiBean initialApiBean;
     private final FieldsConfig fieldsConfig;
+    private final MethodsConfig methodsConfig;
     private final AvailableValuesConfig availableValuesConfig;
 
     private StringBuilder requestBody;
     private List<String> apiFields;
+    private List<String> apiMethods;
     private List<String> codes = new ArrayList<>();
     private final List<String> createdCodes = new ArrayList<>();
     private Map<String, Set<String>> distinctAndSortedValuesOfFields;
     private Map<String, List<String>> availableValues;
 
-    public ApiServiceImpl(Api api, InitialApiBean initialApiBean, FieldsConfig fieldsConfig, AvailableValuesConfig availableValuesConfig) {
+    public ApiServiceImpl(Api api, InitialApiBean initialApiBean, FieldsConfig fieldsConfig,
+                          MethodsConfig methodsConfig, AvailableValuesConfig availableValuesConfig) {
         this.api = api;
         this.initialApiBean = initialApiBean;
         this.fieldsConfig = fieldsConfig;
+        this.methodsConfig = methodsConfig;
         this.availableValuesConfig = availableValuesConfig;
     }
 
@@ -61,10 +66,11 @@ public class ApiServiceImpl implements ApiService {
         refreshToken();
         this.apiFields = fieldsConfig.getFields().get(initialApiBean.getApiName().replaceAll("/", ""));
         availableValues = availableValuesConfig.getValues().get(initialApiBean.getApiName().replaceAll("/", ""));
+        apiMethods = methodsConfig.getMethods().get(initialApiBean.getApiName().replaceAll("/", ""));
         if (availableValues == null)
             availableValues = new TreeMap<>();
         System.out.println("Wait a minute");
-        codes = findAllCodes();
+        codes = findAllIdentifiers(getAll(null, null, null, null, null), "code");
         distinctAndSortedValuesOfFields = getAndSortDistinctValuesOfFields();
     }
 
@@ -91,6 +97,11 @@ public class ApiServiceImpl implements ApiService {
     @Override
     public Map<String, List<String>> getAvailableValues() {
         return availableValues;
+    }
+
+    @Override
+    public List<String> getApiMethods() {
+        return apiMethods;
     }
 
     private void refreshToken() {
@@ -232,7 +243,11 @@ public class ApiServiceImpl implements ApiService {
 
         ResponseIdModel responseIdModel;
         try {
-            responseIdModel = api.updateUsingPUT1(String.valueOf(requestBody), item.get("code"));
+            if (apiMethods.contains("PUT_BY_CODE")) {
+                responseIdModel = api.updateUsingPUT1(String.valueOf(requestBody), item.get("code"));
+            } else {
+                responseIdModel = api.updateUsingPUT3(String.valueOf(requestBody), UUID.fromString(item.get("uuid")));
+            }
         } catch (ApiException e) {
             if (e.getResponseBody().contains("invalid_token")) {
                 refreshToken();
@@ -248,7 +263,7 @@ public class ApiServiceImpl implements ApiService {
 
     @Override
     @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
-    public ResponseIdModel delete(String code) {
+    public ResponseIdModel deleteByCode(String code) {
 
         if (!createdCodes.contains(code)) {
             throw new BadRequestException("There is no item with code " + code + " which can be delete");
@@ -272,7 +287,39 @@ public class ApiServiceImpl implements ApiService {
     }
 
     @Override
+    @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
+    public ResponseIdModel deleteByUuid(String uuid) {
+
+        String code = findAllIdentifiers(getByUuid(uuid), "code").get(0);
+        ResponseIdModel responseIdModel;
+        try {
+            responseIdModel = api.deleteUsingDELETE1(UUID.fromString(uuid));
+        } catch (ApiException e) {
+            if (e.getResponseBody().contains("invalid_token")) {
+                refreshToken();
+                throw new InvalidTokenException(e.getResponseBody());
+            } else
+                throw new BadRequestException("There is no item with uuid " + uuid + " which can be delete");
+        }
+        if (responseIdModel != null) {
+            if (code != null) {
+                createdCodes.remove(code);
+                codes.remove(code);
+            }
+        }
+        return responseIdModel;
+    }
+
+    @Override
     public Map<String, Set<String>> getByCodeToUpdate(String code) {
+
+        final String CODE = "code";
+
+        if (!distinctAndSortedValuesOfFields.containsKey(CODE)) {
+            apiFields.add(CODE);
+            distinctAndSortedValuesOfFields.put(CODE, new TreeSet<>());
+        }
+
         Map<String, Set<String>> updateBody = new TreeMap<>();
         String result = getByCode(code);
 
@@ -281,29 +328,71 @@ public class ApiServiceImpl implements ApiService {
                 .forEach(fieldPart -> updateBody.put(apiFields.get(inc.getAndIncrement()),
                         findDistinctAndSortedValuesOfFields(fieldPart, String.valueOf(result))));
 
+        updateBody.put(CODE, Collections.singleton(code));
+
         return updateBody;
     }
 
-    private List<String> findAllCodes() {
-        String result = getAll(null, null, null, null, null);
-        Pattern pattern = Pattern.compile("(?<=\\[\\{)(.+)(?=\\}\\])");
+    @Override
+    public Map<String, Set<String>> getByUuidToUpdate(String uuid) {
+
+        final String UUID = "uuid";
+
+        if (!distinctAndSortedValuesOfFields.containsKey(UUID)) {
+            apiFields.add(UUID);
+            distinctAndSortedValuesOfFields.put(UUID, new TreeSet<>());
+        }
+
+        Map<String, Set<String>> updateBody = new TreeMap<>();
+        String result;
+        try {
+            result = getByUuid(uuid);
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getMessage() + " which can be update");
+        }
+
+        AtomicInteger inc = new AtomicInteger();
+        apiFields.stream().map(field -> field.split("\\."))
+                .forEach(fieldPart -> updateBody.put(apiFields.get(inc.getAndIncrement()),
+                        findDistinctAndSortedValuesOfFields(fieldPart, String.valueOf(result))));
+
+        updateBody.put(UUID, Collections.singleton(uuid));
+
+        return updateBody;
+    }
+
+    private List<String> findAllIdentifiers(String result, String identifier) {
+        List<String> codesList = new ArrayList<>();
+        Pattern pattern = Pattern.compile("(?<=\"results\":\\[\\{)(.+)(?=\\}\\])");
         Matcher matcher = pattern.matcher(result);
         if (matcher.find()) {
-            result = matcher.group().replaceAll(":\\{(.+?)\\}", "");
+            result = matcher.group();
         }
-        pattern = Pattern.compile("(?<=\"code\":\")(.+?)(?=\",)");
+        result = result.replaceAll(":\\{(.+?)\\}", "");
+        pattern = Pattern.compile("(?<=\"" + identifier + "\":\")(.+?)(?=\",)");
         matcher = pattern.matcher(result);
         while (matcher.find()) {
-            codes.add(matcher.group());
+            codesList.add(matcher.group());
         }
-        return codes;
+        return codesList;
     }
 
     private Map<String, Set<String>> getAndSortDistinctValuesOfFields() {
         Map<String, Set<String>> mapOfDistinctAndSortedValuesOfFields = new TreeMap<>();
         StringBuilder results = new StringBuilder();
-        for (String code : codes) {
-            results.append(getByCode(code));
+        if (apiMethods.contains("GET_BY_CODE")) {
+            for (String code : codes) {
+                results.append(getByCode(code));
+            }
+        } else if (apiMethods.contains("GET_BY_UUID")) {
+            List<String> uuids =
+                    findAllIdentifiers(getAll(null, null, null, null, null),
+                            "uuid");
+            for (String uuid : uuids) {
+                results.append(getByUuid(uuid));
+            }
+        } else {
+            results.append(getAll(null, null, null, null, null));
         }
 
         AtomicInteger inc = new AtomicInteger();
@@ -393,7 +482,10 @@ public class ApiServiceImpl implements ApiService {
         String key;
         while (iterator.hasNext()) {
             key = iterator.next();
-            distinctAndSortedValuesOfFields.get(key).add(item.get(key));
+            if (key.equals("code"))
+                distinctAndSortedValuesOfFields.get(key).add(item.get(key).toUpperCase());
+            else
+                distinctAndSortedValuesOfFields.get(key).add(item.get(key));
         }
     }
 }

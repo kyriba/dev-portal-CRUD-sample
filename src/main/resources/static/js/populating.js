@@ -3,7 +3,7 @@ function populate() {
         if (keySet[position] == 'code' || keySet[position] == 'uuid'){
             continue;
         }
-        if (document.getElementById(keySet[position] + '_input').value == ''){
+        if (document.getElementById(keySet[position] + '_input').value == '' && values[position] != ''){
             document.getElementById(keySet[position] + '_input').value = values[position][0]
         }
     }

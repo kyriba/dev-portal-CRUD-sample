@@ -31,6 +31,7 @@ public class ApiController {
 
     @GetMapping
     public String getMenu(Model model) {
+        model.addAttribute("api_methods", apiService.getApiMethods());
         model.addAttribute("codes_list", apiService.getAllCodes());
         model.addAttribute("created_codes", apiService.getCreatedCodes());
         model.addAttribute("base_url", BASE_URL);
@@ -39,8 +40,9 @@ public class ApiController {
     }
 
     @GetMapping("/getAll")
-    public String getAll(Model model) {
+    public String getAllItems(Model model) {
         model.addAttribute("port", PORT);
+        model.addAttribute("api_methods", apiService.getApiMethods());
         model.addAttribute("codes_list", apiService.getAllCodes());
         model.addAttribute("created_codes", apiService.getCreatedCodes());
         model.addAttribute("base_url", BASE_URL);
@@ -50,7 +52,8 @@ public class ApiController {
     }
 
     @PostMapping("/getByCode")
-    public String getByCode(@RequestParam String get_code, Model model) {
+    public String getItemByCode(@RequestParam String get_code, Model model) {
+        model.addAttribute("api_methods", apiService.getApiMethods());
         model.addAttribute("codes_list", apiService.getAllCodes());
         model.addAttribute("created_codes", apiService.getCreatedCodes());
         model.addAttribute("base_url", BASE_URL);
@@ -61,16 +64,15 @@ public class ApiController {
         try {
             model.addAttribute("item", apiService.getByCode(get_code));
         } catch (BadRequestException e) {
-            if (e.getMessage().contains("There is no item with code")) {
-                model.addAttribute("error_message", json.serialize(e.getMessage()));
-                return "exception/bad-request-exception";
-            }
+            model.addAttribute("error_message", json.serialize(e.getMessage()));
+            return "exception/bad-request-exception";
         }
         return "html/item-code-renderjson";
     }
 
     @PostMapping("/getByUuid")
-    public String getByUuid(@RequestParam String get_uuid, Model model) {
+    public String getItemByUuid(@RequestParam String get_uuid, Model model) {
+        model.addAttribute("api_methods", apiService.getApiMethods());
         model.addAttribute("codes_list", apiService.getAllCodes());
         model.addAttribute("created_codes", apiService.getCreatedCodes());
         model.addAttribute("base_url", BASE_URL);
@@ -80,13 +82,8 @@ public class ApiController {
         }
         try {
             model.addAttribute("item", apiService.getByUuid(get_uuid));
-        } catch (BadRequestException e) {
-            if (e.getMessage().contains("There is no item with uuid")) {
-                model.addAttribute("error_message", json.serialize(e.getMessage()));
-                return "exception/bad-request-exception";
-            }
-        } catch (IllegalArgumentException e2) {
-            model.addAttribute("error_message", json.serialize(e2.getMessage()));
+        } catch (BadRequestException | IllegalArgumentException e) {
+            model.addAttribute("error_message", json.serialize(e.getMessage()));
             return "exception/bad-request-exception";
         }
         return "html/item-uuid-renderjson";
@@ -113,14 +110,16 @@ public class ApiController {
             model.addAttribute("inputs", requestParams.values());
             return "html/create-item";
         }
+        model.addAttribute("api_methods", apiService.getApiMethods());
         model.addAttribute("codes_list", apiService.getAllCodes());
         model.addAttribute("created_codes", apiService.getCreatedCodes());
         model.addAttribute("request_body", apiService.getRequestBody());
         return "html/new-item";
     }
 
-    @PostMapping("/update")
-    public String updateItem(@RequestParam String update_code, Model model) {
+    @PostMapping("/updateByCode")
+    public String updateItemByCode(@RequestParam String update_code, Model model) {
+        model.addAttribute("api_methods", apiService.getApiMethods());
         model.addAttribute("codes_list", apiService.getAllCodes());
         model.addAttribute("created_codes", apiService.getCreatedCodes());
         model.addAttribute("base_url", BASE_URL);
@@ -131,13 +130,35 @@ public class ApiController {
         try {
             if (apiService.getCreatedCodes().contains(update_code)) {
                 model.addAttribute("initial_data", apiService.getByCodeToUpdate(update_code));
+                System.out.println(apiService.getByCodeToUpdate(update_code));
             } else
                 throw new BadRequestException("There is no item with code " + update_code + " which can be update");
         } catch (BadRequestException e) {
-            if (e.getMessage().contains("There is no item with code")) {
-                model.addAttribute("error_message", json.serialize(e.getMessage()));
-                return "exception/bad-request-exception";
-            }
+            model.addAttribute("error_message", json.serialize(e.getMessage()));
+            return "exception/bad-request-exception";
+        }
+        model.addAttribute("fields", apiService.getSortedDistinctValuesOfFields());
+        System.out.println(apiService.getSortedDistinctValuesOfFields());
+        System.out.println(apiService.getAvailableValues());
+        model.addAttribute("available_values", apiService.getAvailableValues());
+        return "html/update-item";
+    }
+
+    @PostMapping("/updateByUuid")
+    public String updateItemByUuid(@RequestParam String update_uuid, Model model) {
+        model.addAttribute("api_methods", apiService.getApiMethods());
+        model.addAttribute("codes_list", apiService.getAllCodes());
+        model.addAttribute("created_codes", apiService.getCreatedCodes());
+        model.addAttribute("base_url", BASE_URL);
+        model.addAttribute("api_url", apiBean.getApiName());
+        if (update_uuid.equals("")) {
+            return "exception/blank-input-exception";
+        }
+        try {
+            model.addAttribute("initial_data", apiService.getByUuidToUpdate(update_uuid));
+        } catch (BadRequestException e) {
+            model.addAttribute("error_message", json.serialize(e.getMessage()));
+            return "exception/bad-request-exception";
         }
         model.addAttribute("fields", apiService.getSortedDistinctValuesOfFields());
         model.addAttribute("available_values", apiService.getAvailableValues());
@@ -154,17 +175,23 @@ public class ApiController {
             model.addAttribute("fields", apiService.getSortedDistinctValuesOfFields());
             model.addAttribute("available_values", apiService.getAvailableValues());
             model.addAttribute("error_message", e.getMessage());
-            model.addAttribute("initial_data", apiService.getByCodeToUpdate(item.get("code")));
+            if (apiService.getApiMethods().contains("GET_BY_CODE")) {
+                model.addAttribute("initial_data", apiService.getByCodeToUpdate(item.get("code")));
+            } else {
+                model.addAttribute("initial_data", apiService.getByUuidToUpdate(item.get("uuid")));
+            }
             return "html/update-item";
         }
+        model.addAttribute("api_methods", apiService.getApiMethods());
         model.addAttribute("codes_list", apiService.getAllCodes());
         model.addAttribute("created_codes", apiService.getCreatedCodes());
         model.addAttribute("request_body", apiService.getRequestBody());
         return "html/updated-item";
     }
 
-    @PostMapping("/delete")
-    public String deleteItem(@RequestParam String delete_code, Model model) {
+    @PostMapping("/deleteByCode")
+    public String deleteItemByCode(@RequestParam String delete_code, Model model) {
+        model.addAttribute("api_methods", apiService.getApiMethods());
         model.addAttribute("codes_list", apiService.getAllCodes());
         model.addAttribute("created_codes", apiService.getCreatedCodes());
         model.addAttribute("base_url", BASE_URL);
@@ -173,12 +200,31 @@ public class ApiController {
             return "exception/blank-input-exception";
         }
         try {
-            model.addAttribute("item", apiService.delete(delete_code));
+            model.addAttribute("item", apiService.deleteByCode(delete_code));
         } catch (BadRequestException e) {
-            if (e.getMessage().contains("There is no item with code")) {
-                model.addAttribute("error_message", json.serialize(e.getMessage()));
-                return "exception/bad-request-exception";
-            }
+            model.addAttribute("error_message", json.serialize(e.getMessage()));
+            return "exception/bad-request-exception";
+        }
+        model.addAttribute("codes_list", apiService.getAllCodes());
+        model.addAttribute("created_codes", apiService.getCreatedCodes());
+        return "html/deleted-item";
+    }
+
+    @PostMapping("/deleteByUuid")
+    public String deleteItemByUuid(@RequestParam String delete_uuid, Model model) {
+        model.addAttribute("api_methods", apiService.getApiMethods());
+        model.addAttribute("codes_list", apiService.getAllCodes());
+        model.addAttribute("created_codes", apiService.getCreatedCodes());
+        model.addAttribute("base_url", BASE_URL);
+        model.addAttribute("api_url", apiBean.getApiName());
+        if (delete_uuid.equals("")) {
+            return "exception/blank-input-exception";
+        }
+        try {
+            model.addAttribute("item", apiService.deleteByUuid(delete_uuid));
+        } catch (BadRequestException e) {
+            model.addAttribute("error_message", json.serialize(e.getMessage()));
+            return "exception/bad-request-exception";
         }
         model.addAttribute("codes_list", apiService.getAllCodes());
         model.addAttribute("created_codes", apiService.getCreatedCodes());

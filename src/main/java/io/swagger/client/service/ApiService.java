@@ -19,7 +19,9 @@ public interface ApiService {
 
     ResponseIdModel update(Map<String, String> item);
 
-    ResponseIdModel delete(String code);
+    ResponseIdModel deleteByCode(String code);
+
+    ResponseIdModel deleteByUuid(String uuid);
 
     String getRequestBody();
 
@@ -31,5 +33,9 @@ public interface ApiService {
 
     Map<String, List<String>> getAvailableValues();
 
+    List<String> getApiMethods();
+
     Map<String, Set<String>> getByCodeToUpdate(String code);
+
+    Map<String, Set<String>> getByUuidToUpdate(String uuid);
 }

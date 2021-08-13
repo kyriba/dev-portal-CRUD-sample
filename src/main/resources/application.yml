@@ -50,34 +50,35 @@ api:
       - thousandSeparator
       - timeZone
       - title
+      - interfaceCode
 
   methods:
     /v1/accounts:
       - GET_ALL
-      - GET_CODE
-      - GET_UUID
+      - GET_BY_CODE
+      - GET_BY_UUID
       - POST
-      - PUT_CODE
-      - PUT_UUID
-      - DELETE_CODE
-      - DELETE_UUID
+      - PUT_BY_CODE
+      - PUT_BY_UUID
+      - DELETE_BY_CODE
+      - DELETE_BY_UUID
 
     /v1/third-parties:
       - GET_ALL
-      - GET_CODE
-      - GET_UUID
+      - GET_BY_CODE
+      - GET_BY_UUID
       - POST
-      - PUT_CODE
-      - PUT_UUID
-      - DELETE_CODE
-      - DELETE_UUID
+      - PUT_BY_CODE
+      - PUT_BY_UUID
+      - DELETE_BY_CODE
+      - DELETE_BY_UUID
 
     /v1/users:
       - GET_ALL
-      - GET_UUID
+      - GET_BY_UUID
       - POST
-      - PUT_UUID
-      - DELETE_UUID
+      - PUT_BY_UUID
+      - DELETE_BY_UUID
 
 enums:
   available:
