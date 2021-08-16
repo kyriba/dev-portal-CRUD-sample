@@ -55,6 +55,9 @@ api:
       - timeZone
       - title
       - interfaceCode
+      - fax
+      - mobilePhone
+      - officePhone
 
     /v1/companies:
       - address.country.code
@@ -87,6 +90,11 @@ api:
       - preferredContactChannel
       - email
       - timeZone
+      - interfaceCode
+      - fax
+      - mobilePhone
+      - officePhone
+      - uuid
 
 #List of all possible methods: [GET_ALL, GET_BY_CODE, GET_BY_UUID, POST, PUT_BY_CODE, PUT_BY_UUID, DELETE_BY_CODE, DELETE_BY_UUID]
   methods:

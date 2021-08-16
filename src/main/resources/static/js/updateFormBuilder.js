@@ -13,10 +13,9 @@
     for (let position = 0; position < keySet.length; position++) {
         var key = keySet[position];
         var value = values[position];
-        if (position < initial_data_values.length) {
-            var initial_data_value = initial_data_values[position][0];
-        } else {
-            var initial_data_value = '';
+        var initial_data_value = '';
+        if (position < initial_data_values.length && initial_data_values[position].length != 0) {
+            initial_data_value = initial_data_values[position][0];
         }
         var bodyRow = tbody.insertRow(position);
         if (availableValues != null) {
@@ -39,15 +38,11 @@
                 }
             }
         }
-        if (key === 'uuid') {
+        if (key === 'uuid' || key === 'code' || key === 'interfaceCode') {
             if (initial_data_value != '') {
-                bodyRow.innerHTML = '<td hidden><label for="uuid_input">uuid</label></td>' +
-                '<td hidden><input type="text" name="uuid" id="uuid_input" value="' + initial_data_value + '"><br></td>';
-            }
-        } else if (key === 'code') {
-            if (initial_data_value != '') {
-                bodyRow.innerHTML = '<td hidden><label for="code_input">code</label></td>' +
-                '<td hidden><input type="text" name="code" id="code_input" value="' + initial_data_value + '"><br></td>';
+                bodyRow.innerHTML = '<td hidden><label for="' + key + '_input">' + key + '</label></td>' +
+                '<td hidden><input type="text" name="' + key + '" id="' + key + '_input" value="' +
+                 initial_data_value + '"><br></td>';
             }
         } else if (!isCheckbox) {
             var htmlCode ='<td><label for="' + key + '">' + key + '</label><br></td>' +

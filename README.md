@@ -30,7 +30,7 @@ cd dev-portal-CRUD-sample
 Build project:
 
 ```shell
-gradle build
+gradle clean build
 ```
 
 And execute jar file:
@@ -41,7 +41,7 @@ java -jar "build/libs/CRUD.jar"
 
 > :warning: *Please notice that the path to your local directory is provided in MacOS/ Unix format. Windows is slash-sensitive, so if you are using a Windows system, replace "/" with "\\"*
 
-Choose the API from the provided list in the Terminal, by typing the number of the item on the list or by providing the name of the API. Name are case-sensitive, make sure you write them in lower-case.
+Choose the API from the provided list in the Terminal, by typing the number of the item on the list or by providing the name of the API. Names are case-sensitive, make sure you write them in lower-case.
 
 ![img_1.png](img_1.png)
 
@@ -63,7 +63,8 @@ If you want to add new API, go to .../src/main/resources/application.yml, add RE
 
 > :warning: {endpoint}* - REST Endpoint of API from **list.apis**
 
-Then add all available CRUD methods of API to **api.methods.{endpoint}** and if there are any enums or boolean values, then add them to **enums.available.values.{endpoint}.{field)****.
+Then add all available CRUD methods of API to **api.methods.{endpoint}** and if there are any enums or boolean values, 
+then add them to **enums.available.values.{endpoint}.{field}****.
 
 > :warning: {field}** - the name of a specific field from **api.fields.{endpoint}**
 

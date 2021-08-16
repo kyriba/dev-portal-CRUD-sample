@@ -40,9 +40,10 @@
                 }
             }
         }
-        if (key === 'code') {
-            bodyRow.innerHTML = '<td><label for="code_input">code</label></td>' +
-            '<td style="text-align:center; vertical-align:middle"><input type="text" name="code" id="code_input"><br></td>';
+        if (key === 'code' || key === 'interfaceCode') {
+            bodyRow.innerHTML = '<td><label for="' + key + '_input">' + key + '</label></td>' +
+            '<td style="text-align:center; vertical-align:middle"><input type="text" name="' + key
+            + '" id="' + key + '_input"><br></td>';
         } else if (!isCheckbox) {
             var htmlCode ='<td><label for="' + key + '">' + key + '</label><br></td>' +
             '<td style="text-align:center; vertical-align:middle"><input type="text" list="' + key +
