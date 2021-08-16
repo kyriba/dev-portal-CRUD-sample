@@ -64,8 +64,8 @@ If you want to add new API, go to .../src/main/resources/application.yml, add RE
 > :warning: {endpoint}* - REST Endpoint of API from **list.apis**
 
 Then add all available CRUD methods of API to **api.methods.{endpoint}** and if there are any enums or boolean values, 
-then add them to **enums.available.values.{endpoint}.{field}****.
+then add them to **enums.available.values.{endpoint}.{field}** **.
 
-> :warning: {field}** - the name of a specific field from **api.fields.{endpoint}**
+> :warning: {field} ** - the name of a specific field from **api.fields.{endpoint}**
 
 > :warning: *If application.yml was modified after application had been built, it needs to be rebuilt. In that case, execute gradle clean build again.*
