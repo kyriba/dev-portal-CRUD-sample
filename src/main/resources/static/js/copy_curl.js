@@ -4,6 +4,22 @@ function copy_curl(parameters, copyId) {
         inputText = document.getElementById(copyId).value;
     }
     const copyText = document.createElement('textarea');
+    switch (apiUrl){
+        case '/v1/bank-balances/accounts':
+        case '/v1/cash-balances/accounts':
+            inputText += '/balances';
+            break;
+        case '/v1/data-permissions':
+            if (copyId != '') {
+                inputText += '/entities';
+            }
+            break;
+        case '/v1/data-permission-profiles':
+            if (copyId != '') {
+                inputText += '/permissions';
+            }
+            break;
+    }
     copyText.value = baseUrl + apiUrl + parameters + inputText;
     copyText.setAttribute('readonly', '');
     copyText.style.position = 'absolute';

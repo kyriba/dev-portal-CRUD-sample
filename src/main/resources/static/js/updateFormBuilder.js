@@ -18,6 +18,13 @@
             initial_data_value = initial_data_values[position][0];
         }
         var bodyRow = tbody.insertRow(position);
+        if (key.includes('[]')) {
+            bodyRow.innerHTML = '<td><label for="' + key + '_input">' + key + '</label></td>' +
+            '<td style="text-align:center; vertical-align:middle">[ <input type="text" name="' + key
+            + '" id="' + key + '_input" style="width: 250px" value="' + initial_data_value +
+            '" placeholder="VAL1, VAL2, VAL3, VAL4"> ]<br></td>';
+            continue;
+        }
         if (availableValues != null) {
             for (let i = 0; i < availableValuesKeySet.length; i++) {
                 if (key === availableValuesKeySet[i]) {

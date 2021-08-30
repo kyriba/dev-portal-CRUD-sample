@@ -21,6 +21,11 @@ list:
     - /v1/banks
     - /v1/bank-branches
     - /v1/supplier-users
+    - /v1/bank-balances/accounts
+    - /v1/cash-balances/accounts
+    - /v1/data-permissions
+    - /v1/data-permission-profiles
+    - /v1/account-groups
 
 api:
   fields:
@@ -96,6 +101,30 @@ api:
       - officePhone
       - uuid
 
+    /v1/bank-balances/accounts:
+      - account.code
+      - bankBalance.amount
+
+    /v1/cash-balances/accounts:
+      - account.code
+      - cashBalance.amount
+
+    /v1/data-permissions:
+      - code
+      - uuid
+
+    /v1/data-permission-profiles:
+      - code
+      - dataType
+      - type
+      - uuid
+
+    /v1/account-groups:
+      - accounts[].code
+      - code
+      - poolingAccount.code
+      - uuid
+
 #List of all possible methods: [GET_ALL, GET_BY_CODE, GET_BY_UUID, POST, PUT_BY_CODE, PUT_BY_UUID, DELETE_BY_CODE, DELETE_BY_UUID]
   methods:
     /v1/accounts:
@@ -160,6 +189,31 @@ api:
       - PUT_BY_UUID
       - DELETE_BY_UUID
 
+    /v1/bank-balances/accounts:
+      - GET_BY_CODE
+      - GET_BY_UUID
+
+    /v1/cash-balances/accounts:
+      - GET_BY_CODE
+      - GET_BY_UUID
+
+    /v1/data-permissions:
+      - GET_ALL
+      - GET_BY_CODE
+      - GET_BY_UUID
+
+    /v1/data-permission-profiles:
+      - GET_ALL
+      - GET_BY_CODE
+      - GET_BY_UUID
+
+    /v1/account-groups:
+      - GET_ALL
+      - GET_BY_UUID
+      - POST
+      - PUT_BY_UUID
+      - DELETE_BY_UUID
+
 #For boolean fields values can be only 'true' or 'false'
 enums:
   available:
@@ -200,3 +254,12 @@ enums:
           - MOBILE_PHONE
           - EMAIL
           - BY_FAX
+
+      /v1/data-permission-profiles:
+        dataType:
+          - COMPANY
+          - USER_GROUP
+
+        type:
+          - GENERAL
+          - BY_FUNCTION

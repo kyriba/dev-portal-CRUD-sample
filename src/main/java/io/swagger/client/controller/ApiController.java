@@ -47,7 +47,7 @@ public class ApiController {
         model.addAttribute("created_codes", apiService.getCreatedCodes());
         model.addAttribute("base_url", BASE_URL);
         model.addAttribute("api_url", apiBean.getApiName());
-        model.addAttribute("list_items", apiService.getAll(null, null, null, null, null));
+        model.addAttribute("list_items", apiService.getAll(null, null, 1000, null, null));
         return "html/items-list";
     }
 

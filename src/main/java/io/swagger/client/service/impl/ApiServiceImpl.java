@@ -70,7 +70,8 @@ public class ApiServiceImpl implements ApiService {
         if (availableValues == null)
             availableValues = new TreeMap<>();
         System.out.println("Wait a minute");
-        codes = findAllIdentifiers(getAll(null, null, null, null, null), "code");
+        if (apiMethods.contains("GET_ALL"))
+            codes = findAllIdentifiers(getAll(null, null, 1000, null, null), "code");
         distinctAndSortedValuesOfFields = getAndSortDistinctValuesOfFields();
     }
 
@@ -328,7 +329,7 @@ public class ApiServiceImpl implements ApiService {
         AtomicInteger inc = new AtomicInteger();
         apiFields.stream().map(field -> field.split("\\."))
                 .forEach(fieldPart -> updateBody.put(apiFields.get(inc.getAndIncrement()),
-                        findDistinctAndSortedValuesOfFields(fieldPart, String.valueOf(result))));
+                        findDistinctAndSortedValuesOfFields(fieldPart, result)));
 
         updateBody.put(CODE, Collections.singleton(code));
 
@@ -355,7 +356,7 @@ public class ApiServiceImpl implements ApiService {
         AtomicInteger inc = new AtomicInteger();
         apiFields.stream().map(field -> field.split("\\."))
                 .forEach(fieldPart -> updateBody.put(apiFields.get(inc.getAndIncrement()),
-                        findDistinctAndSortedValuesOfFields(fieldPart, String.valueOf(result))));
+                        findDistinctAndSortedValuesOfFields(fieldPart, result)));
 
         updateBody.put(UUID, Collections.singleton(uuid));
 
@@ -370,7 +371,7 @@ public class ApiServiceImpl implements ApiService {
             result = matcher.group();
         }
         result = result.replaceAll(":\\{(.+?)\\}", "");
-        pattern = Pattern.compile("(?<=\"" + identifier + "\":\")(.+?)(?=\",)");
+        pattern = Pattern.compile("(?<=\"" + identifier + "\":\")(.+?)(?=\")");
         matcher = pattern.matcher(result);
         while (matcher.find()) {
             codesList.add(matcher.group());
@@ -381,19 +382,21 @@ public class ApiServiceImpl implements ApiService {
     private Map<String, Set<String>> getAndSortDistinctValuesOfFields() {
         Map<String, Set<String>> mapOfDistinctAndSortedValuesOfFields = new TreeMap<>();
         StringBuilder results = new StringBuilder();
-        if (apiMethods.contains("GET_BY_CODE")) {
+        if (apiMethods.contains("GET_BY_CODE") && !initialApiBean.getApiName().equals("/v1/data-permissions")) {
             for (String code : codes) {
                 results.append(getByCode(code));
             }
-        } else if (apiMethods.contains("GET_BY_UUID")) {
+        } else if (apiMethods.contains("GET_BY_UUID") && apiMethods.contains("GET_ALL")
+                && !initialApiBean.getApiName().equals("/v1/data-permissions")) {
             List<String> uuids =
-                    findAllIdentifiers(getAll(null, null, null, null, null),
+                    findAllIdentifiers(getAll(null, null, 1000, null, null),
                             "uuid");
             for (String uuid : uuids) {
                 results.append(getByUuid(uuid));
             }
         } else {
-            results.append(getAll(null, null, null, null, null));
+            results.append(getAll(null, null, 1000, null, null)
+                    .replace("\"results\":[", ""));
         }
 
         AtomicInteger inc = new AtomicInteger();
@@ -405,17 +408,45 @@ public class ApiServiceImpl implements ApiService {
     }
 
     private Set<String> findDistinctAndSortedValuesOfFields(String[] fieldParts, String results) {
-        if (fieldParts.length == 1)
+        if (fieldParts.length == 1) {
             results = results.replaceAll(":\\{(.+?)\\}", "");
+        }
         Set<String> distinctAndSortedValuesOfField = new TreeSet<>();
-        StringBuilder stringBuilder = new StringBuilder();
-        Pattern pattern = Pattern.compile(String.valueOf(buildRegex(fieldParts, stringBuilder, 0)));
+        int position = 0;
+        boolean isArrayField = false;
+
+        for (int i = 0; i < fieldParts.length; i++) {
+            if (fieldParts[i].contains("[]")) {
+                position = i + 1;
+                isArrayField = true;
+                break;
+            }
+            if (i == fieldParts.length - 1)
+                results = results.replaceAll(":\\[(.*?)\\]", "");
+        }
+
+        Pattern pattern = Pattern.compile(String.valueOf(buildRegex(fieldParts, new StringBuilder(), 0)));
         Matcher matcher = pattern.matcher(results);
 
-        while (matcher.find()) {
-            final String valueOfField = matcher.group(1);
-            distinctAndSortedValuesOfField.add(valueOfField);
+        if (position == fieldParts.length || !isArrayField) {
+            while (matcher.find()) {
+                distinctAndSortedValuesOfField.add(matcher.group(1));
+            }
+            return distinctAndSortedValuesOfField;
         }
+        Pattern endPattern;
+        Matcher endMatcher;
+        while (matcher.find()) {
+            StringBuilder stringBuilder = new StringBuilder();
+            endPattern = Pattern.compile(String.valueOf(buildRegex(fieldParts, new StringBuilder(), position)));
+            endMatcher = endPattern.matcher(matcher.group(1));
+            while (endMatcher.find()) {
+                stringBuilder.append(endMatcher.group(1)).append(", ");
+            }
+            distinctAndSortedValuesOfField.add(stringBuilder.delete(stringBuilder.length() - 2,
+                    stringBuilder.length()).toString());
+        }
+
         return distinctAndSortedValuesOfField;
     }
 
@@ -425,10 +456,12 @@ public class ApiServiceImpl implements ApiService {
         String part3OfRegex1 = "(?:.*?)";
         String part4OfRegex1 = "(?=\\})";
         String part2OfRegex2 = "\":\")(.*?)(?:\")";
-        if (fieldParts.length == 1) {
-            return regexBuilder.append(part1OfRegex1And2).append(fieldParts[position]).append(part2OfRegex2);
+        String arrayRegex = "\":\\[)(.*?)(?=\\])";
+        if (fieldParts[position].contains("[]")) {
+            return regexBuilder.append(part1OfRegex1And2).append(fieldParts[position].replace("[]", ""))
+                    .append(arrayRegex);
         }
-        if (position == fieldParts.length - 1) {
+        if (fieldParts.length == 1 || position == fieldParts.length - 1) {
             return regexBuilder.append(part1OfRegex1And2).append(fieldParts[position]).append(part2OfRegex2);
         }
         regexBuilder.append(part1OfRegex1And2).append(fieldParts[position]).append(part2OfRegex1).append(part3OfRegex1);
@@ -439,11 +472,14 @@ public class ApiServiceImpl implements ApiService {
 
     private StringBuilder buildJsonRequestBody(StringBuilder requestBody, List<String[]> listOfFields,
                                                List<String> listOfValues, int position, int loopStart, int loopEnd) {
+        String arrayStart = "[";
+        String arrayEnd = "]";
         String curlyBracket1 = "{";
         String curlyBracket2 = "}";
         String quotes = "\"";
         String fieldEnd = "\": ";
         String comma = ",";
+        boolean isArrayField = false;
 
         for (int i = loopStart; i < listOfFields.size() - 1
                 && position < listOfFields.get(i).length && i <= loopEnd; i++) {
@@ -452,22 +488,92 @@ public class ApiServiceImpl implements ApiService {
                     compareFields(listOfFields.get(i), listOfFields.get(i + 1), position)) {
                 continue;
             }
+            if (listOfFields.get(i)[position].contains("[]")) {
+                listOfFields.get(i)[position] = listOfFields.get(i)[position].replace("[]", "");
+                isArrayField = true;
+            }
             requestBody.append(quotes).append(listOfFields.get(i)[position]).append(fieldEnd);
-            if (position == listOfFields.get(loopStart).length - 1) {
+            if (isArrayField) {
+                requestBody.append(arrayStart);
+                requestBody = buildJsonArray(loopStart, i, position + 1, listOfFields,
+                        listOfValues, requestBody);
+                loopStart = i;
+                requestBody.deleteCharAt(requestBody.length() - 1).append(arrayEnd);
+            }
+            if (position == listOfFields.get(loopStart).length - 1 && !isArrayField) {
                 requestBody.append(quotes).append(listOfValues.get(loopStart)).append(quotes);
-            } else {
+            } else if (position != listOfFields.get(loopStart).length - 1 && !isArrayField) {
                 requestBody.append(curlyBracket1);
             }
-            requestBody = buildJsonRequestBody(requestBody, listOfFields, listOfValues, position + 1, loopStart, i);
-            if (position > listOfFields.get(loopStart + 1).length - 1 || loopStart == loopEnd) {
+            if (!isArrayField) {
+                requestBody = buildJsonRequestBody(requestBody, listOfFields, listOfValues,
+                        position + 1, loopStart, i);
+            }
+            isArrayField = false;
+            if (position > listOfFields.get(i + 1).length - 1 || i == loopEnd
+                    || (containsArrayField(listOfFields.get(loopStart)) && position != 0)) {
                 requestBody.append(curlyBracket2);
-            } else if (position <= listOfFields.get(loopStart + 1).length - 1) {
+            } else if (position <= listOfFields.get(i + 1).length - 1) {
                 requestBody.append(comma);
             }
             loopStart = i + 1;
         }
 
         return requestBody;
+    }
+
+    private StringBuilder buildJsonArray(int start, int end, int position, List<String[]> listOfFields,
+                                                List<String> listOfValues, StringBuilder requestBody) {
+        List<List<String>> listOfArrayValues = new ArrayList<>();
+        List<String[]> arrayFields = new ArrayList<>();
+        if (position >= listOfFields.get(start).length) {
+            requestBody.append(listOfValues.get(start)).append(",");
+            return requestBody;
+        }
+        String[] subArrayOfFields;
+        List<String[]> allArrayValues = new ArrayList<>();
+        for (int i = start; i <= end; i++) {
+            allArrayValues.add(listOfValues.get(i).split(","));
+            subArrayOfFields = new String[listOfFields.get(i).length - position];
+            System.arraycopy(listOfFields.get(i), position, subArrayOfFields, 0,
+                    listOfFields.get(i).length - position);
+            arrayFields.add(subArrayOfFields);
+        }
+        int maxLengthOfArrayValues = 0;
+        for (String[] arrayValues : allArrayValues) {
+            if (arrayValues.length > maxLengthOfArrayValues)
+                maxLengthOfArrayValues = arrayValues.length;
+        }
+        for (int i = 0; i < maxLengthOfArrayValues; i++) {
+            List<String> setOfValues = new ArrayList<>();
+            for (String[] arrayValues : allArrayValues) {
+                if (i < arrayValues.length) {
+                    setOfValues.add(arrayValues[i].trim());
+                } else {
+                    setOfValues.add("");
+                }
+            }
+            setOfValues.add("");
+            listOfArrayValues.add(setOfValues);
+        }
+        arrayFields.add(new String[]{""});
+        for (List<String> listOfArrayValue : listOfArrayValues) {
+            requestBody.append("{");
+            requestBody = buildJsonRequestBody(requestBody, arrayFields, listOfArrayValue,
+                    0, 0, arrayFields.size());
+            requestBody.deleteCharAt(requestBody.length() - 1).append("},");
+        }
+        return requestBody;
+    }
+
+    private boolean containsArrayField(String[] fields) {
+        if (fields.length == 1)
+            return false;
+        for (int i = 0; i < fields.length; i++) {
+            if (fields[i].contains("[]") && i != fields.length - 1)
+                return true;
+        }
+        return false;
     }
 
     private boolean compareFields(String[] fields1, String[] fields2, int position) {

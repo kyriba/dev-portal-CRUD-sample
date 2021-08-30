@@ -440,7 +440,20 @@ public class Api {
 
         // create path and map variables
         String localVarPath = "/code={code}"
-            .replaceAll("\\{" + "code" + "\\}", apiClient.escapeString(code.toString()));
+            .replaceAll("\\{" + "code" + "\\}", apiClient.escapeString(code));
+
+        switch (requestPath){
+            case "/v1/bank-balances/accounts":
+            case "/v1/cash-balances/accounts":
+                localVarPath += "/balances";
+                break;
+            case "/v1/data-permissions":
+                localVarPath += "/entities";
+                break;
+            case "/v1/data-permission-profiles":
+                localVarPath += "/permissions";
+                break;
+        }
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
         List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
@@ -564,6 +577,19 @@ public class Api {
         // create path and map variables
         String localVarPath = "/{uuid}"
             .replaceAll("\\{" + "uuid" + "\\}", apiClient.escapeString(uuid.toString()));
+
+        switch (requestPath){
+            case "/v1/bank-balances/accounts":
+            case "/v1/cash-balances/accounts":
+                localVarPath += "/balances";
+                break;
+            case "/v1/data-permissions":
+                localVarPath += "/entities";
+                break;
+            case "/v1/data-permission-profiles":
+                localVarPath += "/permissions";
+                break;
+        }
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
         List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
