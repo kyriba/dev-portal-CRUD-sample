@@ -21,10 +21,6 @@ list:
     - /v1/banks
     - /v1/bank-branches
     - /v1/supplier-users
-    - /v1/bank-balances/accounts
-    - /v1/cash-balances/accounts
-    - /v1/data-permissions
-    - /v1/data-permission-profiles
     - /v1/account-groups
     - /v1/bank-groups
     - /v1/company-groups
@@ -101,24 +97,6 @@ api:
       - fax
       - mobilePhone
       - officePhone
-      - uuid
-
-    /v1/bank-balances/accounts:
-      - account.code
-      - bankBalance.amount
-
-    /v1/cash-balances/accounts:
-      - account.code
-      - cashBalance.amount
-
-    /v1/data-permissions:
-      - code
-      - uuid
-
-    /v1/data-permission-profiles:
-      - code
-      - dataType
-      - type
       - uuid
 
     /v1/account-groups:
@@ -203,24 +181,6 @@ api:
       - PUT_BY_UUID
       - DELETE_BY_UUID
 
-    /v1/bank-balances/accounts:
-      - GET_BY_CODE
-      - GET_BY_UUID
-
-    /v1/cash-balances/accounts:
-      - GET_BY_CODE
-      - GET_BY_UUID
-
-    /v1/data-permissions:
-      - GET_ALL
-      - GET_BY_CODE
-      - GET_BY_UUID
-
-    /v1/data-permission-profiles:
-      - GET_ALL
-      - GET_BY_CODE
-      - GET_BY_UUID
-
     /v1/account-groups:
       - GET_ALL
       - GET_BY_UUID
@@ -285,12 +245,3 @@ enums:
           - MOBILE_PHONE
           - EMAIL
           - BY_FAX
-
-      /v1/data-permission-profiles:
-        dataType:
-          - COMPANY
-          - USER_GROUP
-
-        type:
-          - GENERAL
-          - BY_FUNCTION
