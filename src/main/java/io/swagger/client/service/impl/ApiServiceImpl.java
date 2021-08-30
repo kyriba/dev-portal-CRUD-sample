@@ -523,7 +523,7 @@ public class ApiServiceImpl implements ApiService {
     }
 
     private StringBuilder buildJsonArray(int start, int end, int position, List<String[]> listOfFields,
-                                                List<String> listOfValues, StringBuilder requestBody) {
+                                         List<String> listOfValues, StringBuilder requestBody) {
         List<List<String>> listOfArrayValues = new ArrayList<>();
         List<String[]> arrayFields = new ArrayList<>();
         if (position >= listOfFields.get(start).length) {

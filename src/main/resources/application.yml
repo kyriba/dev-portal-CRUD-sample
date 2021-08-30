@@ -26,6 +26,8 @@ list:
     - /v1/data-permissions
     - /v1/data-permission-profiles
     - /v1/account-groups
+    - /v1/bank-groups
+    - /v1/company-groups
 
 api:
   fields:
@@ -125,6 +127,18 @@ api:
       - poolingAccount.code
       - uuid
 
+    /v1/bank-groups:
+      - banks[].code
+      - code
+      - leader.code
+      - uuid
+
+    /v1/company-groups:
+      - code
+      - companies[].code
+      - leader.code
+      - uuid
+
 #List of all possible methods: [GET_ALL, GET_BY_CODE, GET_BY_UUID, POST, PUT_BY_CODE, PUT_BY_UUID, DELETE_BY_CODE, DELETE_BY_UUID]
   methods:
     /v1/accounts:
@@ -208,6 +222,23 @@ api:
       - GET_BY_UUID
 
     /v1/account-groups:
+      - GET_ALL
+      - GET_BY_UUID
+      - POST
+      - PUT_BY_UUID
+      - DELETE_BY_UUID
+
+    /v1/bank-groups:
+      - GET_ALL
+      - GET_BY_CODE
+      - GET_BY_UUID
+      - POST
+      - PUT_BY_CODE
+      - PUT_BY_UUID
+      - DELETE_BY_CODE
+      - DELETE_BY_UUID
+
+    /v1/company-groups:
       - GET_ALL
       - GET_BY_UUID
       - POST
