@@ -93,6 +93,7 @@ public class ApiController {
     public String createItem(Model model) {
         model.addAttribute("fields", apiService.getSortedDistinctValuesOfFields());
         model.addAttribute("available_values", apiService.getAvailableValues());
+        model.addAttribute("api_url", apiBean.getApiName());
         return "html/create-item";
     }
 
