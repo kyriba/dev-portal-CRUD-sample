@@ -18,6 +18,8 @@ import org.apache.oltu.oauth2.client.response.OAuthAccessTokenResponse;
 import org.apache.oltu.oauth2.client.response.OAuthJSONAccessTokenResponse;
 import org.apache.oltu.oauth2.common.OAuth;
 import org.apache.oltu.oauth2.common.message.types.GrantType;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,15 @@ public class ApiServiceImpl implements ApiService {
     public String CLIENT_ID;
     @Value("${client.secret}")
     public String CLIENT_SECRET;
+
+    private final String[] accountsFieldsToExclude = new String[] {"status", "includeInElectronicBank",
+            "includeInElectronicBankDate", "excludeFromElectronicBank", "excludeFromElectronicBankDate",
+            "confirmAccountList", "confirmAccountListDate", "confirmAccountBalances", "confirmAccountBalancesDate",
+            "confirmAccountSignatories", "confirmAccountSignatoriesDate", "accountOpeningRequested",
+            "accountOpeningRequestDate", "accountClosureRequested", "accountClosureRequestDate"};
+    private final String[] companiesFieldsToExclude = new String[] {"uuid"};
+    private final String[] thirdPartiesFieldsToExclude = new String[] {"internalCounter", "internalCounterSuffix"};
+    private final String[] usersFieldsToExclude = new String[] {"code", "interfaceCode"};
 
     private final Api api;
     private final InitialApiBean initialApiBean;
@@ -103,6 +114,11 @@ public class ApiServiceImpl implements ApiService {
     @Override
     public List<String> getApiMethods() {
         return apiMethods;
+    }
+
+    @Override
+    public List<String> getApiFields() {
+        return apiFields;
     }
 
     private void refreshToken() {
@@ -200,7 +216,7 @@ public class ApiServiceImpl implements ApiService {
         listOfFields.add(new String[]{""});
         listOfValues.add("");
 
-        requestBody = buildJsonRequestBody(requestBody, listOfFields,
+        requestBody = buildPOSTJsonRequestBody(requestBody, listOfFields,
                 listOfValues, 0, 0, listOfValues.size());
         requestBody.deleteCharAt(requestBody.length() - 1).append("}");
 
@@ -226,24 +242,45 @@ public class ApiServiceImpl implements ApiService {
     @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
     public ResponseIdModel update(Map<String, String> item) {
 
-        requestBody = new StringBuilder("{");
+        List<String> fieldsToExclude;
+        switch (initialApiBean.getApiName()) {
+            case "/v1/accounts":
+                fieldsToExclude = new ArrayList<>(Arrays.asList(accountsFieldsToExclude));
+                break;
+            case "/v1/companies":
+                fieldsToExclude = new ArrayList<>(Arrays.asList(companiesFieldsToExclude));
+                break;
+            case "/v1/third-parties":
+                fieldsToExclude = new ArrayList<>(Arrays.asList(thirdPartiesFieldsToExclude));
+                break;
+            case "/v1/users":
+                fieldsToExclude = new ArrayList<>(Arrays.asList(usersFieldsToExclude));
+                break;
+            default:
+                fieldsToExclude = new ArrayList<>();
+                break;
+        }
+
+        if (apiMethods.contains("PUT_BY_CODE")) {
+            requestBody = new StringBuilder(getByCode(item.get("code")));
+        } else {
+            requestBody = new StringBuilder(getByUuid(item.get("uuid")));
+        }
 
         List<String[]> listOfFields = new ArrayList<>();
         List<String> listOfValues = new ArrayList<>(item.values());
 
         for (String s : item.keySet()) {
-            if (apiFields.contains(s))
+            if (apiFields.contains(s) && !s.equals("code") && !s.equals("uuid"))
                 listOfFields.add(s.split("\\."));
             else
                 listOfValues.remove(item.get(s));
         }
 
-        listOfFields.add(new String[]{""});
-        listOfValues.add("");
-
-        requestBody = buildJsonRequestBody(requestBody, listOfFields,
-                listOfValues, 0, 0, listOfValues.size());
-        requestBody.deleteCharAt(requestBody.length() - 1).append("}");
+        for (int i = 0; i < listOfFields.size(); i++) {
+            requestBody = new StringBuilder(buildPUTJsonRequestBody(String.valueOf(requestBody),
+                    listOfFields.get(i), listOfValues.get(i), fieldsToExclude));
+        }
 
         ResponseIdModel responseIdModel;
         try {
@@ -470,8 +507,64 @@ public class ApiServiceImpl implements ApiService {
         return regexBuilder;
     }
 
-    private StringBuilder buildJsonRequestBody(StringBuilder requestBody, List<String[]> listOfFields,
-                                               List<String> listOfValues, int position, int loopStart, int loopEnd) {
+    private String buildPUTJsonRequestBody(String requestBody, String[] fields, String value,
+                                           List<String> fieldsToExclude) {
+        JSONObject jsonObject = new JSONObject(requestBody);
+        for (int i = 0; i < fieldsToExclude.size(); i++) {
+            jsonObject.remove(fieldsToExclude.remove(i--));
+        }
+        JSONObject copyOfJsonObject = jsonObject;
+        for (int j = 0; j < fields.length - 1; j++) {
+            if (fields[j].contains("[]")) {
+                JSONArray jsonArray = copyOfJsonObject.getJSONArray(fields[j].replace("[]", ""));
+                jsonArray = new JSONArray(buildPUTJsonArray(jsonArray.toString(),
+                        Arrays.stream(fields).skip(j + 1).toArray(String[]::new), value.split(",")));
+                copyOfJsonObject.put(fields[j].replace("[]", ""), jsonArray);
+                return jsonObject.toString();
+            } else {
+                copyOfJsonObject = copyOfJsonObject.getJSONObject(fields[j]);
+            }
+        }
+        String lastFieldPart = fields[fields.length - 1];
+        if (lastFieldPart.equals("code")) {
+            copyOfJsonObject.put(lastFieldPart, value);
+            copyOfJsonObject.remove("uuid");
+        } else if (lastFieldPart.equals("uuid")) {
+            copyOfJsonObject.put(lastFieldPart, value);
+            copyOfJsonObject.remove("code");
+        } else {
+            copyOfJsonObject.put(lastFieldPart, value);
+        }
+        return jsonObject.toString();
+    }
+
+    private String buildPUTJsonArray(String arrayBody, String[] fields, String[] values) {
+        JSONArray jsonArray = new JSONArray(arrayBody);
+        JSONArray newJsonArray = new JSONArray();
+        for (String value : values) {
+            for (int j = 0; j < jsonArray.length(); j++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(j);
+                for (int k = 0; k < fields.length - 1; k++) {
+                    jsonObject = jsonObject.getJSONObject(fields[k]);
+                }
+                String lastFieldPart = fields[fields.length - 1];
+                if (jsonObject.get(lastFieldPart).equals(value.trim())) {
+                    if ((lastFieldPart.equals("code") || lastFieldPart.equals("uuid"))) {
+                        newJsonArray.put(jsonArray.getJSONObject(j));
+                    } else {
+                        newJsonArray.put(new JSONObject().put(lastFieldPart, value.trim()));
+                    }
+                    break;
+                } else if (j == jsonArray.length() - 1) {
+                    newJsonArray.put(new JSONObject(jsonObject).put(lastFieldPart, value.trim()));
+                }
+            }
+        }
+        return newJsonArray.toString();
+    }
+
+    private StringBuilder buildPOSTJsonRequestBody(StringBuilder requestBody, List<String[]> listOfFields,
+                                                   List<String> listOfValues, int position, int loopStart, int loopEnd) {
         String arrayStart = "[";
         String arrayEnd = "]";
         String curlyBracket1 = "{";
@@ -495,7 +588,7 @@ public class ApiServiceImpl implements ApiService {
             requestBody.append(quotes).append(listOfFields.get(i)[position]).append(fieldEnd);
             if (isArrayField) {
                 requestBody.append(arrayStart);
-                requestBody = buildJsonArray(loopStart, i, position + 1, listOfFields,
+                requestBody = buildPOSTJsonArray(loopStart, i, position + 1, listOfFields,
                         listOfValues, requestBody);
                 loopStart = i;
                 requestBody.deleteCharAt(requestBody.length() - 1).append(arrayEnd);
@@ -506,7 +599,7 @@ public class ApiServiceImpl implements ApiService {
                 requestBody.append(curlyBracket1);
             }
             if (!isArrayField) {
-                requestBody = buildJsonRequestBody(requestBody, listOfFields, listOfValues,
+                requestBody = buildPOSTJsonRequestBody(requestBody, listOfFields, listOfValues,
                         position + 1, loopStart, i);
             }
             isArrayField = false;
@@ -522,8 +615,8 @@ public class ApiServiceImpl implements ApiService {
         return requestBody;
     }
 
-    private StringBuilder buildJsonArray(int start, int end, int position, List<String[]> listOfFields,
-                                         List<String> listOfValues, StringBuilder requestBody) {
+    private StringBuilder buildPOSTJsonArray(int start, int end, int position, List<String[]> listOfFields,
+                                             List<String> listOfValues, StringBuilder requestBody) {
         List<List<String>> listOfArrayValues = new ArrayList<>();
         List<String[]> arrayFields = new ArrayList<>();
         if (position >= listOfFields.get(start).length) {
@@ -559,7 +652,7 @@ public class ApiServiceImpl implements ApiService {
         arrayFields.add(new String[]{""});
         for (List<String> listOfArrayValue : listOfArrayValues) {
             requestBody.append("{");
-            requestBody = buildJsonRequestBody(requestBody, arrayFields, listOfArrayValue,
+            requestBody = buildPOSTJsonRequestBody(requestBody, arrayFields, listOfArrayValue,
                     0, 0, arrayFields.size());
             requestBody.deleteCharAt(requestBody.length() - 1).append("},");
         }

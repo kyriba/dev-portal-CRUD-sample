@@ -1,21 +1,12 @@
-    if (apiUrl == '/v1/users' || apiUrl == '/v1/supplier-users') {
-        if (apiUrl == '/v1/users') {
-            var fieldsOrder = ['code', 'interfaceCode', 'accessProfile.code', 'title', 'firstName', 'lastName',
-                'preferredContactChannel', 'officePhone', 'mobilePhone', 'email', 'fax', 'timeZone'];
-        } else {
-            var fieldsOrder = ['code', 'interfaceCode', 'accessProfile.code', 'firstName', 'lastName',
-                'preferredContactChannel', 'officePhone', 'mobilePhone', 'email', 'fax'];
-        }
-        for (let i = 0; i < fieldsOrder.length; i++) {
-            for (let j = 0; j < keySet.length && i < keySet.length; j++) {
-                if (keySet[j] == fieldsOrder[i] && i != j) {
-                    var additionalKeyVariable = keySet[i];
-                    var additionalValueVariable = values[i];
-                    keySet[i] = keySet[j];
-                    values[i] = values[j];
-                    keySet[j] = additionalKeyVariable;
-                    values[j] = additionalValueVariable;
-                }
+    for (let i = 0; i < fieldsOrder.length; i++) {
+        for (let j = 0; j < keySet.length && i < keySet.length; j++) {
+            if (keySet[j] == fieldsOrder[i] && i != j) {
+                var additionalKeyVariable = keySet[i];
+                var additionalValueVariable = values[i];
+                keySet[i] = keySet[j];
+                values[i] = values[j];
+                keySet[j] = additionalKeyVariable;
+                values[j] = additionalValueVariable;
             }
         }
     }
@@ -53,22 +44,8 @@
 
     for (let position = 0; position < keySet.length; position++) {
         var key = keySet[position];
-        if (key === 'code' || key === 'interfaceCode' || key === 'shortCode') {
-            var bodyRow = tbody.insertRow(rowCounter++);
-            var htmlCode = '<td><label for="' + key + '_input">' + key + '</label></td>' +
-            '<td style="text-align:center; vertical-align:middle"><input type="text" name="' + key +
-            '" id="' + key + '_input"><br></td>';
-            for (let i = 2; i <= fieldPartsMaxAmount; i++) {
-                htmlCode += tdTag;
-            }
-            bodyRow.innerHTML = htmlCode;
-        }
-    }
-
-    for (let position = 0; position < keySet.length; position++) {
-        var key = keySet[position];
         var value = values[position];
-        if (key === 'uuid' || key === 'code' || key === 'interfaceCode' || key === 'shortCode') {
+        if (key === 'uuid') {
             continue;
         }
         if (key.includes('[]')) {
@@ -158,7 +135,16 @@
                 }
             }
         }
-        if (!isCheckbox) {
+        if (key === 'code' || key === 'interfaceCode' || key === 'shortCode') {
+            var bodyRow = tbody.insertRow(rowCounter++);
+            var htmlCode = '<td><label for="' + key + '_input">' + key + '</label></td>' +
+            '<td style="text-align:center; vertical-align:middle"><input type="text" name="' + key +
+            '" id="' + key + '_input"><br></td>';
+            for (let i = 2; i <= fieldPartsMaxAmount; i++) {
+                htmlCode += tdTag;
+            }
+            bodyRow.innerHTML = htmlCode;
+        } else if (!isCheckbox) {
             for (let i = 0; i < fieldParts[position].length; i++) {
                 if (position != 0 && i < fieldParts[position - 1].length) {
                     var isDifferent = false;

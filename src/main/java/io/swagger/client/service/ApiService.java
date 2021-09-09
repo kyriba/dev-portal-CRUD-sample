@@ -35,6 +35,8 @@ public interface ApiService {
 
     List<String> getApiMethods();
 
+    List<String> getApiFields();
+
     Map<String, Set<String>> getByCodeToUpdate(String code);
 
     Map<String, Set<String>> getByUuidToUpdate(String uuid);

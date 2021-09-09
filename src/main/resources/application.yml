@@ -14,19 +14,25 @@ base:
 
 list:
   apis:
+    - /v1/account-groups
     - /v1/accounts
+    - /v1/bank-branches
+    - /v1/bank-groups
+    - /v1/banks
+    - /v1/companies
+    - /v1/company-groups
+    - /v1/supplier-users
     - /v1/third-parties
     - /v1/users
-    - /v1/companies
-    - /v1/banks
-    - /v1/bank-branches
-    - /v1/supplier-users
-    - /v1/account-groups
-    - /v1/bank-groups
-    - /v1/company-groups
 
 api:
   fields:
+    /v1/account-groups:
+      - accounts[].code
+      - code
+      - poolingAccount.code
+      - uuid
+
     /v1/accounts:
       - code
       - uuid
@@ -38,6 +44,55 @@ api:
       - bankAccountID.value
       - address.country.code
       - timeZone
+
+    /v1/bank-branches:
+      - code
+      - interfaceCode
+      - bank.code
+      - address.country.code
+      - calendar.code
+      - timeZone
+
+    /v1/bank-groups:
+      - banks[].code
+      - code
+      - leader.code
+      - uuid
+
+    /v1/banks:
+      - address.country.code
+      - code
+      - interfaceCode
+
+    /v1/companies:
+      - address.country.code
+      - code
+      - currencies.currency.code
+      - currencies.glCurrency.code
+      - interfaceCode
+      - shortCode
+
+    /v1/company-groups:
+      - code
+      - companies[].code
+      - leader.code
+      - uuid
+
+    /v1/supplier-users:
+      - code
+      - thirdParty.code
+      - companyOwnership.code
+      - accessProfile.code
+      - firstName
+      - lastName
+      - preferredContactChannel
+      - email
+      - timeZone
+      - interfaceCode
+      - fax
+      - mobilePhone
+      - officePhone
+      - uuid
 
     /v1/third-parties:
       - code
@@ -62,63 +117,15 @@ api:
       - mobilePhone
       - officePhone
 
-    /v1/companies:
-      - address.country.code
-      - code
-      - currencies.currency.code
-      - currencies.glCurrency.code
-      - interfaceCode
-      - shortCode
-
-    /v1/banks:
-      - address.country.code
-      - code
-      - interfaceCode
-
-    /v1/bank-branches:
-      - code
-      - interfaceCode
-      - bank.code
-      - address.country.code
-      - calendar.code
-      - timeZone
-
-    /v1/supplier-users:
-      - code
-      - thirdParty.code
-      - companyOwnership.code
-      - accessProfile.code
-      - firstName
-      - lastName
-      - preferredContactChannel
-      - email
-      - timeZone
-      - interfaceCode
-      - fax
-      - mobilePhone
-      - officePhone
-      - uuid
-
-    /v1/account-groups:
-      - accounts[].code
-      - code
-      - poolingAccount.code
-      - uuid
-
-    /v1/bank-groups:
-      - banks[].code
-      - code
-      - leader.code
-      - uuid
-
-    /v1/company-groups:
-      - code
-      - companies[].code
-      - leader.code
-      - uuid
-
 #List of all possible methods: [GET_ALL, GET_BY_CODE, GET_BY_UUID, POST, PUT_BY_CODE, PUT_BY_UUID, DELETE_BY_CODE, DELETE_BY_UUID]
   methods:
+    /v1/account-groups:
+      - GET_ALL
+      - GET_BY_UUID
+      - POST
+      - PUT_BY_UUID
+      - DELETE_BY_UUID
+
     /v1/accounts:
       - GET_ALL
       - GET_BY_CODE
@@ -127,6 +134,58 @@ api:
       - PUT_BY_CODE
       - PUT_BY_UUID
       - DELETE_BY_CODE
+      - DELETE_BY_UUID
+
+    /v1/bank-branches:
+      - GET_ALL
+      - GET_BY_CODE
+      - GET_BY_UUID
+      - POST
+      - PUT_BY_CODE
+      - PUT_BY_UUID
+      - DELETE_BY_CODE
+      - DELETE_BY_UUID
+
+    /v1/bank-groups:
+      - GET_ALL
+      - GET_BY_CODE
+      - GET_BY_UUID
+      - POST
+      - PUT_BY_CODE
+      - PUT_BY_UUID
+      - DELETE_BY_CODE
+      - DELETE_BY_UUID
+
+    /v1/banks:
+      - GET_ALL
+      - GET_BY_CODE
+      - GET_BY_UUID
+      - POST
+      - PUT_BY_CODE
+      - PUT_BY_UUID
+      - DELETE_BY_CODE
+      - DELETE_BY_UUID
+
+    /v1/companies:
+      - GET_ALL
+      - GET_BY_UUID
+      - POST
+      - PUT_BY_UUID
+      - DELETE_BY_CODE
+      - DELETE_BY_UUID
+
+    /v1/company-groups:
+      - GET_ALL
+      - GET_BY_UUID
+      - POST
+      - PUT_BY_UUID
+      - DELETE_BY_UUID
+
+    /v1/supplier-users:
+      - GET_ALL
+      - GET_BY_UUID
+      - POST
+      - PUT_BY_UUID
       - DELETE_BY_UUID
 
     /v1/third-parties:
@@ -140,65 +199,6 @@ api:
       - DELETE_BY_UUID
 
     /v1/users:
-      - GET_ALL
-      - GET_BY_UUID
-      - POST
-      - PUT_BY_UUID
-      - DELETE_BY_UUID
-
-    /v1/companies:
-      - GET_ALL
-      - GET_BY_UUID
-      - POST
-      - PUT_BY_UUID
-      - DELETE_BY_CODE
-      - DELETE_BY_UUID
-
-    /v1/banks:
-      - GET_ALL
-      - GET_BY_CODE
-      - GET_BY_UUID
-      - POST
-      - PUT_BY_CODE
-      - PUT_BY_UUID
-      - DELETE_BY_CODE
-      - DELETE_BY_UUID
-
-    /v1/bank-branches:
-      - GET_ALL
-      - GET_BY_CODE
-      - GET_BY_UUID
-      - POST
-      - PUT_BY_CODE
-      - PUT_BY_UUID
-      - DELETE_BY_CODE
-      - DELETE_BY_UUID
-
-    /v1/supplier-users:
-      - GET_ALL
-      - GET_BY_UUID
-      - POST
-      - PUT_BY_UUID
-      - DELETE_BY_UUID
-
-    /v1/account-groups:
-      - GET_ALL
-      - GET_BY_UUID
-      - POST
-      - PUT_BY_UUID
-      - DELETE_BY_UUID
-
-    /v1/bank-groups:
-      - GET_ALL
-      - GET_BY_CODE
-      - GET_BY_UUID
-      - POST
-      - PUT_BY_CODE
-      - PUT_BY_UUID
-      - DELETE_BY_CODE
-      - DELETE_BY_UUID
-
-    /v1/company-groups:
       - GET_ALL
       - GET_BY_UUID
       - POST
@@ -224,6 +224,13 @@ enums:
           - LBAN_8_STRUCTURE
           - LBAN_9_STRUCTURE
 
+      /v1/supplier-users:
+        preferredContactChannel:
+          - OFFICE_PHONE
+          - MOBILE_PHONE
+          - EMAIL
+          - BY_FAX
+
       /v1/users:
         preferredContactChannel:
           - OFFICE_PHONE
@@ -238,10 +245,3 @@ enums:
           - MR
           - MRS
           - MS
-
-      /v1/supplier-users:
-        preferredContactChannel:
-          - OFFICE_PHONE
-          - MOBILE_PHONE
-          - EMAIL
-          - BY_FAX

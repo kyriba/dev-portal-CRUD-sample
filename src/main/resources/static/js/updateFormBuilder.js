@@ -1,24 +1,15 @@
-    if (apiUrl == '/v1/users' || apiUrl == '/v1/supplier-users') {
-        if (apiUrl == '/v1/users') {
-            var fieldsOrder = ['code', 'interfaceCode', 'accessProfile.code', 'title', 'firstName', 'lastName',
-                'preferredContactChannel', 'officePhone', 'mobilePhone', 'email', 'fax', 'timeZone'];
-        } else {
-            var fieldsOrder = ['code', 'interfaceCode', 'accessProfile.code', 'firstName', 'lastName',
-                'preferredContactChannel', 'officePhone', 'mobilePhone', 'email', 'fax'];
-        }
-        for (let i = 0; i < fieldsOrder.length; i++) {
-            for (let j = 0; j < keySet.length && i < keySet.length; j++) {
-                if (keySet[j] == fieldsOrder[i] && i != j) {
-                    var additionalKeyVariable = keySet[i];
-                    var additionalValueVariable = values[i];
-                    var additionalInitialDataValueVariable = initial_data_values[i];
-                    keySet[i] = keySet[j];
-                    values[i] = values[j];
-                    initial_data_values[i] = initial_data_values[j];
-                    keySet[j] = additionalKeyVariable;
-                    values[j] = additionalValueVariable;
-                    initial_data_values[j] = additionalInitialDataValueVariable;
-                }
+    for (let i = 0; i < fieldsOrder.length; i++) {
+        for (let j = 0; j < keySet.length && i < keySet.length; j++) {
+            if (keySet[j] == fieldsOrder[i] && i != j) {
+                var additionalKeyVariable = keySet[i];
+                var additionalValueVariable = values[i];
+                var additionalInitialDataValueVariable = initial_data_values[i];
+                keySet[i] = keySet[j];
+                values[i] = values[j];
+                initial_data_values[i] = initial_data_values[j];
+                keySet[j] = additionalKeyVariable;
+                values[j] = additionalValueVariable;
+                initial_data_values[j] = additionalInitialDataValueVariable;
             }
         }
     }

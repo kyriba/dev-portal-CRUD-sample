@@ -91,6 +91,7 @@ public class ApiController {
 
     @PostMapping("/create")
     public String createItem(Model model) {
+        model.addAttribute("api_fields", apiService.getApiFields());
         model.addAttribute("fields", apiService.getSortedDistinctValuesOfFields());
         model.addAttribute("available_values", apiService.getAvailableValues());
         model.addAttribute("api_url", apiBean.getApiName());
@@ -104,6 +105,7 @@ public class ApiController {
         try {
             model.addAttribute("responseModel", apiService.create(requestParams));
         } catch (BadRequestException e) {
+            model.addAttribute("api_fields", apiService.getApiFields());
             model.addAttribute("fields", apiService.getSortedDistinctValuesOfFields());
             model.addAttribute("available_values", apiService.getAvailableValues());
             model.addAttribute("error_message", e.getMessage());
@@ -120,6 +122,7 @@ public class ApiController {
 
     @PostMapping("/updateByCode")
     public String updateItemByCode(@RequestParam String update_code, Model model) {
+        model.addAttribute("api_fields", apiService.getApiFields());
         model.addAttribute("api_methods", apiService.getApiMethods());
         model.addAttribute("codes_list", apiService.getAllCodes());
         model.addAttribute("created_codes", apiService.getCreatedCodes());
@@ -144,6 +147,7 @@ public class ApiController {
 
     @PostMapping("/updateByUuid")
     public String updateItemByUuid(@RequestParam String update_uuid, Model model) {
+        model.addAttribute("api_fields", apiService.getApiFields());
         model.addAttribute("api_methods", apiService.getApiMethods());
         model.addAttribute("codes_list", apiService.getAllCodes());
         model.addAttribute("created_codes", apiService.getCreatedCodes());
@@ -170,6 +174,7 @@ public class ApiController {
         try {
             model.addAttribute("item", apiService.update(item));
         } catch (BadRequestException e) {
+            model.addAttribute("api_fields", apiService.getApiFields());
             model.addAttribute("fields", apiService.getSortedDistinctValuesOfFields());
             model.addAttribute("available_values", apiService.getAvailableValues());
             model.addAttribute("error_message", e.getMessage());
