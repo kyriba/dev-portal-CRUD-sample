@@ -40,14 +40,14 @@ public class ApiServiceImpl implements ApiService {
     @Value("${client.secret}")
     public String CLIENT_SECRET;
 
-    private final String[] accountsFieldsToExclude = new String[] {"status", "includeInElectronicBank",
+    private final String[] accountsFieldsToExclude = new String[]{"status", "includeInElectronicBank",
             "includeInElectronicBankDate", "excludeFromElectronicBank", "excludeFromElectronicBankDate",
             "confirmAccountList", "confirmAccountListDate", "confirmAccountBalances", "confirmAccountBalancesDate",
             "confirmAccountSignatories", "confirmAccountSignatoriesDate", "accountOpeningRequested",
             "accountOpeningRequestDate", "accountClosureRequested", "accountClosureRequestDate"};
-    private final String[] companiesFieldsToExclude = new String[] {"uuid"};
-    private final String[] thirdPartiesFieldsToExclude = new String[] {"internalCounter", "internalCounterSuffix"};
-    private final String[] usersFieldsToExclude = new String[] {"code", "interfaceCode"};
+    private final String[] companiesFieldsToExclude = new String[]{"uuid"};
+    private final String[] thirdPartiesFieldsToExclude = new String[]{"internalCounter", "internalCounterSuffix"};
+    private final String[] usersFieldsToExclude = new String[]{"code", "interfaceCode"};
 
     private final Api api;
     private final InitialApiBean initialApiBean;
@@ -261,7 +261,7 @@ public class ApiServiceImpl implements ApiService {
                 break;
         }
 
-        if (apiMethods.contains("PUT_BY_CODE")) {
+        if (apiMethods.contains("GET_BY_CODE")) {
             requestBody = new StringBuilder(getByCode(item.get("code")));
         } else {
             requestBody = new StringBuilder(getByUuid(item.get("uuid")));
@@ -516,22 +516,34 @@ public class ApiServiceImpl implements ApiService {
         JSONObject copyOfJsonObject = jsonObject;
         for (int j = 0; j < fields.length - 1; j++) {
             if (fields[j].contains("[]")) {
-                JSONArray jsonArray = copyOfJsonObject.getJSONArray(fields[j].replace("[]", ""));
+                JSONArray jsonArray;
+                if (!copyOfJsonObject.isNull(fields[j])) {
+                    jsonArray = copyOfJsonObject.getJSONArray(fields[j].replace("[]", ""));
+                } else {
+                    jsonArray = new JSONArray();
+                }
                 jsonArray = new JSONArray(buildPUTJsonArray(jsonArray.toString(),
                         Arrays.stream(fields).skip(j + 1).toArray(String[]::new), value.split(",")));
                 copyOfJsonObject.put(fields[j].replace("[]", ""), jsonArray);
                 return jsonObject.toString();
             } else {
+                if (copyOfJsonObject.isNull(fields[j])) {
+                    copyOfJsonObject = copyOfJsonObject.put(fields[j], new JSONObject());
+                }
                 copyOfJsonObject = copyOfJsonObject.getJSONObject(fields[j]);
             }
         }
         String lastFieldPart = fields[fields.length - 1];
         if (lastFieldPart.equals("code")) {
             copyOfJsonObject.put(lastFieldPart, value);
-            copyOfJsonObject.remove("uuid");
+            if (copyOfJsonObject.has("uuid")) {
+                copyOfJsonObject.remove("uuid");
+            }
         } else if (lastFieldPart.equals("uuid")) {
             copyOfJsonObject.put(lastFieldPart, value);
-            copyOfJsonObject.remove("code");
+            if (copyOfJsonObject.has("code")) {
+                copyOfJsonObject.remove("code");
+            }
         } else {
             copyOfJsonObject.put(lastFieldPart, value);
         }
@@ -545,10 +557,13 @@ public class ApiServiceImpl implements ApiService {
             for (int j = 0; j < jsonArray.length(); j++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(j);
                 for (int k = 0; k < fields.length - 1; k++) {
+                    if (jsonObject.isNull(fields[k])) {
+                        jsonObject.put(fields[k], new JSONObject());
+                    }
                     jsonObject = jsonObject.getJSONObject(fields[k]);
                 }
                 String lastFieldPart = fields[fields.length - 1];
-                if (jsonObject.get(lastFieldPart).equals(value.trim())) {
+                if (!jsonObject.isNull(lastFieldPart) && jsonObject.get(lastFieldPart).equals(value.trim())) {
                     if ((lastFieldPart.equals("code") || lastFieldPart.equals("uuid"))) {
                         newJsonArray.put(jsonArray.getJSONObject(j));
                     } else {
