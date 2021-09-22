@@ -609,6 +609,9 @@ public class Api {
             case "/v1/data-permission-profiles":
                 localVarPath += "/permissions";
                 break;
+//            case "/v1/cash-flows":
+//                localVarPath += "/detail";
+//                break;
         }
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -1142,4 +1145,171 @@ public class Api {
         apiClient.executeAsync(call, localVarReturnType, callback);
         return call;
     }
+//
+//    /**
+//     * Build call for readCashFlows
+//     * @param accountCode accountCode (optional)
+//     * @param accountUuid accountUuid (optional)
+//     * @param dateType dateType (optional, default to TRANSACTION)
+//     * @param endDate endDate (optional, default to current date)
+//     * @param filter Filter represents search query on RSQL language. The fields which can be used in filter query are defined in description for endpoint.  The following RSQL comparing operators are supported: &#x3D;&#x3D; : Evaluates to true if the attribute is equal to the value. !&#x3D; : Evaluates to true if the attribute is not equal to the value. &#x3D;in&#x3D; : Evaluates to true if the attribute exactly matches any of the values in the list. &#x3D;out&#x3D; : Evaluates to true if the attribute does not match any of the values in the list. &#x3D;&#x3D;ABC* : Similar to SQL like &#39;ABC%. &#x3D;&#x3D;*ABC : Similar to SQL like &#39;%ABC. &#x3D;&#x3D;*ABC* : Similar to SQL like &#39;%ABC%. &#x3D;lt&#x3D; : Evaluates to true if the attribute is less than the value. &#x3D;gt&#x3D; : Evaluates to true if the attribute is greater than the value. &#x3D;le&#x3D; : Evaluates to true if the attribute is less than or equal to the value. &#x3D;ge&#x3D; : Evaluates to true if the attribute is greater than or equal to the value.  Logical Operators: RSQL expression is composed of one or more comparisons, related to each other with logical operators: Logical AND &#39;**;**&#39; or &#39;**and**&#39; Logical OR &#39;**,**&#39; or &#39;**or**&#39;.  Argument can be a single value, or multiple values in parenthesis separated by comma. Value that doesn’t contain any reserved character or a white space can be unquoted, other arguments must be enclosed in single or double quotes. (optional)
+//     * @param pageLimit Limit the number of records per page. (optional)
+//     * @param pageOffset Page Offset means the number of records you want to skip before starting reading. (optional)
+//     * @param sort Specify the comma-separated list of fields used to order the records. By default, ascending ordering is used. Example: **-code** means descending order by field {code}. (optional)
+//     * @param startDate startDate (optional, default to current date)
+//     * @param progressListener Progress listener
+//     * @param progressRequestListener Progress request listener
+//     * @return Call to execute
+//     * @throws ApiException If fail to serialize the request body object
+//     */
+//    public com.squareup.okhttp.Call readCashFlowsCall(String accountCode, UUID accountUuid, String dateType, LocalDate endDate, String filter, Integer pageLimit, Integer pageOffset, List<String> sort, LocalDate startDate, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+//        Object localVarPostBody = null;
+//
+//        // create path and map variables
+//        String localVarPath = "/v1/cash-flows";
+//
+//        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+//        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+//        if (accountCode != null)
+//            localVarQueryParams.addAll(apiClient.parameterToPair("accountCode", accountCode));
+//        if (accountUuid != null)
+//            localVarQueryParams.addAll(apiClient.parameterToPair("accountUuid", accountUuid));
+//        if (dateType != null)
+//            localVarQueryParams.addAll(apiClient.parameterToPair("dateType", dateType));
+//        if (endDate != null)
+//            localVarQueryParams.addAll(apiClient.parameterToPair("endDate", endDate));
+//        if (filter != null)
+//            localVarQueryParams.addAll(apiClient.parameterToPair("filter", filter));
+//        if (pageLimit != null)
+//            localVarQueryParams.addAll(apiClient.parameterToPair("page.limit", pageLimit));
+//        if (pageOffset != null)
+//            localVarQueryParams.addAll(apiClient.parameterToPair("page.offset", pageOffset));
+//        if (sort != null)
+//            localVarCollectionQueryParams.addAll(apiClient.parameterToPairs("multi", "sort", sort));
+//        if (startDate != null)
+//            localVarQueryParams.addAll(apiClient.parameterToPair("startDate", startDate));
+//
+//        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+//
+//        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+//
+//        final String[] localVarAccepts = {
+//                "*/*"
+//        };
+//        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+//        if (localVarAccept != null) localVarHeaderParams.put("Accept", localVarAccept);
+//
+//        final String[] localVarContentTypes = {
+//
+//        };
+//        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+//        localVarHeaderParams.put("Content-Type", localVarContentType);
+//
+//        if(progressListener != null) {
+//            apiClient.getHttpClient().networkInterceptors().add(new com.squareup.okhttp.Interceptor() {
+//                @Override
+//                public com.squareup.okhttp.Response intercept(com.squareup.okhttp.Interceptor.Chain chain) throws IOException {
+//                    com.squareup.okhttp.Response originalResponse = chain.proceed(chain.request());
+//                    return originalResponse.newBuilder()
+//                            .body(new ProgressResponseBody(originalResponse.body(), progressListener))
+//                            .build();
+//                }
+//            });
+//        }
+//
+//        String[] localVarAuthNames = new String[] { "OAuth2ClientCredentials" };
+//        return apiClient.buildCall(localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+//    }
+//
+//    @SuppressWarnings("rawtypes")
+//    private com.squareup.okhttp.Call readCashFlowsValidateBeforeCall(String accountCode, UUID accountUuid, String dateType, LocalDate endDate, String filter, Integer pageLimit, Integer pageOffset, List<String> sort, LocalDate startDate, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+//
+//        com.squareup.okhttp.Call call = readCashFlowsCall(accountCode, accountUuid, dateType, endDate, filter, pageLimit, pageOffset, sort, startDate, progressListener, progressRequestListener);
+//        return call;
+//
+//    }
+//
+//    /**
+//     * List of cash flows
+//     * An empty list is returned if no cash flows are available. The following fields can be used for filter and sort: - **account.uuid** - **account.code** - **flowCode.uuid** - **flowCode.code** - **budgetCode.uuid** - **budgetCode.code** - **origin** - **description** - **reference** - **flowStatus** available values &#x3D; {ESTIMATED,CONFIRMED,ACTUAL,INTRADAY} - **flowStatus.actualMode** - **glStatus** available values &#x3D; {IS_NOT_DEFINED,NOT_BALANCED,BALANCED,EXPORTED_TO_GL}
+//     * @param accountCode accountCode (optional)
+//     * @param accountUuid accountUuid (optional)
+//     * @param dateType dateType (optional, default to TRANSACTION)
+//     * @param endDate endDate (optional, default to current date)
+//     * @param filter Filter represents search query on RSQL language. The fields which can be used in filter query are defined in description for endpoint.  The following RSQL comparing operators are supported: &#x3D;&#x3D; : Evaluates to true if the attribute is equal to the value. !&#x3D; : Evaluates to true if the attribute is not equal to the value. &#x3D;in&#x3D; : Evaluates to true if the attribute exactly matches any of the values in the list. &#x3D;out&#x3D; : Evaluates to true if the attribute does not match any of the values in the list. &#x3D;&#x3D;ABC* : Similar to SQL like &#39;ABC%. &#x3D;&#x3D;*ABC : Similar to SQL like &#39;%ABC. &#x3D;&#x3D;*ABC* : Similar to SQL like &#39;%ABC%. &#x3D;lt&#x3D; : Evaluates to true if the attribute is less than the value. &#x3D;gt&#x3D; : Evaluates to true if the attribute is greater than the value. &#x3D;le&#x3D; : Evaluates to true if the attribute is less than or equal to the value. &#x3D;ge&#x3D; : Evaluates to true if the attribute is greater than or equal to the value.  Logical Operators: RSQL expression is composed of one or more comparisons, related to each other with logical operators: Logical AND &#39;**;**&#39; or &#39;**and**&#39; Logical OR &#39;**,**&#39; or &#39;**or**&#39;.  Argument can be a single value, or multiple values in parenthesis separated by comma. Value that doesn’t contain any reserved character or a white space can be unquoted, other arguments must be enclosed in single or double quotes. (optional)
+//     * @param pageLimit Limit the number of records per page. (optional)
+//     * @param pageOffset Page Offset means the number of records you want to skip before starting reading. (optional)
+//     * @param sort Specify the comma-separated list of fields used to order the records. By default, ascending ordering is used. Example: **-code** means descending order by field {code}. (optional)
+//     * @param startDate startDate (optional, default to current date)
+//     * @return String
+//     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+//     */
+//    public String readCashFlows(String accountCode, UUID accountUuid, String dateType, LocalDate endDate, String filter, Integer pageLimit, Integer pageOffset, List<String> sort, LocalDate startDate) throws ApiException {
+//        ApiResponse<String> resp = readCashFlowsWithHttpInfo(accountCode, accountUuid, dateType, endDate, filter, pageLimit, pageOffset, sort, startDate);
+//        return resp.getData();
+//    }
+//
+//    /**
+//     * List of cash flows
+//     * An empty list is returned if no cash flows are available. The following fields can be used for filter and sort: - **account.uuid** - **account.code** - **flowCode.uuid** - **flowCode.code** - **budgetCode.uuid** - **budgetCode.code** - **origin** - **description** - **reference** - **flowStatus** available values &#x3D; {ESTIMATED,CONFIRMED,ACTUAL,INTRADAY} - **flowStatus.actualMode** - **glStatus** available values &#x3D; {IS_NOT_DEFINED,NOT_BALANCED,BALANCED,EXPORTED_TO_GL}
+//     * @param accountCode accountCode (optional)
+//     * @param accountUuid accountUuid (optional)
+//     * @param dateType dateType (optional, default to TRANSACTION)
+//     * @param endDate endDate (optional, default to current date)
+//     * @param filter Filter represents search query on RSQL language. The fields which can be used in filter query are defined in description for endpoint.  The following RSQL comparing operators are supported: &#x3D;&#x3D; : Evaluates to true if the attribute is equal to the value. !&#x3D; : Evaluates to true if the attribute is not equal to the value. &#x3D;in&#x3D; : Evaluates to true if the attribute exactly matches any of the values in the list. &#x3D;out&#x3D; : Evaluates to true if the attribute does not match any of the values in the list. &#x3D;&#x3D;ABC* : Similar to SQL like &#39;ABC%. &#x3D;&#x3D;*ABC : Similar to SQL like &#39;%ABC. &#x3D;&#x3D;*ABC* : Similar to SQL like &#39;%ABC%. &#x3D;lt&#x3D; : Evaluates to true if the attribute is less than the value. &#x3D;gt&#x3D; : Evaluates to true if the attribute is greater than the value. &#x3D;le&#x3D; : Evaluates to true if the attribute is less than or equal to the value. &#x3D;ge&#x3D; : Evaluates to true if the attribute is greater than or equal to the value.  Logical Operators: RSQL expression is composed of one or more comparisons, related to each other with logical operators: Logical AND &#39;**;**&#39; or &#39;**and**&#39; Logical OR &#39;**,**&#39; or &#39;**or**&#39;.  Argument can be a single value, or multiple values in parenthesis separated by comma. Value that doesn’t contain any reserved character or a white space can be unquoted, other arguments must be enclosed in single or double quotes. (optional)
+//     * @param pageLimit Limit the number of records per page. (optional)
+//     * @param pageOffset Page Offset means the number of records you want to skip before starting reading. (optional)
+//     * @param sort Specify the comma-separated list of fields used to order the records. By default, ascending ordering is used. Example: **-code** means descending order by field {code}. (optional)
+//     * @param startDate startDate (optional, default to current date)
+//     * @return ApiResponse&lt;String&gt;
+//     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+//     */
+//    public ApiResponse<String> readCashFlowsWithHttpInfo(String accountCode, UUID accountUuid, String dateType, LocalDate endDate, String filter, Integer pageLimit, Integer pageOffset, List<String> sort, LocalDate startDate) throws ApiException {
+//        com.squareup.okhttp.Call call = readCashFlowsValidateBeforeCall(accountCode, accountUuid, dateType, endDate, filter, pageLimit, pageOffset, sort, startDate, null, null);
+//        Type localVarReturnType = new TypeToken<String>(){}.getType();
+//        return apiClient.execute(call, localVarReturnType);
+//    }
+//
+//    /**
+//     * List of cash flows (asynchronously)
+//     * An empty list is returned if no cash flows are available. The following fields can be used for filter and sort: - **account.uuid** - **account.code** - **flowCode.uuid** - **flowCode.code** - **budgetCode.uuid** - **budgetCode.code** - **origin** - **description** - **reference** - **flowStatus** available values &#x3D; {ESTIMATED,CONFIRMED,ACTUAL,INTRADAY} - **flowStatus.actualMode** - **glStatus** available values &#x3D; {IS_NOT_DEFINED,NOT_BALANCED,BALANCED,EXPORTED_TO_GL}
+//     * @param accountCode accountCode (optional)
+//     * @param accountUuid accountUuid (optional)
+//     * @param dateType dateType (optional, default to TRANSACTION)
+//     * @param endDate endDate (optional, default to current date)
+//     * @param filter Filter represents search query on RSQL language. The fields which can be used in filter query are defined in description for endpoint.  The following RSQL comparing operators are supported: &#x3D;&#x3D; : Evaluates to true if the attribute is equal to the value. !&#x3D; : Evaluates to true if the attribute is not equal to the value. &#x3D;in&#x3D; : Evaluates to true if the attribute exactly matches any of the values in the list. &#x3D;out&#x3D; : Evaluates to true if the attribute does not match any of the values in the list. &#x3D;&#x3D;ABC* : Similar to SQL like &#39;ABC%. &#x3D;&#x3D;*ABC : Similar to SQL like &#39;%ABC. &#x3D;&#x3D;*ABC* : Similar to SQL like &#39;%ABC%. &#x3D;lt&#x3D; : Evaluates to true if the attribute is less than the value. &#x3D;gt&#x3D; : Evaluates to true if the attribute is greater than the value. &#x3D;le&#x3D; : Evaluates to true if the attribute is less than or equal to the value. &#x3D;ge&#x3D; : Evaluates to true if the attribute is greater than or equal to the value.  Logical Operators: RSQL expression is composed of one or more comparisons, related to each other with logical operators: Logical AND &#39;**;**&#39; or &#39;**and**&#39; Logical OR &#39;**,**&#39; or &#39;**or**&#39;.  Argument can be a single value, or multiple values in parenthesis separated by comma. Value that doesn’t contain any reserved character or a white space can be unquoted, other arguments must be enclosed in single or double quotes. (optional)
+//     * @param pageLimit Limit the number of records per page. (optional)
+//     * @param pageOffset Page Offset means the number of records you want to skip before starting reading. (optional)
+//     * @param sort Specify the comma-separated list of fields used to order the records. By default, ascending ordering is used. Example: **-code** means descending order by field {code}. (optional)
+//     * @param startDate startDate (optional, default to current date)
+//     * @param callback The callback to be executed when the API call finishes
+//     * @return The request call
+//     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+//     */
+//    public com.squareup.okhttp.Call readCashFlowsAsync(String accountCode, UUID accountUuid, String dateType, LocalDate endDate, String filter, Integer pageLimit, Integer pageOffset, List<String> sort, LocalDate startDate, final ApiCallback<String> callback) throws ApiException {
+//
+//        ProgressResponseBody.ProgressListener progressListener = null;
+//        ProgressRequestBody.ProgressRequestListener progressRequestListener = null;
+//
+//        if (callback != null) {
+//            progressListener = new ProgressResponseBody.ProgressListener() {
+//                @Override
+//                public void update(long bytesRead, long contentLength, boolean done) {
+//                    callback.onDownloadProgress(bytesRead, contentLength, done);
+//                }
+//            };
+//
+//            progressRequestListener = new ProgressRequestBody.ProgressRequestListener() {
+//                @Override
+//                public void onRequestProgress(long bytesWritten, long contentLength, boolean done) {
+//                    callback.onUploadProgress(bytesWritten, contentLength, done);
+//                }
+//            };
+//        }
+//
+//        com.squareup.okhttp.Call call = readCashFlowsValidateBeforeCall(accountCode, accountUuid, dateType, endDate, filter, pageLimit, pageOffset, sort, startDate, progressListener, progressRequestListener);
+//        Type localVarReturnType = new TypeToken<String>(){}.getType();
+//        apiClient.executeAsync(call, localVarReturnType, callback);
+//        return call;
+//    }
 }

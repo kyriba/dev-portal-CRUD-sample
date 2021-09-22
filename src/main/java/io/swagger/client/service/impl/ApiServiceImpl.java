@@ -45,9 +45,10 @@ public class ApiServiceImpl implements ApiService {
             "confirmAccountList", "confirmAccountListDate", "confirmAccountBalances", "confirmAccountBalancesDate",
             "confirmAccountSignatories", "confirmAccountSignatoriesDate", "accountOpeningRequested",
             "accountOpeningRequestDate", "accountClosureRequested", "accountClosureRequestDate"};
-    private final String[] companiesFieldsToExclude = new String[]{"uuid"};
+    //    private final String[] cashFlowsFieldsToExclude = new String[]{"flowDescription", "glStatus", "number", "origin",
+//            "status"};
+//    private final String[] cashFlowsFieldsToInclude = new String[]{"description", "flowStatus"};
     private final String[] thirdPartiesFieldsToExclude = new String[]{"internalCounter", "internalCounterSuffix"};
-    private final String[] usersFieldsToExclude = new String[]{"code", "interfaceCode"};
 
     private final Api api;
     private final InitialApiBean initialApiBean;
@@ -243,21 +244,23 @@ public class ApiServiceImpl implements ApiService {
     public ResponseIdModel update(Map<String, String> item) {
 
         List<String> fieldsToExclude;
+//        List<String> fieldsToInclude;
         switch (initialApiBean.getApiName()) {
             case "/v1/accounts":
                 fieldsToExclude = new ArrayList<>(Arrays.asList(accountsFieldsToExclude));
+//                fieldsToInclude = new ArrayList<>();
                 break;
-            case "/v1/companies":
-                fieldsToExclude = new ArrayList<>(Arrays.asList(companiesFieldsToExclude));
-                break;
+//            case "/v1/cash-flows":
+//                fieldsToExclude = new ArrayList<>(Arrays.asList(cashFlowsFieldsToExclude));
+//                fieldsToInclude = new ArrayList<>(Arrays.asList(cashFlowsFieldsToInclude));
+//                break;
             case "/v1/third-parties":
                 fieldsToExclude = new ArrayList<>(Arrays.asList(thirdPartiesFieldsToExclude));
-                break;
-            case "/v1/users":
-                fieldsToExclude = new ArrayList<>(Arrays.asList(usersFieldsToExclude));
+//                fieldsToInclude = new ArrayList<>();
                 break;
             default:
                 fieldsToExclude = new ArrayList<>();
+//                fieldsToInclude = new ArrayList<>();
                 break;
         }
 
@@ -511,13 +514,17 @@ public class ApiServiceImpl implements ApiService {
                                            List<String> fieldsToExclude) {
         JSONObject jsonObject = new JSONObject(requestBody);
         for (int i = 0; i < fieldsToExclude.size(); i++) {
-            jsonObject.remove(fieldsToExclude.remove(i--));
+            if (fieldsToExclude.get(i).contains("[]")) {
+                jsonObject.remove(fieldsToExclude.remove(i--).replace("[]", ""));
+            } else {
+                jsonObject.remove(fieldsToExclude.remove(i--));
+            }
         }
         JSONObject copyOfJsonObject = jsonObject;
         for (int j = 0; j < fields.length - 1; j++) {
             if (fields[j].contains("[]")) {
                 JSONArray jsonArray;
-                if (!copyOfJsonObject.isNull(fields[j])) {
+                if (!copyOfJsonObject.isNull(fields[j].replace("[]", ""))) {
                     jsonArray = copyOfJsonObject.getJSONArray(fields[j].replace("[]", ""));
                 } else {
                     jsonArray = new JSONArray();

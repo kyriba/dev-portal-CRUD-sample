@@ -25,7 +25,6 @@
     var fieldPartsMaxAmount = 0;
     var fieldParts = new Array(keySet.length);
     var tdTag = '<td></td>';
-    var hiddenTdTag = '<td hidden></td>';
 
     for (let k = 0; k < keySet.length; k++) {
         fieldParts[k] = new Array(keySet[k].split(".").length);
@@ -50,11 +49,11 @@
         }
         if ((key === 'code' || key === 'interfaceCode' || key === 'uuid') && initial_data_value != '') {
             var bodyRow = tbody.insertRow(rowCounter++);
-            var htmlCode = '<td hidden><label for="' + key + '_input">' + key + '</label></td>' +
-            '<td hidden><input type="text" name="' + key + '" id="' + key + '_input" value="' +
-            initial_data_value + '"><br></td>';
+            var htmlCode = '<td><label for="' + key + '_input">' + key + '</label></td>' +
+            '<td><input type="text" name="' + key + '" id="' + key + '_input" value="' +
+            initial_data_value + '" readonly><br></td>';
             for (let i = 2; i <= fieldPartsMaxAmount; i++) {
-                htmlCode += hiddenTdTag;
+                htmlCode += tdTag;
             }
             bodyRow.innerHTML = htmlCode;
         } else if (key === 'shortCode' && initial_data_value != '') {
