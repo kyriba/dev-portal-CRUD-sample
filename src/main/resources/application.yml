@@ -153,6 +153,29 @@ api:
       - DELETE_BY_CODE
       - DELETE_BY_UUID
 
+  exclude:
+    fields:
+      /v1/accounts:
+        - status
+        - includeInElectronicBank
+        - includeInElectronicBankDate
+        - excludeFromElectronicBank
+        - excludeFromElectronicBankDate
+        - confirmAccountList
+        - confirmAccountListDate
+        - confirmAccountBalances
+        - confirmAccountBalancesDate
+        - confirmAccountSignatories
+        - confirmAccountSignatoriesDate
+        - accountOpeningRequested
+        - accountOpeningRequestDate
+        - accountClosureRequested
+        - accountClosureRequestDate
+
+      /v1/third-parties:
+        - internalCounter
+        - internalCounterSuffix
+
 #For boolean fields values can be only 'true' or 'false'
 enums:
   available:
