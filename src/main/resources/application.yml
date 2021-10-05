@@ -153,6 +153,7 @@ api:
       - DELETE_BY_CODE
       - DELETE_BY_UUID
 
+#Read-only parameters that cannot be updated
   exclude:
     fields:
       /v1/accounts:
