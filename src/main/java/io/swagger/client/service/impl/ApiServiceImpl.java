@@ -540,7 +540,7 @@ public class ApiServiceImpl implements ApiService {
                 copyOfJsonObject = copyOfJsonObject.getJSONObject(fields[j]);
             }
         }
-        String lastFieldPart = fields[fields.length - 1];
+        String lastFieldPart = fields[fields.length - 1].replace("[]", "");
         if (lastFieldPart.equals("code")) {
             copyOfJsonObject.put(lastFieldPart, value);
             if (copyOfJsonObject.has("uuid")) {
