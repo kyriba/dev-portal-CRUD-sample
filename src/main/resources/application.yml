@@ -205,6 +205,36 @@ api:
       - PUT_BY_UUID
       - DELETE_BY_UUID
 
+  exclude:
+    fields:
+      /v1/accounts:
+        - status
+        - includeInElectronicBank
+        - includeInElectronicBankDate
+        - excludeFromElectronicBank
+        - excludeFromElectronicBankDate
+        - confirmAccountList
+        - confirmAccountListDate
+        - confirmAccountBalances
+        - confirmAccountBalancesDate
+        - confirmAccountSignatories
+        - confirmAccountSignatoriesDate
+        - accountOpeningRequested
+        - accountOpeningRequestDate
+        - accountClosureRequested
+        - accountClosureRequestDate
+
+      /v1/companies:
+        - uuid
+
+      /v1/third-parties:
+        - internalCounter
+        - internalCounterSuffix
+
+      /v1/users:
+        - code
+        - interfaceCode
+
 #For boolean fields values can be only 'true' or 'false'
 enums:
   available:

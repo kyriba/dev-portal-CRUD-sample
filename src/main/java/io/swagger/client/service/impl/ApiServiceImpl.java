@@ -4,10 +4,7 @@ import io.swagger.client.ApiClient;
 import io.swagger.client.ApiException;
 import io.swagger.client.ResponseIdModel;
 import io.swagger.client.api.Api;
-import io.swagger.client.config.AvailableValuesConfig;
-import io.swagger.client.config.FieldsConfig;
-import io.swagger.client.config.InitialApiBean;
-import io.swagger.client.config.MethodsConfig;
+import io.swagger.client.config.*;
 import io.swagger.client.exception.BadRequestException;
 import io.swagger.client.exception.InvalidTokenException;
 import io.swagger.client.service.ApiService;
@@ -40,46 +37,43 @@ public class ApiServiceImpl implements ApiService {
     @Value("${client.secret}")
     public String CLIENT_SECRET;
 
-    private final String[] accountsFieldsToExclude = new String[]{"status", "includeInElectronicBank",
-            "includeInElectronicBankDate", "excludeFromElectronicBank", "excludeFromElectronicBankDate",
-            "confirmAccountList", "confirmAccountListDate", "confirmAccountBalances", "confirmAccountBalancesDate",
-            "confirmAccountSignatories", "confirmAccountSignatoriesDate", "accountOpeningRequested",
-            "accountOpeningRequestDate", "accountClosureRequested", "accountClosureRequestDate"};
-    private final String[] companiesFieldsToExclude = new String[]{"uuid"};
-    private final String[] thirdPartiesFieldsToExclude = new String[]{"internalCounter", "internalCounterSuffix"};
-    private final String[] usersFieldsToExclude = new String[]{"code", "interfaceCode"};
-
     private final Api api;
     private final InitialApiBean initialApiBean;
     private final FieldsConfig fieldsConfig;
     private final MethodsConfig methodsConfig;
     private final AvailableValuesConfig availableValuesConfig;
+    private final FieldsToExcludeConfig fieldsToExcludeConfig;
 
     private StringBuilder requestBody;
     private List<String> apiFields;
     private List<String> apiMethods;
+    private List<String> fieldsToExclude;
     private List<String> codes = new ArrayList<>();
     private final List<String> createdCodes = new ArrayList<>();
     private Map<String, Set<String>> distinctAndSortedValuesOfFields;
     private Map<String, List<String>> availableValues;
 
-    public ApiServiceImpl(Api api, InitialApiBean initialApiBean, FieldsConfig fieldsConfig,
-                          MethodsConfig methodsConfig, AvailableValuesConfig availableValuesConfig) {
+    public ApiServiceImpl(Api api, InitialApiBean initialApiBean, FieldsConfig fieldsConfig, MethodsConfig methodsConfig,
+                          AvailableValuesConfig availableValuesConfig, FieldsToExcludeConfig fieldsToExcludeConfig) {
         this.api = api;
         this.initialApiBean = initialApiBean;
         this.fieldsConfig = fieldsConfig;
         this.methodsConfig = methodsConfig;
         this.availableValuesConfig = availableValuesConfig;
+        this.fieldsToExcludeConfig = fieldsToExcludeConfig;
     }
 
     @PostConstruct
     private void postConstruct() {
         refreshToken();
-        this.apiFields = fieldsConfig.getFields().get(initialApiBean.getApiName().replaceAll("/", ""));
+        apiFields = fieldsConfig.getFields().get(initialApiBean.getApiName().replaceAll("/", ""));
         availableValues = availableValuesConfig.getValues().get(initialApiBean.getApiName().replaceAll("/", ""));
-        apiMethods = methodsConfig.getMethods().get(initialApiBean.getApiName().replaceAll("/", ""));
         if (availableValues == null)
             availableValues = new TreeMap<>();
+        apiMethods = methodsConfig.getMethods().get(initialApiBean.getApiName().replaceAll("/", ""));
+        fieldsToExclude = fieldsToExcludeConfig.getFields().get(initialApiBean.getApiName().replaceAll("/", ""));
+        if (fieldsToExclude == null)
+            fieldsToExclude = new ArrayList<>();
         System.out.println("Wait a minute");
         if (apiMethods.contains("GET_ALL"))
             codes = findAllIdentifiers(getAll(null, null, 1000, null, null), "code");
@@ -138,7 +132,6 @@ public class ApiServiceImpl implements ApiService {
 
             OAuthAccessTokenResponse token = client.accessToken(request, OAuth.HttpMethod.POST, OAuthJSONAccessTokenResponse.class);
             String accessToken = token.getAccessToken();
-//            System.out.println(token.getBody() + "\n");
             ApiClient defaultClient = api.getApiClient();
             io.swagger.client.auth.OAuth OAuth2ClientCredentials = (io.swagger.client.auth.OAuth) defaultClient.getAuthentication("OAuth2ClientCredentials");
             OAuth2ClientCredentials.setAccessToken(accessToken);
@@ -242,25 +235,6 @@ public class ApiServiceImpl implements ApiService {
     @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
     public ResponseIdModel update(Map<String, String> item) {
 
-        List<String> fieldsToExclude;
-        switch (initialApiBean.getApiName()) {
-            case "/v1/accounts":
-                fieldsToExclude = new ArrayList<>(Arrays.asList(accountsFieldsToExclude));
-                break;
-            case "/v1/companies":
-                fieldsToExclude = new ArrayList<>(Arrays.asList(companiesFieldsToExclude));
-                break;
-            case "/v1/third-parties":
-                fieldsToExclude = new ArrayList<>(Arrays.asList(thirdPartiesFieldsToExclude));
-                break;
-            case "/v1/users":
-                fieldsToExclude = new ArrayList<>(Arrays.asList(usersFieldsToExclude));
-                break;
-            default:
-                fieldsToExclude = new ArrayList<>();
-                break;
-        }
-
         if (apiMethods.contains("GET_BY_CODE")) {
             requestBody = new StringBuilder(getByCode(item.get("code")));
         } else {
@@ -279,7 +253,7 @@ public class ApiServiceImpl implements ApiService {
 
         for (int i = 0; i < listOfFields.size(); i++) {
             requestBody = new StringBuilder(buildPUTJsonRequestBody(String.valueOf(requestBody),
-                    listOfFields.get(i), listOfValues.get(i), fieldsToExclude));
+                    listOfFields.get(i), listOfValues.get(i)));
         }
 
         ResponseIdModel responseIdModel;
@@ -507,17 +481,16 @@ public class ApiServiceImpl implements ApiService {
         return regexBuilder;
     }
 
-    private String buildPUTJsonRequestBody(String requestBody, String[] fields, String value,
-                                           List<String> fieldsToExclude) {
+    private String buildPUTJsonRequestBody(String requestBody, String[] fields, String value) {
         JSONObject jsonObject = new JSONObject(requestBody);
-        for (int i = 0; i < fieldsToExclude.size(); i++) {
-            jsonObject.remove(fieldsToExclude.remove(i--));
+        for (String field : fieldsToExclude) {
+            removeFieldFromJsonObject(jsonObject, field);
         }
         JSONObject copyOfJsonObject = jsonObject;
         for (int j = 0; j < fields.length - 1; j++) {
             if (fields[j].contains("[]")) {
                 JSONArray jsonArray;
-                if (!copyOfJsonObject.isNull(fields[j])) {
+                if (!copyOfJsonObject.isNull(fields[j].replace("[]", ""))) {
                     jsonArray = copyOfJsonObject.getJSONArray(fields[j].replace("[]", ""));
                 } else {
                     jsonArray = new JSONArray();
@@ -533,7 +506,7 @@ public class ApiServiceImpl implements ApiService {
                 copyOfJsonObject = copyOfJsonObject.getJSONObject(fields[j]);
             }
         }
-        String lastFieldPart = fields[fields.length - 1];
+        String lastFieldPart = fields[fields.length - 1].replace("[]", "");
         if (lastFieldPart.equals("code")) {
             copyOfJsonObject.put(lastFieldPart, value);
             if (copyOfJsonObject.has("uuid")) {
@@ -702,5 +675,13 @@ public class ApiServiceImpl implements ApiService {
             else
                 distinctAndSortedValuesOfFields.get(key).add(item.get(key));
         }
+    }
+
+    private void removeFieldFromJsonObject(JSONObject jsonObject, String field) {
+        String[] fieldsArray = field.split("\\.");
+        for (int i = 0; i < fieldsArray.length - 1; i++) {
+            jsonObject.get(fieldsArray[i].replace("[]", ""));
+        }
+        jsonObject.remove(fieldsArray[fieldsArray.length - 1].replace("[]", ""));
     }
 }
