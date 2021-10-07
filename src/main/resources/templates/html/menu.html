@@ -133,13 +133,28 @@
                          onclick="copy_curl('/code=', 'update_code')">
                 </td>
             </tr>
+            <tr id="PUT_BY_REF" hidden>
+                <td>Update item by reference</td>
+                <td><label for="update_ref"></label>
+                    <input type="text" name="update_ref" id="update_ref" form="form6"
+                           placeholder="Code or UUID of item you want to change" size="28"></td>
+                <td align="center">
+                    <form th:action="@{/CRUD/updateByRef}" method="post" id="form6">
+                        <button type="submit" style="background-color: #fca130;" class="button">PUT</button>
+                    </form>
+                </td>
+                <td>
+                    <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
+                         onclick="copy_curl('/', 'update_ref')">
+                </td>
+            </tr>
             <tr id="DELETE_BY_UUID" hidden>
                 <td>Delete item by UUID</td>
                 <td><label for="delete_uuid"></label>
-                    <input type="text" name="delete_uuid" id="delete_uuid" form="form6"
+                    <input type="text" name="delete_uuid" id="delete_uuid" form="form7"
                            placeholder="UUID of item you want to delete" size="28"></td>
                 <td align="center">
-                    <form th:action="@{/CRUD/deleteByUuid}" method="post" id="form6">
+                    <form th:action="@{/CRUD/deleteByUuid}" method="post" id="form7">
                         <button type="submit" style="background-color: #f93e3e;" class="button">DELETE</button>
                     </form>
                 </td>
@@ -151,14 +166,14 @@
             <tr id="DELETE_BY_CODE" hidden>
                 <td>Delete item by Code</td>
                 <td><label for="delete_code"></label>
-                    <input type="text" list="delete_codes" name="delete_code" id="delete_code" form="form7"
+                    <input type="text" list="delete_codes" name="delete_code" id="delete_code" form="form8"
                            placeholder="Code of item you want to delete" size="28" autocomplete="off"/>
                     <datalist id="delete_codes">
                         <option th:each="created_code: ${created_codes}" th:value="${created_code}">
                     </datalist>
                 </td>
                 <td align="center">
-                    <form th:action="@{/CRUD/deleteByCode}" method="post" id="form7">
+                    <form th:action="@{/CRUD/deleteByCode}" method="post" id="form8">
                         <button type="submit" style="background-color: #f93e3e;" class="button">DELETE</button>
                     </form>
                 </td>

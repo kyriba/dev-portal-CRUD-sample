@@ -177,6 +177,28 @@ public class ApiController {
         }
         try {
             model.addAttribute("initial_data", apiService.getByUuidToUpdate(update_uuid));
+        } catch (BadRequestException | IllegalArgumentException e) {
+            model.addAttribute("error_message", json.serialize(e.getMessage()));
+            return "exception/bad-request-exception";
+        }
+        model.addAttribute("fields", apiService.getSortedDistinctValuesOfFields());
+        model.addAttribute("available_values", apiService.getAvailableValues());
+        return "html/update-item";
+    }
+
+    @PostMapping("/updateByRef")
+    public String updateItemByRef(@RequestParam String update_ref, Model model) {
+        model.addAttribute("api_fields", apiService.getApiFields());
+        model.addAttribute("api_methods", apiService.getApiMethods());
+        model.addAttribute("codes_list", apiService.getAllCodes());
+        model.addAttribute("created_codes", apiService.getCreatedCodes());
+        model.addAttribute("base_url", BASE_URL);
+        model.addAttribute("api_url", apiBean.getApiName());
+        if (update_ref.equals("")) {
+            return "exception/blank-input-exception";
+        }
+        try {
+            model.addAttribute("initial_data", apiService.getByRefToUpdate(update_ref));
         } catch (BadRequestException e) {
             model.addAttribute("error_message", json.serialize(e.getMessage()));
             return "exception/bad-request-exception";
@@ -244,7 +266,7 @@ public class ApiController {
         }
         try {
             model.addAttribute("item", apiService.deleteByUuid(delete_uuid));
-        } catch (BadRequestException e) {
+        } catch (BadRequestException | IllegalArgumentException e) {
             model.addAttribute("error_message", json.serialize(e.getMessage()));
             return "exception/bad-request-exception";
         }

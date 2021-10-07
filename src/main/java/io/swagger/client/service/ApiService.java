@@ -42,4 +42,6 @@ public interface ApiService {
     Map<String, Set<String>> getByCodeToUpdate(String code);
 
     Map<String, Set<String>> getByUuidToUpdate(String uuid);
+
+    Map<String, Set<String>> getByRefToUpdate(String ref);
 }
