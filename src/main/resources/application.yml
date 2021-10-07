@@ -117,11 +117,11 @@ api:
       - mobilePhone
       - officePhone
 
-#List of all possible methods: [GET_ALL, GET_BY_CODE, GET_BY_UUID, POST, PUT_BY_CODE, PUT_BY_UUID, DELETE_BY_CODE, DELETE_BY_UUID]
+#List of all possible methods: [GET_ALL, GET_BY_CODE, GET_BY_UUID, GET_BY_REF, POST, PUT_BY_CODE, PUT_BY_UUID, DELETE_BY_CODE, DELETE_BY_UUID]
   methods:
     /v1/account-groups:
       - GET_ALL
-      - GET_BY_UUID
+      - GET_BY_REF
       - POST
       - PUT_BY_UUID
       - DELETE_BY_UUID
@@ -176,7 +176,7 @@ api:
 
     /v1/company-groups:
       - GET_ALL
-      - GET_BY_UUID
+      - GET_BY_REF
       - POST
       - PUT_BY_UUID
       - DELETE_BY_UUID

@@ -89,6 +89,25 @@ public class ApiController {
         return "html/item-uuid-renderjson";
     }
 
+    @PostMapping("/getByRef")
+    public String getItemByRef(@RequestParam String get_ref, Model model) {
+        model.addAttribute("api_methods", apiService.getApiMethods());
+        model.addAttribute("codes_list", apiService.getAllCodes());
+        model.addAttribute("created_codes", apiService.getCreatedCodes());
+        model.addAttribute("base_url", BASE_URL);
+        model.addAttribute("api_url", apiBean.getApiName());
+        if (get_ref.equals("")) {
+            return "exception/blank-input-exception";
+        }
+        try {
+            model.addAttribute("item", apiService.getByRef(get_ref));
+        } catch (BadRequestException | IllegalArgumentException e) {
+            model.addAttribute("error_message", json.serialize(e.getMessage()));
+            return "exception/bad-request-exception";
+        }
+        return "html/item-ref-renderjson";
+    }
+
     @PostMapping("/create")
     public String createItem(Model model) {
         model.addAttribute("api_fields", apiService.getApiFields());

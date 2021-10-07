@@ -13,7 +13,9 @@ public interface ApiService {
 
     String getByCode(String code);
 
-    String  getByUuid(String uuid);
+    String getByUuid(String uuid);
+
+    String getByRef(String ref);
 
     ResponseIdModel create(Map<String, String> item);
 

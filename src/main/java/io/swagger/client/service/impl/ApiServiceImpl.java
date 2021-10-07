@@ -196,6 +196,22 @@ public class ApiServiceImpl implements ApiService {
 
     @Override
     @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
+    public String getByRef(String ref) {
+        String result;
+        try {
+            result = api.readItemUsingGET2(ref);
+        } catch (ApiException e) {
+            if (e.getResponseBody().contains("invalid_token")) {
+                refreshToken();
+                throw new InvalidTokenException(e.getResponseBody());
+            } else
+                throw new BadRequestException("There is no item with ref " + ref);
+        }
+        return result;
+    }
+
+    @Override
+    @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
     public ResponseIdModel create(Map<String, String> item) {
         requestBody = new StringBuilder("{");
 
