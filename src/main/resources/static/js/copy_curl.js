@@ -34,8 +34,11 @@ function copy_curl(parameters, copyId) {
 function clear_all() {
     document.getElementById('get_uuid').value = ''
     document.getElementById('get_code').value = ''
+    document.getElementById('get_ref').value = ''
     document.getElementById('update_code').value = ''
     document.getElementById('update_uuid').value = ''
+    document.getElementById('update_ref').value = ''
     document.getElementById('delete_code').value = ''
     document.getElementById('delete_uuid').value = ''
+    document.getElementById('delete_ref').value = ''
 }

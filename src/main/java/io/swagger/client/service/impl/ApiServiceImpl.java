@@ -196,6 +196,22 @@ public class ApiServiceImpl implements ApiService {
 
     @Override
     @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
+    public String getByRef(String ref) {
+        String result;
+        try {
+            result = api.readItemUsingGET2(ref);
+        } catch (ApiException e) {
+            if (e.getResponseBody().contains("invalid_token")) {
+                refreshToken();
+                throw new InvalidTokenException(e.getResponseBody());
+            } else
+                throw new BadRequestException("There is no item with ref " + ref);
+        }
+        return result;
+    }
+
+    @Override
+    @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
     public ResponseIdModel create(Map<String, String> item) {
         requestBody = new StringBuilder("{");
 
@@ -237,8 +253,14 @@ public class ApiServiceImpl implements ApiService {
 
         if (apiMethods.contains("GET_BY_CODE")) {
             requestBody = new StringBuilder(getByCode(item.get("code")));
-        } else {
+        } else if (apiMethods.contains("GET_BY_UUID")) {
             requestBody = new StringBuilder(getByUuid(item.get("uuid")));
+        } else if (apiMethods.contains("GET_BY_REF")) {
+            if (item.containsKey("code")) {
+                requestBody = new StringBuilder(getByRef(item.get("code")));
+            } else if (item.containsKey("uuid")) {
+                requestBody = new StringBuilder(getByRef(item.get("uuid")));
+            }
         }
 
         List<String[]> listOfFields = new ArrayList<>();
@@ -256,12 +278,18 @@ public class ApiServiceImpl implements ApiService {
                     listOfFields.get(i), listOfValues.get(i)));
         }
 
-        ResponseIdModel responseIdModel;
+        ResponseIdModel responseIdModel = new ResponseIdModel();
         try {
             if (apiMethods.contains("PUT_BY_CODE")) {
                 responseIdModel = api.updateUsingPUT1(String.valueOf(requestBody), item.get("code"));
-            } else {
+            } else if (apiMethods.contains("PUT_BY_UUID")) {
                 responseIdModel = api.updateUsingPUT3(String.valueOf(requestBody), UUID.fromString(item.get("uuid")));
+            } else if (apiMethods.contains("PUT_BY_REF")) {
+                if (item.containsKey("code")) {
+                    responseIdModel = api.updateUsingPUT2(String.valueOf(requestBody), item.get("code"));
+                } else if (item.containsKey("uuid")) {
+                    responseIdModel = api.updateUsingPUT2(String.valueOf(requestBody), item.get("uuid"));
+                }
             }
         } catch (ApiException e) {
             if (e.getResponseBody().contains("invalid_token")) {
@@ -305,7 +333,6 @@ public class ApiServiceImpl implements ApiService {
     @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
     public ResponseIdModel deleteByUuid(String uuid) {
 
-        String code = findAllIdentifiers(getByUuid(uuid), "code").get(0);
         ResponseIdModel responseIdModel;
         try {
             responseIdModel = api.deleteUsingDELETE1(UUID.fromString(uuid));
@@ -317,10 +344,31 @@ public class ApiServiceImpl implements ApiService {
                 throw new BadRequestException("There is no item with uuid " + uuid + " which can be delete");
         }
         if (responseIdModel != null) {
-            if (code != null) {
-                createdCodes.remove(code);
-                codes.remove(code);
-            }
+            String code = responseIdModel.getCode();
+            createdCodes.remove(code);
+            codes.remove(code);
+        }
+        return responseIdModel;
+    }
+
+    @Override
+    @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
+    public ResponseIdModel deleteByRef(String ref) {
+
+        ResponseIdModel responseIdModel;
+        try {
+            responseIdModel = api.deleteUsingDELETE2(ref);
+        } catch (ApiException e) {
+            if (e.getResponseBody().contains("invalid_token")) {
+                refreshToken();
+                throw new InvalidTokenException(e.getResponseBody());
+            } else
+                throw new BadRequestException("There is no item with ref " + ref + " which can be delete");
+        }
+        if (responseIdModel != null) {
+            String code = responseIdModel.getCode();
+            createdCodes.remove(code);
+            codes.remove(code);
         }
         return responseIdModel;
     }
@@ -374,6 +422,25 @@ public class ApiServiceImpl implements ApiService {
         return updateBody;
     }
 
+    @Override
+    public Map<String, Set<String>> getByRefToUpdate(String ref) {
+
+        Map<String, Set<String>> updateBody = new TreeMap<>();
+        String result;
+        try {
+            result = getByRef(ref);
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getMessage() + " which can be update");
+        }
+
+        AtomicInteger inc = new AtomicInteger();
+        apiFields.stream().map(field -> field.split("\\."))
+                .forEach(fieldPart -> updateBody.put(apiFields.get(inc.getAndIncrement()),
+                        findDistinctAndSortedValuesOfFields(fieldPart, result)));
+
+        return updateBody;
+    }
+
     private List<String> findAllIdentifiers(String result, String identifier) {
         List<String> codesList = new ArrayList<>();
         Pattern pattern = Pattern.compile("(?<=\"results\":\\[\\{)(.+)(?=\\}\\])");
@@ -405,9 +472,18 @@ public class ApiServiceImpl implements ApiService {
             for (String uuid : uuids) {
                 results.append(getByUuid(uuid));
             }
-        } else {
+        } else if (apiMethods.contains("GET_BY_REF") && apiMethods.contains("GET_ALL")) {
+            List<String> refUuids =
+                    findAllIdentifiers(getAll(null, null, 1000, null, null),
+                            "uuid");
+            for (String refUuid : refUuids) {
+                results.append(getByRef(refUuid));
+            }
+        } else if (apiMethods.contains("GET_ALL")) {
             results.append(getAll(null, null, 1000, null, null)
                     .replace("\"results\":[", ""));
+        } else {
+            return mapOfDistinctAndSortedValuesOfFields;
         }
 
         AtomicInteger inc = new AtomicInteger();

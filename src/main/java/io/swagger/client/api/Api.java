@@ -443,6 +443,133 @@ public class Api {
     }
 
     /**
+     * Build call for deleteUsingDELETE2
+     *
+     * @param ref                     Reference of the item (required)
+     * @param progressListener        Progress listener
+     * @param progressRequestListener Progress request listener
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     */
+    public com.squareup.okhttp.Call deleteUsingDELETE2Call(String ref, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/{ref}"
+                .replaceAll("\\{" + "ref" + "\\}", apiClient.escapeString(ref));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+                "application/json"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) localVarHeaderParams.put("Accept", localVarAccept);
+
+        final String[] localVarContentTypes = {
+
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+        localVarHeaderParams.put("Content-Type", localVarContentType);
+
+        if (progressListener != null) {
+            apiClient.getHttpClient().networkInterceptors().add(new com.squareup.okhttp.Interceptor() {
+                @Override
+                public com.squareup.okhttp.Response intercept(com.squareup.okhttp.Interceptor.Chain chain) throws IOException {
+                    com.squareup.okhttp.Response originalResponse = chain.proceed(chain.request());
+                    return originalResponse.newBuilder()
+                            .body(new ProgressResponseBody(originalResponse.body(), progressListener))
+                            .build();
+                }
+            });
+        }
+
+        String[] localVarAuthNames = new String[]{"OAuth2ClientCredentials"};
+        return apiClient.buildCall(requestPath + localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private com.squareup.okhttp.Call deleteUsingDELETE2ValidateBeforeCall(String ref, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+
+        // verify the required parameter 'ref' is set
+        if (ref == null) {
+            throw new ApiException("Missing the required parameter 'ref' when calling deleteUsingDELETE2(Async)");
+        }
+
+
+        com.squareup.okhttp.Call call = deleteUsingDELETE2Call(ref, progressListener, progressRequestListener);
+        return call;
+
+    }
+
+    /**
+     * Delete a specific item identified by a reference.
+     *
+     * @param ref Reference of the item (required)
+     * @return ResponseIdModel
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     */
+    public ResponseIdModel deleteUsingDELETE2(String ref) throws ApiException {
+        ApiResponse<ResponseIdModel> resp = deleteUsingDELETE2WithHttpInfo(ref);
+        return resp.getData();
+    }
+
+    /**
+     * Delete a specific item identified by a reference.
+     *
+     * @param ref Reference of the item (required)
+     * @return ApiResponse&lt;ResponseIdModel&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     */
+    public ApiResponse<ResponseIdModel> deleteUsingDELETE2WithHttpInfo(String ref) throws ApiException {
+        com.squareup.okhttp.Call call = deleteUsingDELETE2ValidateBeforeCall(ref, null, null);
+        Type localVarReturnType = new TypeToken<ResponseIdModel>() {
+        }.getType();
+        return apiClient.execute(call, localVarReturnType);
+    }
+
+    /**
+     * Delete a specific item identified by a reference. (asynchronously)
+     *
+     * @param ref      Reference of the item (required)
+     * @param callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     */
+    public com.squareup.okhttp.Call deleteUsingDELETE2Async(String ref, final ApiCallback<ResponseIdModel> callback) throws ApiException {
+
+        ProgressResponseBody.ProgressListener progressListener = null;
+        ProgressRequestBody.ProgressRequestListener progressRequestListener = null;
+
+        if (callback != null) {
+            progressListener = new ProgressResponseBody.ProgressListener() {
+                @Override
+                public void update(long bytesRead, long contentLength, boolean done) {
+                    callback.onDownloadProgress(bytesRead, contentLength, done);
+                }
+            };
+
+            progressRequestListener = new ProgressRequestBody.ProgressRequestListener() {
+                @Override
+                public void onRequestProgress(long bytesWritten, long contentLength, boolean done) {
+                    callback.onUploadProgress(bytesWritten, contentLength, done);
+                }
+            };
+        }
+
+        com.squareup.okhttp.Call call = deleteUsingDELETE2ValidateBeforeCall(ref, progressListener, progressRequestListener);
+        Type localVarReturnType = new TypeToken<ResponseIdModel>() {
+        }.getType();
+        apiClient.executeAsync(call, localVarReturnType, callback);
+        return call;
+    }
+
+    /**
      * Build call for readItemUsingGET1
      *
      * @param code                    The code of the item returned by GET /items. (required)
@@ -576,6 +703,133 @@ public class Api {
         }
 
         com.squareup.okhttp.Call call = readItemUsingGET1ValidateBeforeCall(code, progressListener, progressRequestListener);
+        Type localVarReturnType = new TypeToken<String>() {
+        }.getType();
+        apiClient.executeAsync(call, localVarReturnType, callback);
+        return call;
+    }
+
+    /**
+     * Build call for readItemUsingGET2
+     *
+     * @param ref                     The reference of the item returned by GET /items. (required)
+     * @param progressListener        Progress listener
+     * @param progressRequestListener Progress request listener
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     */
+    public com.squareup.okhttp.Call readItemUsingGET2Call(String ref, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/{ref}"
+                .replaceAll("\\{" + "ref" + "\\}", apiClient.escapeString(ref));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+                "*/*"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) localVarHeaderParams.put("Accept", localVarAccept);
+
+        final String[] localVarContentTypes = {
+
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+        localVarHeaderParams.put("Content-Type", localVarContentType);
+
+        if (progressListener != null) {
+            apiClient.getHttpClient().networkInterceptors().add(new com.squareup.okhttp.Interceptor() {
+                @Override
+                public com.squareup.okhttp.Response intercept(com.squareup.okhttp.Interceptor.Chain chain) throws IOException {
+                    com.squareup.okhttp.Response originalResponse = chain.proceed(chain.request());
+                    return originalResponse.newBuilder()
+                            .body(new ProgressResponseBody(originalResponse.body(), progressListener))
+                            .build();
+                }
+            });
+        }
+
+        String[] localVarAuthNames = new String[]{"OAuth2ClientCredentials"};
+        return apiClient.buildCall(requestPath + localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private com.squareup.okhttp.Call readItemUsingGET2ValidateBeforeCall(String ref, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+
+        // verify the required parameter 'ref' is set
+        if (ref == null) {
+            throw new ApiException("Missing the required parameter 'ref' when calling readItemUsingGET2(Async)");
+        }
+
+
+        com.squareup.okhttp.Call call = readItemUsingGET2Call(ref, progressListener, progressRequestListener);
+        return call;
+
+    }
+
+    /**
+     * Get details about a specific item identified by a reference.
+     *
+     * @param ref The reference of the item returned by GET /items. (required)
+     * @return String
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     */
+    public String readItemUsingGET2(String ref) throws ApiException {
+        ApiResponse<String> resp = readItemUsingGET2WithHttpInfo(ref);
+        return resp.getData();
+    }
+
+    /**
+     * Get details about a specific item identified by a reference.
+     *
+     * @param ref The reference of the item returned by GET /items. (required)
+     * @return ApiResponse&lt;String&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     */
+    public ApiResponse<String> readItemUsingGET2WithHttpInfo(String ref) throws ApiException {
+        com.squareup.okhttp.Call call = readItemUsingGET2ValidateBeforeCall(ref, null, null);
+        Type localVarReturnType = new TypeToken<String>() {
+        }.getType();
+        return apiClient.execute(call, localVarReturnType);
+    }
+
+    /**
+     * Get details about a specific item identified by a reference. (asynchronously)
+     *
+     * @param ref      The reference of the item returned by GET /items. (required)
+     * @param callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     */
+    public com.squareup.okhttp.Call readItemUsingGET2Async(String ref, final ApiCallback<String> callback) throws ApiException {
+
+        ProgressResponseBody.ProgressListener progressListener = null;
+        ProgressRequestBody.ProgressRequestListener progressRequestListener = null;
+
+        if (callback != null) {
+            progressListener = new ProgressResponseBody.ProgressListener() {
+                @Override
+                public void update(long bytesRead, long contentLength, boolean done) {
+                    callback.onDownloadProgress(bytesRead, contentLength, done);
+                }
+            };
+
+            progressRequestListener = new ProgressRequestBody.ProgressRequestListener() {
+                @Override
+                public void onRequestProgress(long bytesWritten, long contentLength, boolean done) {
+                    callback.onUploadProgress(bytesWritten, contentLength, done);
+                }
+            };
+        }
+
+        com.squareup.okhttp.Call call = readItemUsingGET2ValidateBeforeCall(ref, progressListener, progressRequestListener);
         Type localVarReturnType = new TypeToken<String>() {
         }.getType();
         apiClient.executeAsync(call, localVarReturnType, callback);
@@ -1004,6 +1258,142 @@ public class Api {
         }
 
         com.squareup.okhttp.Call call = updateUsingPUT1ValidateBeforeCall(itemDto, code, progressListener, progressRequestListener);
+        Type localVarReturnType = new TypeToken<ResponseIdModel>() {
+        }.getType();
+        apiClient.executeAsync(call, localVarReturnType, callback);
+        return call;
+    }
+
+    /**
+     * Build call for updateUsingPUT2
+     *
+     * @param itemDto                 String (required)
+     * @param ref                     The reference of the item (required)
+     * @param progressListener        Progress listener
+     * @param progressRequestListener Progress request listener
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     */
+    public com.squareup.okhttp.Call updateUsingPUT2Call(String itemDto, String ref, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+        Object localVarPostBody = itemDto;
+
+        // create path and map variables
+        String localVarPath = "/{ref}"
+                .replaceAll("\\{" + "ref" + "\\}", apiClient.escapeString(ref));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+                "application/json"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) localVarHeaderParams.put("Accept", localVarAccept);
+
+        final String[] localVarContentTypes = {
+                "application/json"
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+        localVarHeaderParams.put("Content-Type", localVarContentType);
+
+        if (progressListener != null) {
+            apiClient.getHttpClient().networkInterceptors().add(new com.squareup.okhttp.Interceptor() {
+                @Override
+                public com.squareup.okhttp.Response intercept(com.squareup.okhttp.Interceptor.Chain chain) throws IOException {
+                    com.squareup.okhttp.Response originalResponse = chain.proceed(chain.request());
+                    return originalResponse.newBuilder()
+                            .body(new ProgressResponseBody(originalResponse.body(), progressListener))
+                            .build();
+                }
+            });
+        }
+
+        String[] localVarAuthNames = new String[]{"OAuth2ClientCredentials"};
+        return apiClient.buildCall(requestPath + localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private com.squareup.okhttp.Call updateUsingPUT2ValidateBeforeCall(String itemDto, String ref, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+
+        // verify the required parameter 'itemDto' is set
+        if (itemDto == null) {
+            throw new ApiException("Missing the required parameter 'itemDto' when calling updateUsingPUT2(Async)");
+        }
+
+        // verify the required parameter 'ref' is set
+        if (ref == null) {
+            throw new ApiException("Missing the required parameter 'ref' when calling updateUsingPUT2(Async)");
+        }
+
+
+        com.squareup.okhttp.Call call = updateUsingPUT2Call(itemDto, ref, progressListener, progressRequestListener);
+        return call;
+
+    }
+
+    /**
+     * Update a specific item identified by a reference.
+     *
+     * @param itemDto String (required)
+     * @param ref     The reference of the item (required)
+     * @return ResponseIdModel
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     */
+    public ResponseIdModel updateUsingPUT2(String itemDto, String ref) throws ApiException {
+        ApiResponse<ResponseIdModel> resp = updateUsingPUT2WithHttpInfo(itemDto, ref);
+        return resp.getData();
+    }
+
+    /**
+     * Update a specific item identified by a reference.
+     *
+     * @param itemDto String (required)
+     * @param ref     The reference of the item (required)
+     * @return ApiResponse&lt;ResponseIdModel&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     */
+    public ApiResponse<ResponseIdModel> updateUsingPUT2WithHttpInfo(String itemDto, String ref) throws ApiException {
+        com.squareup.okhttp.Call call = updateUsingPUT2ValidateBeforeCall(itemDto, ref, null, null);
+        Type localVarReturnType = new TypeToken<ResponseIdModel>() {
+        }.getType();
+        return apiClient.execute(call, localVarReturnType);
+    }
+
+    /**
+     * Update a specific item identified by a reference. (asynchronously)
+     *
+     * @param itemDto  String (required)
+     * @param ref      The reference of the item (required)
+     * @param callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     */
+    public com.squareup.okhttp.Call updateUsingPUT2Async(String itemDto, String ref, final ApiCallback<ResponseIdModel> callback) throws ApiException {
+
+        ProgressResponseBody.ProgressListener progressListener = null;
+        ProgressRequestBody.ProgressRequestListener progressRequestListener = null;
+
+        if (callback != null) {
+            progressListener = new ProgressResponseBody.ProgressListener() {
+                @Override
+                public void update(long bytesRead, long contentLength, boolean done) {
+                    callback.onDownloadProgress(bytesRead, contentLength, done);
+                }
+            };
+
+            progressRequestListener = new ProgressRequestBody.ProgressRequestListener() {
+                @Override
+                public void onRequestProgress(long bytesWritten, long contentLength, boolean done) {
+                    callback.onUploadProgress(bytesWritten, contentLength, done);
+                }
+            };
+        }
+
+        com.squareup.okhttp.Call call = updateUsingPUT2ValidateBeforeCall(itemDto, ref, progressListener, progressRequestListener);
         Type localVarReturnType = new TypeToken<ResponseIdModel>() {
         }.getType();
         apiClient.executeAsync(call, localVarReturnType, callback);

@@ -13,7 +13,9 @@ public interface ApiService {
 
     String getByCode(String code);
 
-    String  getByUuid(String uuid);
+    String getByUuid(String uuid);
+
+    String getByRef(String ref);
 
     ResponseIdModel create(Map<String, String> item);
 
@@ -22,6 +24,8 @@ public interface ApiService {
     ResponseIdModel deleteByCode(String code);
 
     ResponseIdModel deleteByUuid(String uuid);
+
+    ResponseIdModel deleteByRef(String ref);
 
     String getRequestBody();
 
@@ -40,4 +44,6 @@ public interface ApiService {
     Map<String, Set<String>> getByCodeToUpdate(String code);
 
     Map<String, Set<String>> getByUuidToUpdate(String uuid);
+
+    Map<String, Set<String>> getByRefToUpdate(String ref);
 }
