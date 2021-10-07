@@ -25,6 +25,8 @@ public interface ApiService {
 
     ResponseIdModel deleteByUuid(String uuid);
 
+    ResponseIdModel deleteByRef(String ref);
+
     String getRequestBody();
 
     List<String> getCreatedCodes();

@@ -41,7 +41,7 @@
                 <td>Get item by UUID</td>
                 <td><label for="get_uuid"></label>
                     <input type="text" name="get_uuid" id="get_uuid" form="form1"
-                           placeholder="UUID of item you want to get" size="28"></td>
+                           placeholder="UUID of item you want to get" size="32"></td>
                 <td align="center">
                     <form th:action="@{/CRUD/getByUuid}" method="post" id="form1">
                         <button type="submit" style="background-color: #1e90ff;" class="button">GET</button>
@@ -56,7 +56,7 @@
                 <td>Get item by Code</td>
                 <td><label for="get_code"></label>
                     <input type="text" list="get_codes" name="get_code" id="get_code" form="form2"
-                           placeholder="Code of item you want to get" size="28" autocomplete="off"/>
+                           placeholder="Code of item you want to get" size="32" autocomplete="off"/>
                     <datalist id="get_codes">
                         <option th:each="code_list: ${codes_list}" th:value="${code_list}">
                     </datalist>
@@ -75,7 +75,7 @@
                 <td>Get item by reference</td>
                 <td><label for="get_ref"></label>
                     <input type="text" name="get_ref" id="get_ref" form="form3"
-                           placeholder="Code or UUID of item you want to get" size="28"></td>
+                           placeholder="Code or UUID of item you want to get" size="32"></td>
                 <td align="center">
                     <form th:action="@{/CRUD/getByRef}" method="post" id="form3">
                         <button type="submit" style="background-color: #1e90ff;" class="button">GET</button>
@@ -103,7 +103,7 @@
                 <td>Update item by UUID</td>
                 <td><label for="update_uuid"></label>
                     <input type="text" name="update_uuid" id="update_uuid" form="form4"
-                           placeholder="UUID of item you want to change" size="28"></td>
+                           placeholder="UUID of item you want to change" size="32"></td>
                 <td align="center">
                     <form th:action="@{/CRUD/updateByUuid}" method="post" id="form4">
                         <button type="submit" style="background-color: #fca130;" class="button">PUT</button>
@@ -118,7 +118,7 @@
                 <td>Update item by Code</td>
                 <td><label for="update_code"></label>
                     <input type="text" list="update_codes" name="update_code" id="update_code" form="form5"
-                           placeholder="Code of item you want to change" size="28" autocomplete="off"/>
+                           placeholder="Code of item you want to change" size="32" autocomplete="off"/>
                     <datalist id="update_codes">
                         <option th:each="created_code: ${created_codes}" th:value="${created_code}">
                     </datalist>
@@ -137,7 +137,7 @@
                 <td>Update item by reference</td>
                 <td><label for="update_ref"></label>
                     <input type="text" name="update_ref" id="update_ref" form="form6"
-                           placeholder="Code or UUID of item you want to change" size="28"></td>
+                           placeholder="Code or UUID of item you want to change" size="32"></td>
                 <td align="center">
                     <form th:action="@{/CRUD/updateByRef}" method="post" id="form6">
                         <button type="submit" style="background-color: #fca130;" class="button">PUT</button>
@@ -152,7 +152,7 @@
                 <td>Delete item by UUID</td>
                 <td><label for="delete_uuid"></label>
                     <input type="text" name="delete_uuid" id="delete_uuid" form="form7"
-                           placeholder="UUID of item you want to delete" size="28"></td>
+                           placeholder="UUID of item you want to delete" size="32"></td>
                 <td align="center">
                     <form th:action="@{/CRUD/deleteByUuid}" method="post" id="form7">
                         <button type="submit" style="background-color: #f93e3e;" class="button">DELETE</button>
@@ -167,7 +167,7 @@
                 <td>Delete item by Code</td>
                 <td><label for="delete_code"></label>
                     <input type="text" list="delete_codes" name="delete_code" id="delete_code" form="form8"
-                           placeholder="Code of item you want to delete" size="28" autocomplete="off"/>
+                           placeholder="Code of item you want to delete" size="32" autocomplete="off"/>
                     <datalist id="delete_codes">
                         <option th:each="created_code: ${created_codes}" th:value="${created_code}">
                     </datalist>
@@ -180,6 +180,21 @@
                 <td>
                     <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
                          onclick="copy_curl('/code=', 'delete_code')">
+                </td>
+            </tr>
+            <tr id="DELETE_BY_REF" hidden>
+                <td>Delete item by reference</td>
+                <td><label for="delete_ref"></label>
+                    <input type="text" name="delete_ref" id="delete_ref" form="form9"
+                           placeholder="Code or UUID of item you want to delete" size="32"></td>
+                <td align="center">
+                    <form th:action="@{/CRUD/deleteByRef}" method="post" id="form9">
+                        <button type="submit" style="background-color: #f93e3e;" class="button">DELETE</button>
+                    </form>
+                </td>
+                <td>
+                    <img th:src="@{/img/copy_image.png}" class="copy" width="20" height="20"
+                         onclick="copy_curl('/', 'delete_ref')">
                 </td>
             </tr>
             </tbody>

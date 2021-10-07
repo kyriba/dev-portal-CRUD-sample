@@ -352,6 +352,28 @@ public class ApiServiceImpl implements ApiService {
     }
 
     @Override
+    @Retryable(value = InvalidTokenException.class, maxAttempts = 2)
+    public ResponseIdModel deleteByRef(String ref) {
+
+        ResponseIdModel responseIdModel;
+        try {
+            responseIdModel = api.deleteUsingDELETE2(ref);
+        } catch (ApiException e) {
+            if (e.getResponseBody().contains("invalid_token")) {
+                refreshToken();
+                throw new InvalidTokenException(e.getResponseBody());
+            } else
+                throw new BadRequestException("There is no item with ref " + ref + " which can be delete");
+        }
+        if (responseIdModel != null) {
+            String code = responseIdModel.getCode();
+            createdCodes.remove(code);
+            codes.remove(code);
+        }
+        return responseIdModel;
+    }
+
+    @Override
     public Map<String, Set<String>> getByCodeToUpdate(String code) {
 
         final String CODE = "code";

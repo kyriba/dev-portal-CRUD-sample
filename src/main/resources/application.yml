@@ -117,14 +117,14 @@ api:
       - mobilePhone
       - officePhone
 
-#List of all possible methods: [GET_ALL, GET_BY_CODE, GET_BY_UUID, GET_BY_REF, POST, PUT_BY_CODE, PUT_BY_UUID, PUT_BY_REF, DELETE_BY_CODE, DELETE_BY_UUID]
+#List of all possible methods: [GET_ALL, GET_BY_CODE, GET_BY_UUID, GET_BY_REF, POST, PUT_BY_CODE, PUT_BY_UUID, PUT_BY_REF, DELETE_BY_CODE, DELETE_BY_UUID, DELETE_BY_REF]
   methods:
     /v1/account-groups:
       - GET_ALL
       - GET_BY_REF
       - POST
       - PUT_BY_REF
-      - DELETE_BY_UUID
+      - DELETE_BY_REF
 
     /v1/accounts:
       - GET_ALL
@@ -179,7 +179,7 @@ api:
       - GET_BY_REF
       - POST
       - PUT_BY_REF
-      - DELETE_BY_UUID
+      - DELETE_BY_REF
 
     /v1/supplier-users:
       - GET_ALL

@@ -274,4 +274,25 @@ public class ApiController {
         model.addAttribute("created_codes", apiService.getCreatedCodes());
         return "html/deleted-item";
     }
+
+    @PostMapping("/deleteByRef")
+    public String deleteItemByRef(@RequestParam String delete_ref, Model model) {
+        model.addAttribute("api_methods", apiService.getApiMethods());
+        model.addAttribute("codes_list", apiService.getAllCodes());
+        model.addAttribute("created_codes", apiService.getCreatedCodes());
+        model.addAttribute("base_url", BASE_URL);
+        model.addAttribute("api_url", apiBean.getApiName());
+        if (delete_ref.equals("")) {
+            return "exception/blank-input-exception";
+        }
+        try {
+            model.addAttribute("item", apiService.deleteByRef(delete_ref));
+        } catch (BadRequestException e) {
+            model.addAttribute("error_message", json.serialize(e.getMessage()));
+            return "exception/bad-request-exception";
+        }
+        model.addAttribute("codes_list", apiService.getAllCodes());
+        model.addAttribute("created_codes", apiService.getCreatedCodes());
+        return "html/deleted-item";
+    }
 }

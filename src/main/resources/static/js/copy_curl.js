@@ -40,4 +40,5 @@ function clear_all() {
     document.getElementById('update_ref').value = ''
     document.getElementById('delete_code').value = ''
     document.getElementById('delete_uuid').value = ''
+    document.getElementById('delete_ref').value = ''
 }
