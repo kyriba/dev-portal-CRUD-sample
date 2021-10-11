@@ -19,7 +19,6 @@ list:
     - /v1/bank-branches
     - /v1/bank-groups
     - /v1/banks
-#    - /v1/cash-flows
     - /v1/company-groups
     - /v1/third-parties
 
@@ -61,13 +60,6 @@ api:
       - address.country.code
       - code
       - interfaceCode
-
-#    /v1/cash-flows:
-#      - account.code
-#      - flowCode.code
-#      - flowStatus
-#      - date.transactionDate
-#      - flowAmount.currency.code
 
     /v1/company-groups:
       - code
@@ -128,13 +120,6 @@ api:
       - PUT_BY_UUID
       - DELETE_BY_CODE
       - DELETE_BY_UUID
-
-#    /v1/cash-flows:
-#      - GET_ALL
-#      - GET_BY_UUID
-#      - POST
-#      - PUT_BY_UUID
-#      - DELETE_BY_UUID
 
     /v1/company-groups:
       - GET_ALL

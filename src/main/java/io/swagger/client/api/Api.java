@@ -863,9 +863,6 @@ public class Api {
             case "/v1/data-permission-profiles":
                 localVarPath += "/permissions";
                 break;
-//            case "/v1/cash-flows":
-//                localVarPath += "/detail";
-//                break;
         }
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
