@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CRUD</title>
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/img/logo.png}"/>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <script th:src="@{/js/populating.js}"></script>
+    <script th:src="@{/js/renderjson.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/renderjson.css}">
+</head>
+<body>
+
+<div class="to_hide" id="data"></div>
+
+<form th:action="@{/CRUD/created}" method="post" id="creating_form">
+    <div class="container">
+        <div class="row">
+            <table class="table table-responsive table-bordered table-striped" id="create_table">
+            </table>
+        </div>
+    </div>
+</form>
+
+<form th:action="@{/CRUD}" method="get" id="get_form">
+    <div class="container">
+        <div class="row">
+            <table class="table table-responsive table-bordered table-striped">
+                <tbody>
+                <td colspan="3" style="text-align:center; vertical-align:middle">
+                    <button type="submit" style="width: 150px"><b>Back to menu</b></button>
+                </td>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</form>
+
+<script th:inline="javascript">
+
+/*<![CDATA[*/
+    var fieldsOrder = /*[[${api_fields}]]*/;
+    var apiUrl = /*[[${api_url}]]*/;
+    var values = /*[[${fields.values()}]]*/;
+    var keySet = /*[[${fields.keySet()}]]*/;
+    var availableValues = /*[[${available_values}]]*/;
+    var availableValuesKeySet = /*[[${available_values.keySet()}]]*/;
+    var availableValuesLists = /*[[${available_values.values()}]]*/;
+/*]]>*/
+
+</script>
+
+<script th:src="@{/js/createFormBuilder.js}"></script>
+
+<script type="text/javascript" src="renderjson.js"></script>
+<script th:inline="javascript">
+    renderjson.set_show_to_level("all");
+
+/*<![CDATA[*/
+    var error_message = /*[[${error_message}]]*/;
+    var inputFields = /*[[${inputFields}]]*/;
+    var inputs = /*[[${inputs}]]*/;
+/*]]>*/
+
+    if (error_message != null) {
+        for (let i = 0; i < inputFields.length; i++) {
+            if(inputs[i] != '')
+                document.getElementById(inputFields[i] + '_input').value = inputs[i];
+        }
+        const obj = JSON.parse(error_message);
+        var refer = (function render() {
+            document.getElementById("data").appendChild(renderjson(obj));
+            return render;
+        }());
+    }
+
+</script>
+
+</body>
+</html>

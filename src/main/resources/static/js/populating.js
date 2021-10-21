@@ -1,39 +1,30 @@
 function populate() {
-    if (document.getElementById('country_input').value == ''){
-        document.getElementById('country_input').value = 'FR'
+    for (let position = 0; position < keySet.length; position++) {
+        if (keySet[position] == 'code' || keySet[position] == 'uuid'
+            || keySet[position] == 'interfaceCode' || keySet[position] == 'shortCode'){
+            continue;
+        } else if (keySet[position] == 'firstName') {
+            document.getElementById(keySet[position] + '_input').value = 'John'
+        } else if (keySet[position] == 'lastName') {
+            document.getElementById(keySet[position] + '_input').value = 'Doe'
+        } else if (keySet[position] == 'accessProfile.code') {
+            document.getElementById(keySet[position] + '_input').value = 'DEV'
+        } else if (keySet[position] == 'companyOwnership.code') {
+            document.getElementById(keySet[position] + '_input').value = 'COMPANY01'
+        } else if (keySet[position] == 'email') {
+            document.getElementById(keySet[position] + '_input').value = 'test@mail.com'
+        } else if (keySet[position] == 'fax') {
+            document.getElementById(keySet[position] + '_input').value = '1-212-555-1234'
+        } else if (keySet[position] == 'mobilePhone') {
+            document.getElementById(keySet[position] + '_input').value = '1-212-999-8765'
+        } else if (keySet[position] == 'officePhone') {
+            document.getElementById(keySet[position] + '_input').value = '000-000-000'
+        } else if (keySet[position] == 'thirdParty.code') {
+            document.getElementById(keySet[position] + '_input').value = 'DEMO_SUPPLIER'
+        } else if (keySet[position] == 'timeZone') {
+            document.getElementById(keySet[position] + '_input').value = 'CET'
+        } else if (document.getElementById(keySet[position] + '_input').value == '' && values[position] != ''){
+            document.getElementById(keySet[position] + '_input').value = values[position][0]
+        }
     }
-    if (document.getElementById('city').value == ''){
-        document.getElementById('city').value = 'PUTEAUX'
-    }
-    if (document.getElementById('value').value == ''){
-        document.getElementById('value').value = '0000'
-    }
-    if (document.getElementById('branch_code_input').value == ''){
-        document.getElementById('branch_code_input').value = 'BRANCHDEMO'
-    }
-    if (document.getElementById('calendar_code_input').value == ''){
-        document.getElementById('calendar_code_input').value = 'FR'
-    }
-    if (document.getElementById('company_code_input').value == ''){
-        document.getElementById('company_code_input').value = 'COMPANY-DEMO'
-    }
-    if (document.getElementById('currency_code_input').value == ''){
-        document.getElementById('currency_code_input').value = 'EUR'
-    }
-    if (document.getElementById('time_zone_input').value == ''){
-        document.getElementById('time_zone_input').value = 'Asia/Tokyo'
-    }
-}
-
-function populateWithErrorData(data) {
-    document.getElementById('code').value = data.code
-    document.getElementById('country_input').value = data.country;
-    document.getElementById('city').value = data.city;
-    document.getElementById('value').value = data.value;
-    document.getElementById('ban_structure').value = data.ban_structure;
-    document.getElementById('branch_code_input').value = data.branch_code;
-    document.getElementById('calendar_code_input').value = data.calendar_code;
-    document.getElementById('company_code_input').value = data.company_code;
-    document.getElementById('currency_code_input').value = data.currency_code;
-    document.getElementById('time_zone_input').value = data.time_zone;
 }

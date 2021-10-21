@@ -23,3 +23,17 @@ function do_unhide() {
       unhide[j].style.display = "block";
     }
 }
+
+function show_collapse_button() {
+    var collapse_button = document.getElementsByClassName("collapse_button");
+    var expand_button = document.getElementsByClassName("expand_button");
+    collapse_button[0].style.display = "block";
+    expand_button[0].style.display = "none";
+}
+
+function show_expand_button() {
+    var collapse_button = document.getElementsByClassName("collapse_button");
+    var expand_button = document.getElementsByClassName("expand_button");
+    collapse_button[0].style.display = "none";
+    expand_button[0].style.display = "block";
+}

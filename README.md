@@ -19,7 +19,7 @@ To copy the API client to your computer copy link of the repository, open comman
 git clone https://github.com/kyriba/dev-portal-CRUD-sample.git
 ```
 
-> :warning: *Before building project go to .../src/main/resources/application.yml and update client_id and client_secret with your credentials.*
+> :warning: *Before building project go to .../src/main/resources/application.yml and update **client.id** and **client.secret** with your credentials.*
 
 Then open command prompt and go to your project directory, for example:
 
@@ -30,7 +30,7 @@ cd dev-portal-CRUD-sample
 Build project:
 
 ```shell
-gradle build
+gradle clean build
 ```
 
 And execute jar file:
@@ -41,16 +41,31 @@ java -jar "build/libs/CRUD.jar"
 
 > :warning: *Please notice that the path to your local directory is provided in MacOS/ Unix format. Windows is slash-sensitive, so if you are using a Windows system, replace "/" with "\\"*
 
+Choose the API from the provided list in the Terminal, by typing the number of the item on the list or by providing the name of the API. Names are case-sensitive, make sure you write them in lower-case.
+
+![img_1.png](img_1.png)
+
 If the application runs successfully, you can go to the link:
 
 ```link
 http://localhost:2000/CRUD
 ```
 
-If you want to change the port, go to .../src/main/resources/application.yml and replace the "port" value.
+If you want to change the port, go to .../src/main/resources/application.yml and replace the **server.port** value.
 
 If everything was done accordingly with provided steps, the result should look as presented in the image below:
 
-![img_1.png](img_1.png)
+![img.png](img.png)
 
 To terminate application press **Ctrl + C** and execute **Y**.
+
+If you want to add new API, go to .../src/main/resources/application.yml, add REST Endpoint of API to **list.apis**, add at least all mandatory fields to **api.fields.{endpoint}***.
+
+> :warning: {endpoint}* - REST Endpoint of API from **list.apis**
+
+Then add all available CRUD methods of API to **api.methods.{endpoint}** and if there are any enums or boolean values, 
+then add them to **enums.available.values.{endpoint}.{field}** **.
+
+> :warning: {field} ** - the name of a specific field from **api.fields.{endpoint}**
+
+> :warning: *If application.yml was modified after application had been built, it needs to be rebuilt. In that case, execute gradle clean build again.*

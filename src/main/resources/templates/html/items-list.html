@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CRUD</title>
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/img/logo.png}"/>
+    <script th:src="@{/js/renderjson.js}"></script>
+    <script th:src="@{/js/hiding.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/renderjson.css}">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body>
+
+<div class="container" th:replace="html/menu::menu-table"></div>
+
+<div style="width: 360px; margin: auto;">
+    <div style="float: left; width: 120px">
+        <button class="to_hide" onclick="do_hide()" style="width: 100px; margin: 10px;">Hide result</button>
+    </div>
+    <div style="float: left; width: 120px">
+        <button class="to_unhide" onclick="do_unhide()" style="width: 100px; margin: 10px; display: none;">Show result</button>
+    </div>
+    <div style="float: right; width: 120px">
+        <button onclick="clear_all()" style="width: 100px; margin: 10px;">Clear inputs</button>
+    </div>
+    <div style="float: right; width: 120px">
+        <button class="expand_button" onclick="changeLevelOfExpanding('all'); show_collapse_button();"
+                style="width: 100px; margin: 10px;">Expand</button>
+    </div>
+    <div style="float: right; width: 120px">
+        <button class="collapse_button" onclick="changeLevelOfExpanding(1); show_expand_button();"
+                style="width: 100px; margin: 10px; display: none;">Collapse</button>
+    </div>
+</div>
+
+<h2 class="to_hide" align="center">List of items</h2>
+<div class="to_hide" id="data"></div>
+<script type="text/javascript" src="renderjson.js"></script>
+<script th:inline="javascript">
+    renderjson.set_show_to_level(1);
+
+/*<![CDATA[*/
+    var list_items = /*[[${list_items}]]*/;
+/*]]>*/
+
+    const obj = JSON.parse(list_items);
+    var refer = (function render() {
+        document.getElementById("data").appendChild(renderjson(obj));
+        return render;
+    }());
+
+</script>
+
+<script th:inline="javascript">
+    function changeLevelOfExpanding(level) {
+        const myNode = document.getElementById("data");
+        while (myNode.firstChild) {
+            myNode.removeChild(myNode.lastChild);
+        }
+        renderjson.set_show_to_level(level);
+        var refer = (function render() {
+            document.getElementById("data").appendChild(renderjson(obj));
+            return render;
+        }());
+    }
+</script>
+
+</body>
+</html>

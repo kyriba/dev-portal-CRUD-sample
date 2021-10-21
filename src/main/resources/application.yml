@@ -11,3 +11,172 @@ access:
 
 base:
   url: https://demo.kyriba.com/gateway/api
+
+list:
+  apis:
+    - /v1/account-groups
+    - /v1/accounts
+    - /v1/bank-branches
+    - /v1/bank-groups
+    - /v1/banks
+    - /v1/company-groups
+    - /v1/third-parties
+
+api:
+  fields:
+    /v1/account-groups:
+      - accounts[].code
+      - code
+      - poolingAccount.code
+      - uuid
+
+    /v1/accounts:
+      - code
+      - uuid
+      - calendar.code
+      - currency.code
+      - company.code
+      - branch.code
+      - bankAccountID.banStructure
+      - bankAccountID.value
+      - address.country.code
+      - timeZone
+
+    /v1/bank-branches:
+      - code
+      - interfaceCode
+      - bank.code
+      - address.country.code
+      - calendar.code
+      - timeZone
+
+    /v1/bank-groups:
+      - banks[].code
+      - code
+      - leader.code
+      - uuid
+
+    /v1/banks:
+      - address.country.code
+      - code
+      - interfaceCode
+
+    /v1/company-groups:
+      - code
+      - companies[].code
+      - leader.code
+      - uuid
+
+    /v1/third-parties:
+      - code
+      - name
+      - address.country.code
+
+#List of all possible methods: [GET_ALL, GET_BY_CODE, GET_BY_UUID, GET_BY_REF, POST, PUT_BY_CODE, PUT_BY_UUID, PUT_BY_REF, DELETE_BY_CODE, DELETE_BY_UUID, DELETE_BY_REF]
+  methods:
+    /v1/account-groups:
+      - GET_ALL
+      - GET_BY_REF
+      - POST
+      - PUT_BY_REF
+      - DELETE_BY_REF
+
+    /v1/accounts:
+      - GET_ALL
+      - GET_BY_CODE
+      - GET_BY_UUID
+      - POST
+      - PUT_BY_CODE
+      - PUT_BY_UUID
+      - DELETE_BY_CODE
+      - DELETE_BY_UUID
+
+    /v1/bank-branches:
+      - GET_ALL
+      - GET_BY_CODE
+      - GET_BY_UUID
+      - POST
+      - PUT_BY_CODE
+      - PUT_BY_UUID
+      - DELETE_BY_CODE
+      - DELETE_BY_UUID
+
+    /v1/bank-groups:
+      - GET_ALL
+      - GET_BY_CODE
+      - GET_BY_UUID
+      - POST
+      - PUT_BY_CODE
+      - PUT_BY_UUID
+      - DELETE_BY_CODE
+      - DELETE_BY_UUID
+
+    /v1/banks:
+      - GET_ALL
+      - GET_BY_CODE
+      - GET_BY_UUID
+      - POST
+      - PUT_BY_CODE
+      - PUT_BY_UUID
+      - DELETE_BY_CODE
+      - DELETE_BY_UUID
+
+    /v1/company-groups:
+      - GET_ALL
+      - GET_BY_REF
+      - POST
+      - PUT_BY_REF
+      - DELETE_BY_REF
+
+    /v1/third-parties:
+      - GET_ALL
+      - GET_BY_CODE
+      - GET_BY_UUID
+      - POST
+      - PUT_BY_CODE
+      - PUT_BY_UUID
+      - DELETE_BY_CODE
+      - DELETE_BY_UUID
+
+#Read-only parameters that cannot be updated
+  exclude:
+    fields:
+      /v1/accounts:
+        - status
+        - includeInElectronicBank
+        - includeInElectronicBankDate
+        - excludeFromElectronicBank
+        - excludeFromElectronicBankDate
+        - confirmAccountList
+        - confirmAccountListDate
+        - confirmAccountBalances
+        - confirmAccountBalancesDate
+        - confirmAccountSignatories
+        - confirmAccountSignatoriesDate
+        - accountOpeningRequested
+        - accountOpeningRequestDate
+        - accountClosureRequested
+        - accountClosureRequestDate
+
+      /v1/third-parties:
+        - internalCounter
+        - internalCounterSuffix
+
+#For boolean fields values can be only 'true' or 'false'
+enums:
+  available:
+    values:
+      /v1/accounts:
+        bankAccountID.banStructure:
+          - BBAN_STRUCTURE
+          - IBAN_STRUCTURE
+          - LBAN_0_STRUCTURE
+          - LBAN_1_STRUCTURE
+          - LBAN_2_STRUCTURE
+          - LBAN_3_STRUCTURE
+          - LBAN_4_STRUCTURE
+          - LBAN_5_STRUCTURE
+          - LBAN_6_STRUCTURE
+          - LBAN_7_STRUCTURE
+          - LBAN_8_STRUCTURE
+          - LBAN_9_STRUCTURE
