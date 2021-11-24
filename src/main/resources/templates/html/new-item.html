@@ -24,11 +24,11 @@
         <button onclick="clear_all()" style="width: 100px; margin: 10px;">Clear inputs</button>
     </div>
     <div style="float: right; width: 120px">
-        <button class="expand_button" onclick="changeLevelOfExpanding('all'); show_collapse_button();"
+        <button class="expand_button" onclick="changeLevelOfExpanding('all', 'request_data'); show_collapse_button();"
                 style="width: 100px; margin: 10px;">Expand</button>
     </div>
     <div style="float: right; width: 120px">
-        <button class="collapse_button" onclick="changeLevelOfExpanding(0); show_expand_button();"
+        <button class="collapse_button" onclick="changeLevelOfExpanding(0, 'request_data'); show_expand_button();"
                 style="width: 100px; margin: 10px; display: none;">Collapse</button>
     </div>
 </div>
@@ -85,6 +85,7 @@ renderjson.set_show_to_level(0);
 /*]]>*/
 
     const obj = JSON.parse(request_body);
+    renderjson.set_document_id("request_data");
     var refer = (function render() {
         document.getElementById("request_data").appendChild(renderjson(obj));
         return render;
@@ -93,14 +94,15 @@ renderjson.set_show_to_level(0);
 </script>
 
 <script th:inline="javascript">
-    function changeLevelOfExpanding(level) {
-        const myNode = document.getElementById("request_data");
+    function changeLevelOfExpanding(level, documentId) {
+        const myNode = document.getElementById(documentId);
         while (myNode.firstChild) {
             myNode.removeChild(myNode.lastChild);
         }
         renderjson.set_show_to_level(level);
+        renderjson.set_document_id(documentId);
         var refer = (function render() {
-            document.getElementById("request_data").appendChild(renderjson(obj));
+            document.getElementById(documentId).appendChild(renderjson(obj));
             return render;
         }());
     }

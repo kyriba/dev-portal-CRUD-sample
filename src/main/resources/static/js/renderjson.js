@@ -61,6 +61,7 @@
 //     .object.syntax ("{", "}")
 //     .array.syntax  ("[", "]")
 var module, window, define, renderjson=(function() {
+    var isFirstTime = true;
     var themetext = function(/* [class, text]+ */) {
         var spans = [];
         while (arguments.length)
@@ -95,6 +96,42 @@ var module, window, define, renderjson=(function() {
         a.href = '#';
         a.onclick = function(e) { callback(); if (e) e.stopPropagation(); return false; };
         return a; };
+    var switch_button = function() {
+        if(isFirstTime && renderjson.options.show_to_level != 0 && renderjson.options.show_to_level != "all"){
+            isFirstTime = false;
+            return;
+        }
+        var disclosure_elements = document.getElementById(renderjson.options.document_id).getElementsByClassName("disclosure");
+        var number_of_show_options = 0;
+        var number_of_hide_options = 0;
+        var visible_show_options = 0;
+        var visible_hide_options = 0;
+        for (var j = 0; j < disclosure_elements.length; j++) {
+            if(disclosure_elements[j].text == renderjson.options.show){
+                number_of_show_options++;
+                if(disclosure_elements[j].parentNode.style.display == "inline")
+                    visible_show_options++;
+            } else if(disclosure_elements[j].text == renderjson.options.hide){
+                number_of_hide_options++;
+                if(disclosure_elements[j].parentNode.style.display == "inline")
+                    visible_hide_options++;
+            }
+        }
+        var collapse_button = document.getElementsByClassName("collapse_button");
+        var expand_button = document.getElementsByClassName("expand_button");
+        if((number_of_show_options != number_of_hide_options) || (visible_show_options > 0 && visible_hide_options > 0)) {
+            collapse_button[0].style.display = "none";
+            expand_button[0].style.display = "block";
+            return;
+        }
+        if(visible_show_options == 0) {
+            collapse_button[0].style.display = "block";
+            expand_button[0].style.display = "none";
+        } else {
+            collapse_button[0].style.display = "none";
+            expand_button[0].style.display = "block";
+        }
+    }
 
     function _renderjson(json, indent, dont_indent, show_level, options) {
         var my_indent = dont_indent ? "" : indent;
@@ -106,9 +143,11 @@ var module, window, define, renderjson=(function() {
                 content = prepend(builder(),
                     A(options.hide, "disclosure",
                         function() { content.style.display="none";
-                            empty.style.display="inline"; } )));
+                            empty.style.display="inline";
+                            if(options.document_id != "") switch_button();} )));
                 content.style.display="inline";
-                empty.style.display="none"; };
+                empty.style.display="none";
+                if(options.document_id != "") switch_button();};
             append(empty,
                 A(options.show, "disclosure", show),
                 themetext(type+ " syntax", open),
@@ -178,6 +217,8 @@ var module, window, define, renderjson=(function() {
         pre.className = "renderjson";
         return pre;
     }
+    renderjson.set_document_id = function(document_id) { renderjson.options.document_id = document_id;
+        return renderjson;}
     renderjson.set_icons = function(show, hide) { renderjson.options.show = show;
         renderjson.options.hide = hide;
         return renderjson; };
@@ -201,6 +242,7 @@ var module, window, define, renderjson=(function() {
     renderjson.set_show_by_default = function(show) { renderjson.options.show_to_level = show ? Number.MAX_VALUE : 0;
         return renderjson; };
     renderjson.options = {};
+    renderjson.set_document_id("");
     renderjson.set_icons('+', '-');
     renderjson.set_show_by_default(false);
     renderjson.set_sort_objects(false);
