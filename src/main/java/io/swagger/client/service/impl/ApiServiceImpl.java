@@ -462,7 +462,10 @@ public class ApiServiceImpl implements ApiService {
         StringBuilder results = new StringBuilder();
         if (apiMethods.contains("GET_BY_CODE") && !initialApiBean.getApiName().equals("/v1/data-permissions")) {
             for (String code : codes) {
-                results.append(getByCode(code));
+                try {
+                    results.append(getByCode(code));
+                } catch (BadRequestException ignored) {
+                }
             }
         } else if (apiMethods.contains("GET_BY_UUID") && apiMethods.contains("GET_ALL")
                 && !initialApiBean.getApiName().equals("/v1/data-permissions")) {
@@ -470,14 +473,19 @@ public class ApiServiceImpl implements ApiService {
                     findAllIdentifiers(getAll(null, null, 1000, null, null),
                             "uuid");
             for (String uuid : uuids) {
-                results.append(getByUuid(uuid));
+                try {
+                    results.append(getByUuid(uuid));
+                } catch (BadRequestException ignored) {
+                }
             }
         } else if (apiMethods.contains("GET_BY_REF") && apiMethods.contains("GET_ALL")) {
             List<String> refUuids =
                     findAllIdentifiers(getAll(null, null, 1000, null, null),
                             "uuid");
             for (String refUuid : refUuids) {
+                try{
                 results.append(getByRef(refUuid));
+                } catch (BadRequestException ignored){}
             }
         } else if (apiMethods.contains("GET_ALL")) {
             results.append(getAll(null, null, 1000, null, null)

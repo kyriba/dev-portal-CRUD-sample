@@ -6,6 +6,8 @@ Building the API client library requires:
 1. JDK 1.8 or higher - [Installation](https://www.oracle.com/java/technologies/javase-downloads.html)
 2. Gradle - [Installation](https://gradle.org/install/)
 
+> :warning: *Make sure that Gradle version is compatible with Java [See in docs](https://docs.gradle.org/current/userguide/compatibility.html)*
+
 > :warning: *If you also have JRE installed, create a new environment variable for Java and set a new path for the PATH environment to the JDK folder in "Program Files".
 > Guides for creating and setting a new path: 
 > [Windows](https://stackoverflow.com/a/35623142) 
